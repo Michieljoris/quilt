@@ -16,6 +16,10 @@ define(
         var api = {};
         var defaultDesignDocName = 'auth';
         
+        api.withCredentials = function(withCred) {
+           $.couch.withCredentials(withCred); 
+        };
+        
         api.init = function(url, aDefaultDesignDocName) {
             $.couch.urlPrefix = url;
             defaultDesignDocName = aDefaultDesignDocName || defaultDesignDocName;

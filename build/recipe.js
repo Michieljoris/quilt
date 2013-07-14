@@ -1,6 +1,5 @@
 /*global process:false*/
 
-
 var mainMenuTree = [
     // { label: 'Home', icon: '', route: 'home'
     //    // sub: [
@@ -93,6 +92,7 @@ var exports = {
                     ,'bower_components/ace-builds/src-min-noconflict/ace'
                     ,'bower_components/angular-ui-ace/ui-ace'
                     ,'jquery.couch'
+                    ,'vow'
                     ,'couchapi'
                     ,"scrollspy"
                     ,"cookie"
@@ -104,12 +104,13 @@ var exports = {
                 files: [
                     'myjs'
                     ,'angularModule'
+                    ,'router'
+                    ,'services/myservices'
                     ,'controllers/managerCntl'
                     ,'controllers/mainCntl'
                     ,'controllers/helpCntl'
                     ,'controllers/testCntl'
                     // ,'directives/compile'
-                    ,'router'
                     
                 ],
                 path: 'js/'
@@ -127,6 +128,17 @@ var exports = {
             //     },
         ]
         ,template: [
+            { src: 'html/manager.html' 
+              ,id: "manager"
+              ,tagIdPostfix: '--' //can be overridden per template
+              // ,out: 'helpView.html'
+              ,mapping: {
+                  setupConnection: 'markdown/setupConnection.md',
+                  setupConnectionDisconnected: 'markdown/setupConnectionDisconnected.md',
+                  setupConnectionHelp: 'markdown/setupConnectionHelp.md',
+                  enableCors: 'markdown/enableCors.md'
+              }
+            },
             { src: 'views/help.html' 
               ,tagIdPostfix: '--' //can be overridden per template
               ,out: 'helpView.html'
@@ -140,7 +152,7 @@ var exports = {
               ,out: 'managerView.html'
               ,mapping: {
                    manmenu: 'html/manmenu',
-                   manager: 'html/manager.html'
+                   manager: 'manager'
               }
             }
             ,{ src: 'views/test.html' 

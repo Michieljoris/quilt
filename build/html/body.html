@@ -6,19 +6,21 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <!-- <a class="brand" target="blank"
-      href="http://localhost:5984/_utils">CouchDB</a> -->
-      <h4 ng-show="!connected">Connect to CouchDB</h4>
-      <ul ng-show="false" class="nav">
+      <a class="brand" target="blank"
+      href="http://localhost:5984/_utils">{{getTitle()}}</a> 
+      <ul ng-show="true" class="nav">
         <li class="">
-          <a href="#!manager">Manage</a>
+          <a id="reset-link" href="#" ng-click="reset()">{{getResetText()}}</a>
         </li>
-        <li class="">
-          <a href="#!help">Help</a>
-        </li>
-        <li class="">
-          <a href="#!test">test</a>
-        </li>
+        <!-- <li class=""> -->
+        <!--   <a href="#!manager">Manage</a> -->
+        <!-- </li> -->
+        <!-- <li class=""> -->
+        <!--   <a href="#!help">Help</a> -->
+        <!-- </li> -->
+        <!-- <li class=""> -->
+        <!--   <a href="#!test">test</a> -->
+        <!-- </li> -->
       </ul>
       
     </div>

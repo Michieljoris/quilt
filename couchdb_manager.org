@@ -1,0 +1,12 @@
+* TODO
+** regex the urls entered
+url ending in letter after portnumber hangs
+maybe do a timeout that resolves the promise in state.init ?
+* good to know
+** local.ini settings
+headers:accept, origin, authorization, content-type,
+X-CouchDB-WWW-Authenticate, X-Couch-Full-Commit
+methods:DELETE, GET, HEAD, POST, OPTIONS, PUT
+credentials:true
+enable_cors:true
+origins:*

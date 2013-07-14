@@ -11,8 +11,123 @@
 </div>
 
 </div>
-      <div id="manager--"  class="span9" ><a href="#" id="couchDBurl" data-type="text" data-title="Enter username"></a>
-<br>value = {{couchDburl}}
+      <div id="manager--"  class="span6" ><div ng-hide="state.connected">
+  <div ng-hide="disconnected" id="setupConnection--" ><p>I have tried to connect to CouchDB with the following two addresses:</p>
+
+<ul>
+<li><p><a href="#" id="couchDBurl" data-type="text"></a> (CouchDB)</p></li>
+<li><p><a href="#" id="corsProxy" data-type="text" ></a> (Cors proxy)</p></li>
+</ul>
+
+<p>Neither of them gave back a valid response.</p>
+
+<p>Please correct them (by clicking on them) and then click the connect button or refresh the page.</p>
+
+<p><button class="btn btn-small btn-primary" ng-click="connect()">Connect</button></p></div>
+  <div ng-show="disconnected" id="setupConnectionDisconnected--" ><p>Please enter the urls of the CouchDB you want to try to connect to:</p>
+
+<ul>
+<li><p><a href="#" id="couchDBurl2" data-type="text"></a></p></li>
+<li><p><a href="#" id="corsProxy2" data-type="text" ></a></p></li>
+</ul>
+
+<p><button class="btn btn-small btn-primary" ng-click="connect()">Connect</button></p></div>
+  <a  ng-click="isSetupConnectionHelpCollapsed =
+  !isSetupConnectionHelpCollapsed">For help on how to configure
+  CouchDB click here.</a>
+  <brk>
+  <div id="setupConnectionHelp--" collapse="isSetupConnectionHelpCollapsed"><p>If you can't connect this could be for the following reasons:</p>
+
+<ul>
+<li><p>You have not installed CouchDB.</p>
+
+<p>Please download CouchDB for windows from <a href="http://www.apache.org/dyn/closer.cgi?path=/couchdb/binary/win/1.3.1/setup-couchdb-1.3.1_R15B03-1.exe">here</a>,
+for mac <a href="http://www.apache.org/dyn/closer.cgi?path=/couchdb/binary/mac/1.3.1/Apache-CouchDB-1.3.1.zip">here</a> and linux <a href="http://www.apache.org/dyn/closer.cgi?path=/couchdb/source/1.3.1/apache-couchdb-1.3.1.tar.gz">here</a>.
+Installing is a matter of just clicking Next. There is one step that
+asks you wheter you want run the database as a service. If you say
+'No' you will have to manually start CouchDB on every restart of your computer.
+After downloading and installing come back to this page.</p></li>
+<li><p>CouchDB is installed but is not configured properly (which it isn't
+after a fresh install).</p>
+
+<p>You can remedy this by doing one of the following:</p>
+
+<ol><li><p>Download this little <a href="cors-proxy.zip">utility</a>. Unzip its content
+somewhere on you hard drive and double click the cors-proxy.bat in the unzipped
+folder.  Under Linux install node.js first, then execute "node server.js". That should
+work on a Mac as well. Then come back to this page and refresh
+or click the connect button. This proxy server assumes your CouchDB
+instance is on http;//localhost:5984<p>
+I will then try to configure CouchDb to enable access without having to
+use this little utility. This will only work with a CouchDB that is
+not locked down yet with a server admin password (as is the case
+after a fresh install). <p>
+This is the simplest solution for a fresh install.</p></li>
+<li><p>Download this <a href="local.ini">file</a>. In windows copy this to
+C:\Program Files (x86)\Apache Software
+Foundation\CouchDB\etc\couchdb\local.ini. In Linux it is somewhere
+like /usr/local/etc/couchdb/local.ini Overwrite the file that's
+there already. Restart the CouchDB service, or restart the
+computer. CouchDB should now be accessible from this site. <br>
+<strong><em>Warning: Don't do this if you or somebody else has already configured CouchDB at  all. Besides clobbering current settings, it also will remove any existing server admins and set up a new admin (with password admin).</em></strong></p></li>
+<li><p>If you know what you're doing go to the database config page, most
+likely <a href="http://localhost:5984/_utils/config.html">here</a> for a local
+install. If your CouchDB is on a network somewhere you will need to
+replace the <em>localhost:5984</em> part of this address with the proper address and
+port. <p> 
+You will need server admin credentials for a locked down CouchDB. On
+a fresh install you don't. Look for the option <strong>enable_cors</strong> and
+change its value to <strong>true</strong>. Look for the <strong>credentials</strong> options and
+change its value to <strong>true</strong>. Then go to the bottom of the page and
+click <strong>Add a new section</strong>. Fill in <strong>cors</strong>, <strong>origins</strong> and <strong>*</strong>
+for <strong>section</strong>, <strong>option</strong> and <strong>value</strong> respectively. Refresh this page or click the
+connect button.</p></li></ol></li>
+<li><p>CouchDB is installed and configured properly but neither of the addresses entered
+at the top of the page are correct. </p>
+
+<ul><li><p>Carefully check the addresses you've
+entered. </p></li>
+<li><p>Is the port correct? For instance if you're CouchDB is on a https address the port is
+probably 6984. </p></li>
+<li><p>The second address is the default address for the
+little CorsProxy server that enables access. If you have a different
+cors proxy server that enables access to your CouchDB fill that in
+there. </p></li>
+<li><p>Can you open the default address for the CouchDB instance in
+a browser window? For a local CouchDB this is for instance
+<a href="">http://localhost:5984</a>. You should see a empty page with
+something like:</p>
+
+<p>{"couchdb":"Welcome","uuid":"4418cad0d9bd42aabccad6cd71d1b5eb","version":"1.3.0","vendor":{"version":"1.3.0","name":"The
+Apache Software Foundation"}}</p></li></ul></li>
+</ul>
+
+<p>The above tips assume you want the simplest setup possible. If you
+don't want to enable cors for the CouchDB server you can use the
+cors proxy server for all future access to the database. You will
+have to run it every time before you use the roster app. You could
+put it in the startup folder of windows. Your access will be through
+the address http://localhost:1234. </p>
+
+<p>If your setup is more complicated contact me on <a href="&#x6D;&#x61;&#105;&#x6C;&#116;&#111;:&#x6D;&#105;&#99;&#104;i&#101;&#108;&#106;&#x6F;&#x72;i&#x73;&#x40;&#x67;&#109;&#x61;&#105;&#108;&#46;&#x63;&#111;&#109;">&#x6D;&#105;&#99;&#104;i&#101;&#108;&#106;&#x6F;&#x72;i&#x73;&#x40;&#x67;&#109;&#x61;&#105;&#108;&#46;&#x63;&#111;&#109;</a></p></div>
+</div>
+  <div id="enableCors--" ng-show="enableCors"><p>It looks like the cors settings were not applied to the server yet.</p>
+
+<p>You can choose not too modify CouchDB but you will have to run a cors
+proxy for the roster app to access the database. </p>
+
+<p><button class="btn btn-small btn-primary" ng-click="connect()">Set
+server cors settings</button></p>
+
+<p>The following settings will be applied:</p>
+
+<pre><code>credentials:true
+enable_cors:true
+origins:*
+headers:accept, origin, authorization, content-type,
+X-CouchDB-WWW-Authenticate, X-Couch-Full-Commit
+methods:DELETE, GET, HEAD, POST, OPTIONS, PUT
+</code></pre></div>
 </div>
     </div>
 </div> 

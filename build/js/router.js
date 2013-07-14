@@ -2,7 +2,7 @@
 /*jshint strict:false unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
 /*jshint maxparams:6 maxcomplexity:10 maxlen:190 devel:true*/
 
-angular.module('ngView', [], function($routeProvider, $locationProvider) {
+var ngView = angular.module('ngView', [], function($routeProvider, $locationProvider) {
     
     var baseDir = '/built/';
     var mapping =
