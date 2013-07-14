@@ -1,0 +1,41 @@
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <!-- <a class="brand" target="blank"
+      href="http://localhost:5984/_utils">CouchDB</a> -->
+      <h4 ng-show="!connected">Connect to CouchDB</h4>
+      <ul ng-show="false" class="nav">
+        <li class="">
+          <a href="#!manager">Manage</a>
+        </li>
+        <li class="">
+          <a href="#!help">Help</a>
+        </li>
+        <li class="">
+          <a href="#!test">test</a>
+        </li>
+      </ul>
+      
+    </div>
+  </div>
+</div>
+
+<!-- <header id="overview" class="jumbotron subhead"> -->
+<!--   <div class="container"> -->
+
+<!--   <div class="container"> -->
+<!--     <h3>{{getPage()}} -->
+<!--     </h3> -->
+<!--   </div> -->
+<!-- </header> -->
+
+
+<div class="ng-view"></div>
+
+
+

@@ -1,0 +1,15 @@
+{
+    "name": "couchdb_manager",
+    "version": "1.0.0",
+    "main": "www/js/",
+    "ignore": [
+	".jshintrc",
+	"**/*.txt"
+    ],
+    "dependencies": {
+	"angular-ui-codemirror": "latest"
+	,"angular-ui-ace": "latest"
+    },
+    "devDependencies": {
+    }
+}

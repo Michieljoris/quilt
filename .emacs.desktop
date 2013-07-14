@@ -1,0 +1,216 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Wed Jun 19 11:29:00 2013
+;; Desktop file format version 206
+;; Emacs version 24.1.50.2
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name "/home/michieljoris/mysrc/javascript/roster/_attachments/js/TAGS")
+(setq tags-table-list '("/home/michieljoris/mysrc/javascript/roster/_attachments/js/TAGS"))
+(setq search-ring '("bookmark"))
+(setq regexp-search-ring '("surround" "find-file" "project" "bookmark" "bmkjjj" "bookmark" "bo" "bokkk" "bookmark"))
+(setq register-alist (list '(106 . "jkj") '(24) '(3) '(-1) '(9) '(13) '(8) (list 82 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 36040 (get-buffer "modes.el")))) mk)) '(0) (desktop-list* 111 (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk nil (get-buffer " *temp*<24>")))) mk)) '(117) (desktop-list* 116 (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk nil (get-buffer " *temp*<24>")))) mk)) '(119) '(134217832) '(72) '(134217847) '(134217848 . "\367q\367u") '(113) '(101 file . "~/emacs/init.el") '(98 file . "~/.bashrc") '(107) '(105)))
+(setq file-name-history '("/home/michieljoris/emacs/packages/my-elisp-files/keys.el" "/home/michieljoris/emacs/packages/my-elisp-files/modes.el" "~/www/sites/personalinfo/" "/home/michieljoris/www/sites/personalinfo/www/js/controllers/mainCntl.js" "~/www/sites/personalinfo/" "/home/michieljoris/emacs/packages/my-elisp-files/modes.el" "/home/michieljoris/www/sites/personalinfo/personalinfo.org" "/home/michieljoris/www/sites/personalinfo/build/recipe.js" "~/www/sites/personalinfo/.emacs.desktop" "/home/michieljoris/emacs/packages/my-elisp-files/keys.el" "/home/michieljoris/emacs/packages/my-elisp-files/modes.el" "/home/michieljoris/www/sites/personalinfo/.emacs.desktop" "/home/michieljoris/www/sites/personalinfo/desktop" "~/www/sites/personalinfo/" "~/www/sites/personalinfo/desktop" "/home/michieljoris/www/sites/personalinfo/personalinfo.org" "~/www/sites/personalinfo/personalinfo.org" "/home/michieljoris/www/sites/personalinfo/personalinfo.org" "~/temp/tst4" "~/temp/desktoptest" "/home/michieljoris/emacs/packages/my-elisp-files/modes.el" "/home/michieljoris/www/sites/personalinfo/personalinfo.org" "/home/michieljoris/www/sites/personalinfo/www/js/angularModule.js" "/home/michieljoris/www/sites/personalinfo/www/js/angular-resource.min.js" "/home/michieljoris/www/edge/apps/backend/config/app.yml" "/home/michieljoris/www/edge/apps/backend/lib/myMailer.class.php" "/home/michieljoris/www/edge/README.md" "/home/michieljoris/www/edge/apps/backend/config/app.yml" "/home/michieljoris/emacs/packages/my-elisp-files/keys.el" "/home/michieljoris/emacs/packages/my-elisp-files/modes.el"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/michieljoris/www/sites/personalinfo/www/js/controllers/mainCntl.js"
+  "mainCntl.js"
+  'js2-mode
+  '(undo-tree-mode flymake-mode moz-minor-mode auto-complete-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode tern-mode skewer-mode hs-minor-mode)
+  502
+  '(496 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/emacs/packages/my-elisp-files/modes.el"
+  "modes.el"
+  'emacs-lisp-mode
+  '(undo-tree-mode auto-complete-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode paredit-mode eldoc-mode)
+  36272
+  '(37435 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/mysrc/org/notes.org"
+  "notes.org"
+  'org-mode
+  '(auto-fill-mode undo-tree-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode)
+  150
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/emacs/packages/my-elisp-files/keys.el"
+  "keys.el"
+  'emacs-lisp-mode
+  '(undo-tree-mode auto-complete-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode paredit-mode eldoc-mode)
+  1239
+  '(1260 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/www/sites/personalinfo/www/js/persona.js"
+  "persona.js"
+  'js2-mode
+  '(undo-tree-mode flymake-mode moz-minor-mode auto-complete-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode tern-mode skewer-mode hs-minor-mode)
+  200
+  '(nil nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/.emacs.d/elpa/find-things-fast-readme.txt"
+  "find-things-fast-readme.txt"
+  'text-mode
+  '(auto-fill-mode undo-tree-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode)
+  1998
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  nil
+  "*info*"
+  'Info-mode
+  '(undo-tree-mode yas-minor-mode window-number-mode global-auto-revert-mode)
+  2156511
+  '(1 nil)
+  t
+  '("/usr/local/share/info/emacs" "Concept Index" ((history ("dir" "Top" 20062))))
+  '((tab-width . 8) (buffer-file-coding-system . iso-latin-1-unix) (case-fold-search . t)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/www/sites/personalinfo/build/recipe.js"
+  "recipe.js"
+  'js2-mode
+  '(undo-tree-mode flymake-mode moz-minor-mode auto-complete-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode tern-mode skewer-mode hs-minor-mode)
+  713
+  '(nil nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix) (truncate-lines)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/www/sites/personalinfo/personalinfo.org"
+  "personalinfo.org"
+  'org-mode
+  '(auto-fill-mode undo-tree-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode)
+  665
+  '(290 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . emacs-mule-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/mysrc/org/it-notes.org"
+  "it-notes.org"
+  'org-mode
+  '(auto-fill-mode undo-tree-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode)
+  4074
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/mysrc/org/picolisp-notes.org"
+  "picolisp-notes.org"
+  'org-mode
+  '(auto-fill-mode undo-tree-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/mysrc/org/from-mobile.org"
+  "from-mobile.org"
+  'org-mode
+  '(auto-fill-mode undo-tree-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/mysrc/org/language-ref.org"
+  "language-ref.org"
+  'org-mode
+  '(auto-fill-mode undo-tree-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/mysrc/org/project-bootstrap.org"
+  "project-bootstrap.org"
+  'org-mode
+  '(auto-fill-mode undo-tree-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/mysrc/org/julangart.org"
+  "julangart.org"
+  'org-mode
+  '(auto-fill-mode undo-tree-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/mysrc/org/cs_study.org"
+  "cs_study.org"
+  'org-mode
+  '(auto-fill-mode undo-tree-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/mysrc/org/project-roster.org"
+  "project-roster.org"
+  'org-mode
+  '(auto-fill-mode undo-tree-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode)
+  16633
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (truncate-lines . t)))
+
+(desktop-create-buffer 206
+  "/home/michieljoris/.emacs.d/elpa/find-things-fast-20111123.2341/find-things-fast-autoloads.el"
+  "find-things-fast-autoloads.el"
+  'emacs-lisp-mode
+  '(undo-tree-mode auto-complete-mode yas-minor-mode window-number-mode autopair-mode global-auto-revert-mode paredit-mode eldoc-mode)
+  1512
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+

@@ -1,0 +1,94 @@
+<div  class="container manager" >
+<h3>Hello from the body</h3>
+
+   <button ng-click="info()">info</button>
+   <button ng-click="allDbs()">allDbs</button>
+   <br>
+   <form ng-submit="signup()">
+     <input type="text" ng-model="name"  size="30"
+            placeholder="name">
+     <input type="text" ng-model="pwd"  size="30"
+            placeholder="pwd">
+     <input class="btn-primary" type="submit" value="signup">
+   </form>
+   <br>
+   <form ng-submit="login()">
+     <input type="text" ng-model="name"  size="30"
+            placeholder="name">
+     <input type="text" ng-model="pwd"  size="30"
+            placeholder="pwd">
+     <input class="btn-primary" type="submit" value="login">
+   </form>
+   
+   <form ng-submit="hash()">
+     <input type="text" ng-model="salt"  size="30"
+            placeholder="salt">
+     <input type="text" ng-model="pwd"  size="30"
+            placeholder="pwd">
+     <input class="btn-primary" type="submit" value="hash">
+   </form>
+   
+   
+   <form ng-submit="dbInfo()">
+     <input type="text" ng-model="dbName"  size="30"
+            placeholder="dbName">
+     <input class="btn-primary" type="submit" value="dbInfo">
+   </form>
+   
+   <button ng-click="session()">session</button>
+   <br>
+   <button ng-click="logout()">logout</button>
+   <br>
+   <button ng-click="config()">config</button>
+   <br>
+   
+   
+   <form ng-submit="replicate()">
+     <input type="text" ng-model="repId"  size="30"
+            placeholder="repId">
+     <input type="text" ng-model="source"  size="30"
+            placeholder="source">
+     <input type="text" ng-model="target"  size="30"
+            placeholder="target">
+     <input type="checkbox" ng-model="continuous"  size="30"
+            placeholder="continous">
+     <input class="btn-primary" type="submit" value="add replication">
+   </form>
+   <button ng-click="replicateRemove()">remove replication</button>
+   <br>
+   <button ng-click="replicateDo()">Do replication</button>
+   <button ng-click="replicateStop()">Stop replication</button>
+   <br>
+   <br><button ng-click="active()">Active Tasks</button>
+   
+   <form ng-submit="docGet()">
+     <input type="text" ng-model="docId"  size="30"
+            placeholder="docId">
+     <input type="text" ng-model="params"  size="30"
+            placeholder="params">
+     <input class="btn-primary" type="submit" value="docGet">
+   </form>
+   <br>
+   <form ng-submit="addView()">
+     <input type="text" ng-model="viewGroup"  size="30"
+            placeholder="viewGroup">
+     <input type="text" ng-model="viewFunName"  size="30"
+            placeholder="funName">
+     <input type="text" ng-model="viewFun"  size="30"
+            placeholder="viewFun">
+     <input class="btn-primary" type="submit" value="addView">
+   </form>
+  
+  <div id="acediv" ui-ace="{
+	       useWrapMode : true,
+	       showGutter: false,
+	       theme:'twilight',
+	       mode: 'xml'
+	       }" 
+       ng-model="acetext"
+       scope-instance="myace"
+       >
+  </div>
+   
+   
+</div>

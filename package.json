@@ -1,0 +1,24 @@
+{
+    "name": "couchdb_manager",
+    "version": "0.1.0",
+    "author": "Michiel van Oosten",
+    "description": "A simple CouchDB manager",
+    "repository": {
+	"type": "git",
+	"url": "git://github.com/michieljoris/couchdb_manager.git"
+    },
+    "scripts": {
+	"start": "node ./server/server.js"
+    },
+    "dependencies": {
+	"bb-server": "*",
+	"html-builder": "*",
+	"nodemailer": "*",
+	"dbox": "*"
+    },
+    "bugs": {
+	"url": "https://github.com/michieljoris/couchdb_manager/issues"
+    },
+    "analyze": false,
+    "preferGlobal": "true"
+}
