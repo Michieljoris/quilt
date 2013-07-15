@@ -17,6 +17,7 @@ define(
         var defaultDesignDocName = 'auth';
         
         api.withCredentials = function(withCred) {
+            console.log('in coucapi');
            $.couch.withCredentials(withCred); 
         };
         
@@ -33,6 +34,17 @@ define(
             },section, option, value);
             return vow.promise;
         };
+
+        api.info = function(){
+            var vow = VOW.make(); 
+            $.couch.info({
+                success: vow.keep,
+                error: vow.break
+            });
+            return vow.promise;
+        };
+
+        
         
         //---------------------sessions
         api.login = function(name, pwd) {

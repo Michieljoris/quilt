@@ -2,10 +2,10 @@
   <div ng-hide="disconnected" id="setupConnection--" ></div>
   <div ng-show="disconnected" id="setupConnectionDisconnected--" ></div>
   <a  ng-click="isSetupConnectionHelpCollapsed =
-  !isSetupConnectionHelpCollapsed">For help on how to configure
-  CouchDB click here.</a>
+		!isSetupConnectionHelpCollapsed">For help on how to configure
+    CouchDB click here.</a>
   <brk>
-  <div id="setupConnectionHelp--" collapse="isSetupConnectionHelpCollapsed">
-  </div>
+    <div id="setupConnectionHelp--" collapse="isSetupConnectionHelpCollapsed">
+    </div>
 </div>
-  <div id="enableCors--" ng-show="enableCors"></div>
+<div ng-show="state.connected" id="enableCors--" ng-show="enableCors"></div>

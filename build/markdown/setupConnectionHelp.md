@@ -1,4 +1,16 @@
-If you can't connect this could be for the following reasons:
+For windows do the following: 
+
+* Download [CouchDB][couchdb for windows]. Install, say 'Yes' when
+  asked to run the database as a service.
+  
+* Download this [utility][corsproxy.zip]. Unzip it somewhere and double-click
+  the cors-proxy.bat in th unzipped folder.
+  
+* Refresh this page, or click the connect button
+
+More help:
+
+If you still can't connect this could be for the following reasons:
 
 * You have not installed CouchDB.
 
@@ -76,7 +88,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. 
 
-If your setup is more complicated contact me on <mailto:michieljoris@gmail.com>
+If your setup is more complicated than above or it is not working contact me on <mailto:michieljoris@gmail.com>
   
 [couchdb for windows]: http://www.apache.org/dyn/closer.cgi?path=/couchdb/binary/win/1.3.1/setup-couchdb-1.3.1_R15B03-1.exe
 [couchdb for mac]: http://www.apache.org/dyn/closer.cgi?path=/couchdb/binary/mac/1.3.1/Apache-CouchDB-1.3.1.zip

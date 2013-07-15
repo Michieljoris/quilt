@@ -99,8 +99,9 @@
         },
 
         withCredentials: function(withCred) {
-            withCredentials = withCred;
-          
+            if (typeof withCred === 'boolean') withCredentials = withCred;
+            console.log(withCredentials);
+            return withCredentials;
         },
         /**
          * View and edit the CouchDB configuration, called with just the options
@@ -255,6 +256,7 @@
                     xhr.setRequestHeader('Accept', 'application/json');
                 },
                 complete: function(req) {
+                    console.log(req);
                     var resp = $.parseJSON(req.responseText);
                     if (req.status == 200) {
                         if (options.success) options.success(resp);

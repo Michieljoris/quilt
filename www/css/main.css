@@ -1268,3 +1268,12 @@ body {
 #manager-- {
     padding-top:20px;
 }
+
+.btn.logbutton {
+    margin-top:8px;
+}
+
+body .modal {
+    width:300px;
+    margin-left: -180px
+}

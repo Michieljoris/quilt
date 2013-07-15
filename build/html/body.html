@@ -12,17 +12,42 @@
         <li class="">
           <a id="reset-link" href="#" ng-click="reset()">{{getResetText()}}</a>
         </li>
-        <!-- <li class=""> -->
-        <!--   <a href="#!manager">Manage</a> -->
-        <!-- </li> -->
+        <li class=""> 
+          <a href="#!manager">Manage</a> 
+        </li> 
         <!-- <li class=""> -->
         <!--   <a href="#!help">Help</a> -->
         <!-- </li> -->
-        <!-- <li class=""> -->
-        <!--   <a href="#!test">test</a> -->
-        <!-- </li> -->
+        <li class=""> 
+          <a href="#!test">test</a> 
+        </li> 
       </ul>
       
+      <button ng-show="state.connected && !state.user" class="logbutton
+      btn btn-primary pull-right" ng-click="login()">Login</button>
+      <button ng-show="state.connected && state.user"
+      class="logbutton btn btn-primary pull-right"
+      ng-click="logout()">Logout</button>
+      
+      <div id="loginDialog" modal="shouldBeOpen" close="close()" options="logopts">
+        <div class="modal-header">
+          <h3>Login</h3>
+        </div>
+        <div class="modal-body">
+	  <form>
+	    <fieldset>
+	      <input type="text" placeholder="user name"><br>
+	      <input type="password" placeholder="password">
+	    </fieldset>
+	  </form>
+	  
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-warning cancel pull-left"
+            ng-click="close()">Cancel</button>
+            <button class="btn btn-primary" ng-click="close()">Login</button>
+        </div>
+    </div>
     </div>
   </div>
 </div>

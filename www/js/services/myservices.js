@@ -42,9 +42,9 @@ angular.module("myApp").factory('state', function(defaults, config) {
         console.log('trying ' , url);
         var vow = VOW.make();
         $.couch.urlPrefix = url;
-        couchapi.dbAll().when(
+        couchapi.info().when(
             function(data) {
-                state.allDbs = data;
+                // state.allDbs = data;
                 vow.keep(url);
             },
             function(err) {
@@ -73,20 +73,33 @@ angular.module("myApp").factory('state', function(defaults, config) {
             state.connected = false;
         }, defaults.timeout);
          
-        couchapi.withCredentials = false;
+        couchapi.withCredentials(false);
         VOW.first([tryUrl(config.couchDbUrl), tryUrl(config.corsProxy)]).when(
             function(url) {
-                vow.keep(url);
-                state.connected = url;
+                $.couch.urlPrefix = url;
                 if (url === config.corsProxy) state.maybeCors = true;
+                state.connected = url;
+                couchapi.withCredentials(true);
+                return couchapi.session();
+            }
+        ).when(
+           function(sessionInfo) {
+               if (sessionInfo && sessionInfo.userCtx && sessionInfo.userCtx.name)
+                   state.user = sessionInfo.userCtx;
+               console.log(sessionInfo, state.user);
+               return VOW.kept();
+           } 
+        ).when(
+            function() {
+                vow.keep();
                 clearTimeout(timer);
-                couchapi.withCredentials = true;
+                couchapi.withCredentials(true);
             },
             function(err) {
                 vow.keep(err);
                 state.connected = false;
                 clearTimeout(timer);
-                couchapi.withCredentials = true;
+                couchapi.withCredentials(true);
             }
         );
         

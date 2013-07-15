@@ -33,10 +33,22 @@
 
 <p><button class="btn btn-small btn-primary" ng-click="connect()">Connect</button></p></div>
   <a  ng-click="isSetupConnectionHelpCollapsed =
-  !isSetupConnectionHelpCollapsed">For help on how to configure
-  CouchDB click here.</a>
+		!isSetupConnectionHelpCollapsed">For help on how to configure
+    CouchDB click here.</a>
   <brk>
-  <div id="setupConnectionHelp--" collapse="isSetupConnectionHelpCollapsed"><p>If you can't connect this could be for the following reasons:</p>
+    <div id="setupConnectionHelp--" collapse="isSetupConnectionHelpCollapsed"><p>For windows do the following: </p>
+
+<ul>
+<li><p>Download <a href="http://www.apache.org/dyn/closer.cgi?path=/couchdb/binary/win/1.3.1/setup-couchdb-1.3.1_R15B03-1.exe">CouchDB</a>. Install, say 'Yes' when
+asked to run the database as a service.</p></li>
+<li><p>Download this <a href="cors-proxy.zip">utility</a>. Unzip it somewhere and double-click
+the cors-proxy.bat in th unzipped folder.</p></li>
+<li><p>Refresh this page, or click the connect button</p></li>
+</ul>
+
+<p>More help:</p>
+
+<p>If you still can't connect this could be for the following reasons:</p>
 
 <ul>
 <li><p>You have not installed CouchDB.</p>
@@ -109,9 +121,9 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated contact me on <a href="&#x6D;&#x61;&#105;&#x6C;&#116;&#111;:&#x6D;&#105;&#99;&#104;i&#101;&#108;&#106;&#x6F;&#x72;i&#x73;&#x40;&#x67;&#109;&#x61;&#105;&#108;&#46;&#x63;&#111;&#109;">&#x6D;&#105;&#99;&#104;i&#101;&#108;&#106;&#x6F;&#x72;i&#x73;&#x40;&#x67;&#109;&#x61;&#105;&#108;&#46;&#x63;&#111;&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;a&#105;&#108;&#116;&#x6F;:&#x6D;i&#99;&#x68;&#x69;&#101;l&#x6A;&#x6F;&#114;&#105;&#115;&#x40;&#x67;&#x6D;&#x61;&#x69;&#x6C;&#46;&#x63;&#x6F;&#x6D;">&#x6D;i&#99;&#x68;&#x69;&#101;l&#x6A;&#x6F;&#114;&#105;&#115;&#x40;&#x67;&#x6D;&#x61;&#x69;&#x6C;&#46;&#x63;&#x6F;&#x6D;</a></p></div>
 </div>
-  <div id="enableCors--" ng-show="enableCors"><p>It looks like the cors settings were not applied to the server yet.</p>
+<div ng-show="state.connected" id="enableCors--" ng-show="enableCors"><p>It looks like the cors settings were not applied to the server yet.</p>
 
 <p>You can choose not too modify CouchDB but you will have to run a cors
 proxy for the roster app to access the database. </p>
