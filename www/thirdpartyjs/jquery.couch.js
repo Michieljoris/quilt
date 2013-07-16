@@ -1038,6 +1038,7 @@
                     }
                     return;
                 }
+                // resp.allResponseHeaders = req.getAllResponseHeaders();
                 if (options.ajaxStart) {
                     options.ajaxStart(resp);
                 }

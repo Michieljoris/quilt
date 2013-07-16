@@ -34,19 +34,23 @@
         <li class="">
           <a id="reset-link" href="#" ng-click="reset()">{{getResetText()}}</a>
         </li>
+        <li ng-hide="state.corsConfigured">
+          <a id="cors-link" href="#" ng-click="state.activeScreen='#enableCors'">cors</a>
+        </li>
         <li class=""> 
           <a href="#!manager">Manage</a> 
         </li> 
-        <!-- <li class=""> -->
-        <!--   <a href="#!help">Help</a> -->
-        <!-- </li> -->
+        <li class=""> 
+          <a href="#!help">Help</a> 
+        </li> 
         <li class=""> 
           <a href="#!test">test</a> 
         </li> 
       </ul>
       
+      <span class="pull-right" style="color:white; padding-top:10px">{{state.user.name}}</span>
       <button ng-show="state.connected && !state.user" class="logbutton
-      btn btn-primary pull-right" ng-click="login()">Login</button>
+      btn btn-primary pull-right" ng-click="openLogin()">Login</button>
       <button ng-show="state.connected && state.user"
       class="logbutton btn btn-primary pull-right"
       ng-click="logout()">Logout</button>
@@ -58,8 +62,8 @@
         <div class="modal-body">
 	  <form>
 	    <fieldset>
-	      <input type="text" placeholder="user name"><br>
-	      <input type="password" placeholder="password">
+	      <input type="text" placeholder="user name" ng-model="loginText"><br>
+	      <input type="password" placeholder="password" ng-model="passwordText">
 	    </fieldset>
 	  </form>
 	  
@@ -67,7 +71,7 @@
         <div class="modal-footer">
             <button class="btn btn-warning cancel pull-left"
             ng-click="close()">Cancel</button>
-            <button class="btn btn-primary" ng-click="close()">Login</button>
+            <button class="btn btn-primary" ng-click="login()">Login</button>
         </div>
     </div>
     </div>

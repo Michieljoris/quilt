@@ -112,7 +112,7 @@ function testCntl($scope, $timeout) {
             error: function(status) {
                 console.log(status);
             }
-        },'bla','blaa','bla');
+        });
     };
     $scope.salt = '77bac623e30d91809eecbc974aecf807';
     $scope.pwd = 'password';

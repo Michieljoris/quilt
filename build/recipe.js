@@ -134,9 +134,10 @@ var exports = {
               // ,out: 'helpView.html'
               ,mapping: {
                   setupConnection: 'markdown/setupConnection.md',
-                  setupConnectionDisconnected: 'markdown/setupConnectionDisconnected.md',
                   setupConnectionHelp: 'markdown/setupConnectionHelp.md',
-                  enableCors: 'markdown/enableCors.md'
+                  enableCors: 'markdown/enableCors.md',
+                  replicate: 'markdown/replicate.md'
+                  ,help: 'markdown/help.md'
               }
             },
             { src: 'views/help.html' 

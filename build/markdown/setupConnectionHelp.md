@@ -63,7 +63,11 @@ If you still can't connect this could be for the following reasons:
   at the top of the page are correct. 
   
   * Carefully check the addresses you've
-  entered. 
+  entered. If the cors proxy address worked before but not any more
+  now it might be because the CouchDB is actually configured correctly for cors
+  access now. Accessing a cors enabled server via a cors proxy is
+  problematic it seems. So check the database's direct address
+  carefully, because that should work now.
   
   * Is the port correct? For instance if you're CouchDB is on a https address the port is
   probably 6984. 

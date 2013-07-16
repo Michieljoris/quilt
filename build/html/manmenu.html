@@ -1,10 +1,9 @@
-<div id="manmenu" class="navigation" >
-  <ul class="nav nav-list sidemenu" data-spy="affix" data-offset-top="130">
-    <li><a  class="scroll"
-    href="#bla1"><i class="icon-chevron-right"></i>Install CouchDB</a></li>
-    <li><a  class="scroll" href="#bla2"><i class="icon-chevron-right"></i>Setup</a></li>
-    <li><a  class="scroll" href="#bla3"><i class="icon-chevron-right"></i>Edit</a></li>
-    <li><a  class="scroll" href="#bla4"><i class="icon-chevron-right"></i>Share</a></li>
+<div ng-show="state.connected" id="manmenu" class="navigation" >
+  <ul class="nav nav-list sidemenu" data-spy="affix"
+      data-offset-top="130">
+    <li ng-class="isActive('#help')"><a   ng-click="click($event)" href="#help"><i class="icon-chevron-right"></i>Info</a></li>
+    <li ng-hide="true" ng-class="isActive('#enableCors')"><a   ng-click="click($event)" href="#enableCors"><i class="icon-chevron-right"></i>Enable CORS</a></li>
+    <li ng-class="isActive('#replicate')"><a   ng-click="click($event)" href="#replicate"><i class="icon-chevron-right"></i>Replicate</a></li>
   </ul>
 </div>
 

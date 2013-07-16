@@ -1,6 +1,6 @@
 <div ng-hide="state.connected">
-  <div ng-hide="disconnected" id="setupConnection--" ></div>
-  <div ng-show="disconnected" id="setupConnectionDisconnected--" ></div>
+  <div  id="setupConnection--" ></div>
+  <!-- <div ng-show="disconnected" id="setupConnectionDisconnected--" ></div> -->
   <a  ng-click="isSetupConnectionHelpCollapsed =
 		!isSetupConnectionHelpCollapsed">For help on how to configure
     CouchDB click here.</a>
@@ -8,4 +8,9 @@
     <div id="setupConnectionHelp--" collapse="isSetupConnectionHelpCollapsed">
     </div>
 </div>
-<div ng-show="state.connected" id="enableCors--" ng-show="enableCors"></div>
+
+<div ng-show="state.connected ">
+  <div ng-show="isActive('#enableCors')" id="enableCors--"></div>
+  <div ng-show="isActive('#replicate')" id="replicate--"></div>
+  <div ng-show="isActive('#help')" id="help--"></div>
+</div>

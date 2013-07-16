@@ -36,9 +36,8 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
     };
     $scope.disconnected = false;
     
-    $scope.login = function() {
+    $scope.openLogin = function() {
         $scope.shouldBeOpen = true;
-        console.log('login');
     };
 
    
@@ -48,8 +47,22 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
         delete state.user;
     };
     
+    $scope.login = function () {
+        couchapi.login($scope.loginText, $scope.passwordText).when(
+            function(data) {
+                console.log(data);
+                state.user = data;
+                state.initialize($scope);
+                // $scope.$apply();
+            },
+            function(data) {
+                console.log('error', data);
+            }  
+        );
+        $scope.shouldBeOpen = false;
+    };
+    
     $scope.close = function () {
-        // $scope.closeMsg = 'I was closed at: ' + new Date();
         $scope.shouldBeOpen = false;
     };
     

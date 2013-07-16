@@ -1,37 +1,36 @@
 <div  class="container manager" >
     <div class="row">
-      <div ng-show="connected" id="manmenu--" class="span3 mmenu-sidebar"><div id="manmenu" class="navigation" >
-  <ul class="nav nav-list sidemenu" data-spy="affix" data-offset-top="130">
-    <li><a  class="scroll"
-    href="#bla1"><i class="icon-chevron-right"></i>Install CouchDB</a></li>
-    <li><a  class="scroll" href="#bla2"><i class="icon-chevron-right"></i>Setup</a></li>
-    <li><a  class="scroll" href="#bla3"><i class="icon-chevron-right"></i>Edit</a></li>
-    <li><a  class="scroll" href="#bla4"><i class="icon-chevron-right"></i>Share</a></li>
+      <div  id="manmenu--" class="span3 mmenu-sidebar"><div ng-show="state.connected" id="manmenu" class="navigation" >
+  <ul class="nav nav-list sidemenu" data-spy="affix"
+      data-offset-top="130">
+    <li ng-class="isActive('#help')"><a   ng-click="click($event)" href="#help"><i class="icon-chevron-right"></i>Info</a></li>
+    <li ng-hide="true" ng-class="isActive('#enableCors')"><a   ng-click="click($event)" href="#enableCors"><i class="icon-chevron-right"></i>Enable CORS</a></li>
+    <li ng-class="isActive('#replicate')"><a   ng-click="click($event)" href="#replicate"><i class="icon-chevron-right"></i>Replicate</a></li>
   </ul>
 </div>
 
 </div>
       <div id="manager--"  class="span6" ><div ng-hide="state.connected">
-  <div ng-hide="disconnected" id="setupConnection--" ><p>I have tried to connect to CouchDB with the following two addresses:</p>
+  <div  id="setupConnection--" ><p ng-hide="disconnected"> 
+I have tried to connect to CouchDB with the following two addresses:
+</p>
+
+<p ng-show="disconnected"> Please enter the urls of the CouchDB you want to try to connect to:</p>
 
 <ul>
 <li><p><a href="#" id="couchDBurl" data-type="text"></a> (CouchDB)</p></li>
 <li><p><a href="#" id="corsProxy" data-type="text" ></a> (Cors proxy)</p></li>
 </ul>
 
-<p>Neither of them gave back a valid response.</p>
+<div ng-hide="disconnected">
+Neither of them gave back a valid response.
 
-<p>Please correct them (by clicking on them) and then click the connect button or refresh the page.</p>
-
-<p><button class="btn btn-small btn-primary" ng-click="connect()">Connect</button></p></div>
-  <div ng-show="disconnected" id="setupConnectionDisconnected--" ><p>Please enter the urls of the CouchDB you want to try to connect to:</p>
-
-<ul>
-<li><p><a href="#" id="couchDBurl2" data-type="text"></a></p></li>
-<li><p><a href="#" id="corsProxy2" data-type="text" ></a></p></li>
-</ul>
+Please correct them (by clicking on them) and then click the connect
+button or refresh the page.
+</div>
 
 <p><button class="btn btn-small btn-primary" ng-click="connect()">Connect</button></p></div>
+  <!-- <div ng-show="disconnected" id="setupConnectionDisconnected--" ></div> -->
   <a  ng-click="isSetupConnectionHelpCollapsed =
 		!isSetupConnectionHelpCollapsed">For help on how to configure
     CouchDB click here.</a>
@@ -98,7 +97,11 @@ connect button.</p></li></ol></li>
 at the top of the page are correct. </p>
 
 <ul><li><p>Carefully check the addresses you've
-entered. </p></li>
+entered. If the cors proxy address worked before but not any more
+now it might be because the CouchDB is actually configured correctly for cors
+access now. Accessing a cors enabled server via a cors proxy is
+problematic it seems. So check the database's direct address
+carefully, because that should work now.</p></li>
 <li><p>Is the port correct? For instance if you're CouchDB is on a https address the port is
 probably 6984. </p></li>
 <li><p>The second address is the default address for the
@@ -121,25 +124,38 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;a&#105;&#108;&#116;&#x6F;:&#x6D;i&#99;&#x68;&#x69;&#101;l&#x6A;&#x6F;&#114;&#105;&#115;&#x40;&#x67;&#x6D;&#x61;&#x69;&#x6C;&#46;&#x63;&#x6F;&#x6D;">&#x6D;i&#99;&#x68;&#x69;&#101;l&#x6A;&#x6F;&#114;&#105;&#115;&#x40;&#x67;&#x6D;&#x61;&#x69;&#x6C;&#46;&#x63;&#x6F;&#x6D;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#105;&#x6C;to:&#x6D;&#105;&#x63;&#x68;&#x69;&#x65;&#108;&#x6A;o&#x72;&#x69;&#115;&#64;&#103;&#109;&#x61;i&#x6C;&#x2E;&#99;&#x6F;&#109;">&#x6D;&#105;&#x63;&#x68;&#x69;&#x65;&#108;&#x6A;o&#x72;&#x69;&#115;&#64;&#103;&#109;&#x61;i&#x6C;&#x2E;&#99;&#x6F;&#109;</a></p></div>
 </div>
-<div ng-show="state.connected" id="enableCors--" ng-show="enableCors"><p>It looks like the cors settings were not applied to the server yet.</p>
 
-<p>You can choose not too modify CouchDB but you will have to run a cors
-proxy for the roster app to access the database. </p>
+<div ng-show="state.connected ">
+  <div ng-show="isActive('#enableCors')" id="enableCors--"><div ng-show="state.maybeCors">
+It looks like we're accessing CouchDB through my cors proxy. 
+<p>
 
-<p><button class="btn btn-small btn-primary" ng-click="connect()">Set
-server cors settings</button></p>
+You can choose not too modify CouchDB but you will have to keep running this cors
+proxy so the roster app can access the database. 
+</div>
+
+<p>To enable cors and enable the roster app to access the database
+directly a certain number of settings need to be applied.</p>
+
+<p ng-show="!isAdminLoggedIn()">
+ Please click the button right top and log in with server admin
+ credentials so I can check whether cors settings have been configured correctly.
+</p>
+
+<p>This section and button will be accessible as long as there is a discrepancy
+between recommended and actual settings.</p>
+
+<p><button class="btn btn-small btn-primary" ng-click="enableCors()">
+Apply cors settings to CouchDB</button></p>
 
 <p>The following settings will be applied:</p>
 
-<pre><code>credentials:true
-enable_cors:true
-origins:*
-headers:accept, origin, authorization, content-type,
-X-CouchDB-WWW-Authenticate, X-Couch-Full-Commit
-methods:DELETE, GET, HEAD, POST, OPTIONS, PUT
-</code></pre></div>
+<pre>{{defaults.corsSettings | json}}</pre></div>
+  <div ng-show="isActive('#replicate')" id="replicate--"><p>Hello, are we replicating??</p></div>
+  <div ng-show="isActive('#help')" id="help--"><p>Intro</p></div>
+</div>
 </div>
     </div>
 </div> 

@@ -38,7 +38,10 @@ define(
         api.info = function(){
             var vow = VOW.make(); 
             $.couch.info({
-                success: vow.keep,
+                success: function(data){
+                   console.log(data);
+                  vow.keep(data);  
+                },
                 error: vow.break
             });
             return vow.promise;
@@ -52,6 +55,7 @@ define(
             $.couch.login({
                 name: name,
                 password: pwd,
+                withCredentials:true,
                 success: vow.keep,
                 error: vow.break
             });
