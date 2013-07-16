@@ -15,10 +15,16 @@ directly a certain number of settings need to be applied.
 </p>
 
 This section and button will be accessible as long as there is a discrepancy
-between recommended and actual settings.
+between recommended and actual settings, or I just can't see whether
+there is!!
 
 <button class="btn btn-small btn-primary" ng-click="enableCors()">
 Apply cors settings to CouchDB</button>
+
+<p ng-show="!isAdminLoggedIn()">
+ Please click the button right top and log in with server admin
+ credentials, otherwise I can't update server configuration.
+</p>
 
 The following settings will be applied:
 

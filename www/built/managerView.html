@@ -124,7 +124,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#105;&#x6C;to:&#x6D;&#105;&#x63;&#x68;&#x69;&#x65;&#108;&#x6A;o&#x72;&#x69;&#115;&#64;&#103;&#109;&#x61;i&#x6C;&#x2E;&#99;&#x6F;&#109;">&#x6D;&#105;&#x63;&#x68;&#x69;&#x65;&#108;&#x6A;o&#x72;&#x69;&#115;&#64;&#103;&#109;&#x61;i&#x6C;&#x2E;&#99;&#x6F;&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#105;&#x6C;&#116;&#x6F;:&#x6D;&#x69;&#x63;&#x68;ie&#x6C;&#x6A;&#111;&#114;&#x69;&#x73;&#x40;&#103;&#x6D;&#97;i&#108;&#46;c&#x6F;&#109;">&#x6D;&#x69;&#x63;&#x68;ie&#x6C;&#x6A;&#111;&#114;&#x69;&#x73;&#x40;&#103;&#x6D;&#97;i&#108;&#46;c&#x6F;&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -145,10 +145,16 @@ directly a certain number of settings need to be applied.</p>
 </p>
 
 <p>This section and button will be accessible as long as there is a discrepancy
-between recommended and actual settings.</p>
+between recommended and actual settings, or I just can't see whether
+there is!!</p>
 
 <p><button class="btn btn-small btn-primary" ng-click="enableCors()">
 Apply cors settings to CouchDB</button></p>
+
+<p ng-show="!isAdminLoggedIn()">
+ Please click the button right top and log in with server admin
+ credentials, otherwise I can't update server configuration.
+</p>
 
 <p>The following settings will be applied:</p>
 

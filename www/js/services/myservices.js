@@ -58,12 +58,14 @@ angular.module("myApp").factory('state', function(defaults, config) {
     var state = {};
     
     function checkSetting(setting, data)  {
-        var value = data[setting[0]][setting[1]];
+        var value = data[setting[0]] ? data[setting[0]][setting[1]] : '';
+        value = value || '';
         return value.indexOf(setting[2]) !== -1;
     }
     
     function checkCors() {
         var corsSettings = defaults.corsSettings;
+        console.log(corsSettings);
         console.log('checking cors config');
         var vow = VOW.make();
         couchapi.config().when(
@@ -78,9 +80,9 @@ angular.module("myApp").factory('state', function(defaults, config) {
                         for (var v=0; v<values.length; v++) {
                             var value = values[v];
                             var set = checkSetting([setting, option, value], data);
-                            // console.log(value, set);
                             if (!set) {
                                 state.corsConfigured = false;
+                                console.log('cors not configured properly..');
                                 cookie.remove('corsConfigured');
                                 vow.keep();
                                 return;
@@ -89,12 +91,14 @@ angular.module("myApp").factory('state', function(defaults, config) {
                         }
                     }
                 }
+                console.log('cors configured properly.');
                 cookie.set('corsConfigured', true);
                 state.corsConfigured = true;
                 vow.keep();
             }, 
             function(data) {
                 state.corsConfigured = cookie.get('corsConfigured');
+                console.log('cors configured properly? Can\'t tell. What does cookie say?' + state.corsConfigured );
                 vow.keep(data);
             }
         );

@@ -1,4 +1,4 @@
-/*global myAppModule:false scrollSpy:false $:false couchapi:false PBKDF2:false emit:false*/
+/*global VOW:false scrollSpy:false $:false couchapi:false PBKDF2:false emit:false*/
 /*jshint strict:true unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
 /*jshint maxparams:4 maxcomplexity:7 maxlen:130 devel:true newcap:false*/
 
@@ -67,6 +67,31 @@ function managerCntl($scope, config, state, defaults) {
     
     $scope.isAdminLoggedIn = function() {
         return (state.user && state.user.roles && state.user.roles.indexOf('_admin') !== -1);
+    };
+    
+    $scope.enableCors = function() {
+        var vows = [];
+        var corsSettings = defaults.corsSettings;
+        var settingKeys = Object.keys(corsSettings);
+        for (var i=0; i< settingKeys.length; i++) {
+            var setting = settingKeys[i];
+            var optionKeys = Object.keys(corsSettings[setting]);
+            for (var j=0; j< optionKeys.length; j++) {
+                var option= optionKeys[j];
+                var values = corsSettings[setting][option];
+                console.log(setting, option, values.toString());
+                vows.push(couchapi.config(setting, option, values.toString()));
+            }
+        }
+        VOW.every(vows).when(
+            function(data) {
+                state.initialize($scope);
+                console.log(data);
+            },
+            function(err) {
+                console.log(err);
+                alert('I wasn\'t able to update the CouchDB settings. Are you logged in with server admin credentials?');
+            }); 
     };
 
 }
