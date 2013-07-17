@@ -1,11 +1,10 @@
 <div  class="container manager" >
     <div class="row">
-      <div  id="manmenu--" class="span3 mmenu-sidebar"><div ng-show="state.connected" id="manmenu" class="navigation" >
+      <div  id="manmenu--" class="span3 mmenu-sidebar"><div ng-show="state.connected && state.advanced" id="manmenu"
+     class="navigation" >
   <ul class="nav nav-list sidemenu" data-spy="affix"
       data-offset-top="130">
-    <li ng-class="isActive('#help')"><a   ng-click="click($event)" href="#help"><i class="icon-chevron-right"></i>Info</a></li>
-    <li ng-hide="true" ng-class="isActive('#enableCors')"><a   ng-click="click($event)" href="#enableCors"><i class="icon-chevron-right"></i>Enable CORS</a></li>
-    <li ng-class="isActive('#replicate')"><a   ng-click="click($event)" href="#replicate"><i class="icon-chevron-right"></i>Replicate</a></li>
+    <li ng-repeat="screen in screens" class="{{isActive('#' + screen.name)}}"><a   ng-click="click($event)" href="#{{screen.name}}"><i class="icon-chevron-right"></i>{{screen.menu}}</a></li>
   </ul>
 </div>
 
@@ -32,8 +31,8 @@ button or refresh the page.
 <p><button class="btn btn-small btn-primary" ng-click="connect()">Connect</button></p></div>
   <!-- <div ng-show="disconnected" id="setupConnectionDisconnected--" ></div> -->
   <a  ng-click="isSetupConnectionHelpCollapsed =
-		!isSetupConnectionHelpCollapsed">For help on how to configure
-    CouchDB click here.</a>
+		!isSetupConnectionHelpCollapsed">Help on how to
+		enable access to CouchDB click here.</a>
   <brk>
     <div id="setupConnectionHelp--" collapse="isSetupConnectionHelpCollapsed"><p>For windows do the following: </p>
 
@@ -124,45 +123,136 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#105;&#x6C;&#116;&#x6F;:&#x6D;&#x69;&#x63;&#x68;ie&#x6C;&#x6A;&#111;&#114;&#x69;&#x73;&#x40;&#103;&#x6D;&#97;i&#108;&#46;c&#x6F;&#109;">&#x6D;&#x69;&#x63;&#x68;ie&#x6C;&#x6A;&#111;&#114;&#x69;&#x73;&#x40;&#103;&#x6D;&#97;i&#108;&#46;c&#x6F;&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#97;i&#108;&#116;&#111;:&#109;&#105;&#99;&#104;&#x69;e&#108;&#x6A;o&#x72;&#105;&#115;&#64;&#103;&#x6D;&#x61;&#105;&#108;&#x2E;&#x63;o&#x6D;">&#109;&#105;&#99;&#104;&#x69;e&#108;&#x6A;o&#x72;&#105;&#115;&#64;&#103;&#x6D;&#x61;&#105;&#108;&#x2E;&#x63;o&#x6D;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
-  <div ng-show="isActive('#enableCors')" id="enableCors--"><div ng-show="state.maybeCors">
-It looks like we're accessing CouchDB through my cors proxy. 
+  <div ng-show="isActive('#enableCors')" id="enableCors--"><p>This website and the roster app can't access the
+CouchDB server directly because they are served from different
+origins. But to configure CouchDB for our needs we needed access to
+it. That's why you either installed a 'cors proxy' or
+configured CouchDB manually to enable this access. </p>
+
+<p>However you need to choose a solution for long term access. My recommendation
+is to 'enable cors' for the CouchDB server. See below for other
+options.</p>
+
+<p ng-show="state.corsConfigured">
+It looks like your CouchDB is configured just the way I need it to
+be (<a href="#" ng-click="checkCors($event)">check again</a>). If you're happy with this (I would) go on to setting up your
+database. If not read on.
+</p>
+
+<p ng-show="!state.configAccessible && !state.corsConfigured">
+ <b>Please click the button and log in with server admin
+ credentials so I can check whether cors settings have been configured
+ correctly.</b>
+
+<br>
+<button class="btn btn-small btn-primary" ng-click="openLogin()">Log in</button>
+</p>
+
+<div ng-show="state.configAccessible && !state.corsConfigured">
+To enable cors and enable the roster app to access the database
+directly a certain number of settings need to be applied.
+<p><p>    
+
+<button class="btn btn-small btn-primary" ng-click="enableCors($event)">
+Automatically apply cors settings to CouchDB</button>
+<p>
+For info on how to do this manually please <a href="#"
+ng-click="reset($event)">disconnect</a> and look at the help on how to
+enable access to CouchDB.
 <p>
 
-You can choose not too modify CouchDB but you will have to keep running this cors
-proxy so the roster app can access the database. 
+<a  ng-click="isCorsSettingsCollapsed =
+!isCorsSettingsCollapsed">Click to see the settings that will be applied: </a>
+
+<div collapse= "!isCorsSettingsCollapsed">
+<pre>{{defaults.corsSettings | json}}</pre>
 </div>
 
-<p>To enable cors and enable the roster app to access the database
-directly a certain number of settings need to be applied.</p>
+<p></div></p>
 
-<p ng-show="!isAdminLoggedIn()">
- Please click the button right top and log in with server admin
- credentials so I can check whether cors settings have been configured correctly.
-</p>
+<hr />
 
-<p>This section and button will be accessible as long as there is a discrepancy
-between recommended and actual settings, or I just can't see whether
-there is!!</p>
+<h3>Other options:</h3>
 
-<p><button class="btn btn-small btn-primary" ng-click="enableCors()">
-Apply cors settings to CouchDB</button></p>
+<ul>
+<li><p>You can choose not too modify CouchDB at all. But you will have to have a cors
+proxy in the background at all times so the roster app can access the
+database. <span ng-show="state.maybeCors">
+It looks like we're accessing CouchDB through cors proxy at the
+moment. If so, you're done. 
+</span> </p>
 
-<p ng-show="!isAdminLoggedIn()">
- Please click the button right top and log in with server admin
- credentials, otherwise I can't update server configuration.
-</p>
+<p>For info on how install to install this proxy <a href="#" ng-click="reset($event)">disconnect</a> and look at the help on how to enable access to CouchDB.</p></li>
+<li><p>The third option is to serve the roster app and this app from
+CouchDB, then they both come from the same domain, and the problem is
+solved. 
+<span ng-show="state.servedFromCouchDb">
+It looks like this app is already server from CouchDB. <br />
+</span>
+<span ng-hide="state.servedFromCouchDb">
+<span ng-hide="state.configAccessible">
+<b>Please click the button right top and log in with server admin
+credentials so I can replicate this and the roster app to your CouchDB.</b>
+</span>
+<span ng-show="state.configAccessible">
+To make this happen please click the button:<br><br>
+<button class="btn btn-small btn-primary" ng-click="enableCors($event)">
+Replicate this app and the roster app to the local database</button>
+</span>
+</span></p>
 
-<p>The following settings will be applied:</p>
+<p>Go to <a href="{{state.connected}}/quilt">{{state.connected}}/quilt</a>
+for this app, and <a target="_blank" href="{{state.connected}}/roster">{{state.connected}}/roster</a> for the roster.</p></li>
+</ul></div>
+  <div ng-show="isActive('#simple')" id="simple--"><p>Setup CouchDB</p>
 
-<pre>{{defaults.corsSettings | json}}</pre></div>
-  <div ng-show="isActive('#replicate')" id="replicate--"><p>Hello, are we replicating??</p></div>
-  <div ng-show="isActive('#help')" id="help--"><p>Intro</p></div>
+<hr />
+
+<div ng-hide="state.configAccessible">
+<b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b>
+<button class="btn btn-small btn-primary" ng-click="openLogin()">Log
+in your CouchDB</button>
+</div>
+
+<p><span ng-show="state.partyMode">
+Your CouchDB is in party mode as it's called. Which means there is no
+server admin configured. This makes your database quite insecure. It
+is not strictly necessary, but highly recommended to create a server
+admin. Please click the button to do so.
+<button class="btn btn-small btn-primary" ng-click="createServerAdmin()">Log
+in your CouchDB</button>
+</span></p>
+
+<p><b><i>Please supply the address and credentials for the remote CouchDB you want to
+synchronize with.<p></i></b></p>
+
+<p>Remote CouchDB: <a href="#" id="remoteUrl" data-type="text"></a> <br>
+User name: <a href="#" id="remoteUserName" data-type="text" ></a> <br> 
+Password: <a href="#" id="remotePassword" data-type="password" ></a> <br></p>
+
+<p><b><i>Please edit the list of locations you want to synchronize with
+your CouchDB.<p></i></b>
+<a href="#" id="locationsToSync" data-type="checklist"
+data-original-title="Select locations"></a> <br></p>
+
+<p><p><p></p>
+
+<p><button class="btn btn-small btn-primary"
+ng-click="setupSimple()">Setup your CouchDB!!</button></p></div>
+  <div ng-show="isActive('#info')" id="info--"><p>Intro</p></div>
+  <div ng-show="isActive('#serverAdmins')" id="serverAdmins--"><p>Server admins</p></div>
+  <div ng-show="isActive('users')" id="users--"><div class='row' style='margin-left: 0; padding-left:10px; border:solid grey 1px; height:40; width:100%;'>placeholder for markdown/users.md</div></div>
+  <div ng-show="isActive('databases')" id="databases--"><div class='row' style='margin-left: 0; padding-left:10px; border:solid grey 1px; height:40; width:100%;'>placeholder for markdown/databases.md</div></div>
+  <div ng-show="isActive('scripts')" id="scripts--"><div class='row' style='margin-left: 0; padding-left:10px; border:solid grey 1px; height:40; width:100%;'>placeholder for markdown/scripts.md</div></div>
+  <div ng-show="isActive('replications')" id="replications--"><div class='row' style='margin-left: 0; padding-left:10px; border:solid grey 1px; height:40; width:100%;'>placeholder for markdown/replications.md</div></div>
 </div>
 </div>
+      <div id="rightBar--"  class="span3" >
+      </div>
     </div>
 </div> 
 

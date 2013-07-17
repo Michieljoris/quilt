@@ -17,7 +17,7 @@
     <script src="js/angular-ui-ieshiv.js"></script>
     <![endif]-->						    
 <script src="http://localhost:9090/skewer"></script>
-<link rel="stylesheet" type="text/css" href="css/bootstrap.css"><link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.css"><link rel="stylesheet" type="text/css" href="css/jquery-ui-1.10.2.custom.css"><link rel="stylesheet" type="text/css" href="css/angular-ui.css"><link rel="stylesheet" type="text/css" href="css/checkboxes.css"><link rel="stylesheet" type="text/css" href="css/bootstrap-editable.css"><link rel="stylesheet" type="text/css" href="css/main.css"><link rel="stylesheet" type="text/css" href="css/mycss.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap.css"><link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.css"><link rel="stylesheet" type="text/css" href="css/jquery-ui-1.10.2.custom.css"><link rel="stylesheet" type="text/css" href="css/angular-ui.css"><link rel="stylesheet" type="text/css" href="css/bootstrap-editable.css"><link rel="stylesheet" type="text/css" href="css/main.css"><link rel="stylesheet" type="text/css" href="css/mycss.css">
 </head>
   <body id="ng:app" ng:app="myApp" ng-controller='mainCntl' ng-cloak>
     <div id="wrapper--"><div class="navbar navbar-inverse navbar-fixed-top">
@@ -28,15 +28,21 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="brand" target="blank"
+      <a title="Open futon" class="brand" target="_blank"
       href="http://localhost:5984/_utils">{{getTitle()}}</a> 
-      <ul ng-show="true" class="nav">
+      <ul id="topmenu" ng-show="true" class="nav">
         <li class="">
-          <a id="reset-link" href="#" ng-click="reset()">{{getResetText()}}</a>
+          <a class="sublink"  href="#" ng-click="reset()">{{getResetText()}}</a>
         </li>
-        <li ng-hide="state.corsConfigured">
-          <a id="cors-link" href="#" ng-click="state.activeScreen='#enableCors'">cors</a>
+        <li ng-show="state.connected">
+          <a title="Setup access to CouchDB" class="sublink" href="" ng-click="state.activeScreen='#enableCors'">access</a>
         </li>
+        <li class=""> 
+	  <a class="sublink" ng-show="state.connected && !state.advanced" href="#" ng-click="advancedSetup($event)">advanced</a>
+        </li> 
+        <li class=""> 
+	  <a class="sublink" ng-show="state.connected && state.advanced" href="#" ng-click="simpleSetup($event)">simple</a>
+        </li> 
         <li class=""> 
           <a href="#!manager">Manage</a> 
         </li> 
@@ -49,11 +55,8 @@
       </ul>
       
       <span class="pull-right" style="color:white; padding-top:10px">{{state.user.name}}</span>
-      <button ng-show="state.connected && !state.user" class="logbutton
-      btn btn-primary pull-right" ng-click="openLogin()">Login</button>
-      <button ng-show="state.connected && state.user"
-      class="logbutton btn btn-primary pull-right"
-      ng-click="logout()">Logout</button>
+      <button ng-show="state.connected && !state.user" class="logbutton btn btn-primary pull-right" ng-click="openLogin()">Login</button>
+      <button ng-show="state.connected && state.user" class="logbutton btn btn-primary pull-right" ng-click="logout()">Logout</button>
       
       <div id="loginDialog" modal="shouldBeOpen" close="close()" options="logopts">
         <div class="modal-header">

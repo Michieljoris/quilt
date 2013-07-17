@@ -20,12 +20,17 @@ function managerCntl($scope, config, state, defaults) {
     
     //-----------------------------------------------------
     $scope.isActive = function(screen) {
+        // console.log('screen=',screen, state.activeScreen);
         return screen === state.activeScreen ? 'active' : '';
     };
     
     $scope.click = function(event) {
         event.preventDefault();
         state.activeScreen = event.currentTarget.hash;
+        if (state.activeScreen === "#simple") {
+            cookie.remove("quilt_advanced");
+            state.advanced = false;
+        }
     };
     
     $scope.config = config;
@@ -66,10 +71,18 @@ function managerCntl($scope, config, state, defaults) {
     $scope.isSetupConnectionHelpCollapsed = true;
     
     $scope.isAdminLoggedIn = function() {
-        return (state.user && state.user.roles && state.user.roles.indexOf('_admin') !== -1);
+        return state.configAccessible ||
+            (state.user && state.user.roles && state.user.roles.indexOf('_admin') !== -1);
     };
     
-    $scope.enableCors = function() {
+    $scope.checkCors = function($event) {
+        $event.preventDefault();
+        cookie.remove('corsConfigured');
+        state.initialize($scope);
+    };
+    
+    $scope.enableCors = function($event) {
+        $event.preventDefault();
         var vows = [];
         var corsSettings = defaults.corsSettings;
         var settingKeys = Object.keys(corsSettings);
@@ -79,7 +92,7 @@ function managerCntl($scope, config, state, defaults) {
             for (var j=0; j< optionKeys.length; j++) {
                 var option= optionKeys[j];
                 var values = corsSettings[setting][option];
-                console.log(setting, option, values.toString());
+                console.log('applied:', setting, option, values.toString());
                 vows.push(couchapi.config(setting, option, values.toString()));
             }
         }
@@ -90,8 +103,69 @@ function managerCntl($scope, config, state, defaults) {
             },
             function(err) {
                 console.log(err);
-                alert('I wasn\'t able to update the CouchDB settings. Are you logged in with server admin credentials?');
+                state.initialize($scope);
+                // alert('I wasn\'t able to update the CouchDB settings. Are you logged in with server admin credentials?');
             }); 
     };
+    
+    $scope.screens = [
+        { name: 'info', menu: 'Info'}
+        ,{ name: 'serverAdmins', menu: 'Server admins'}
+        ,{ name: 'users', menu: 'Users'}
+        ,{ name: 'databases', menu: 'Databases'}
+        ,{ name: 'scripts', menu: 'Scripts'}
+        ,{ name: 'replications', menu: 'Replications'}
+        // ,{ name: 'simple', menu: 'Simple setup'}
+        
+
+        ];
+    
+    
+    $('#remoteUrl').editable({
+        type: 'text',
+        // value: state.remoteUrl,
+        value: "http:multicapdb.iriscouch.com",
+        success: function(response, newValue) {
+            config.set({ couchDbUrl: newValue });
+            $scope.$apply();
+        }
+    });
+    
+    $('#remoteUserName').editable({
+        type: 'text',
+        value: state.remoteUserName,
+        success: function(response, newValue) {
+            // config.set({ corsProxy: newValue });
+            // $scope.$apply();
+        }
+    });
+    
+    $('#remotePassword').editable({
+        type: 'text',
+        value: state.remotePassword,
+        success: function(response, newValue) {
+            // config.set({ corsProxy: newValue });
+            // $scope.$apply();
+        }
+    });
+    
+    $('#locationsToSync').editable({
+        // type: 'checklist',
+        value: [2, 3],    
+        source: [
+              {value: 1, text: 'Waterford West'},
+              {value: 2, text: 'Runcorn 9'},
+              {value: 3, text: 'Rubicon'}
+           ],
+        success: function(response, newValue) {
+            console.log(newValue);
+            // config.set({ corsProxy: newValue });
+            
+            // $scope.$apply();
+        }
+    });
+    
+    
+    
 
 }

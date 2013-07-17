@@ -60,7 +60,7 @@ var exports = {
                 ,'bootstrap-responsive'
                 ,'jquery-ui-1.10.2.custom'
                 ,'angular-ui'
-                ,'checkboxes'
+                // ,'checkboxes'
                 ,'bootstrap-editable.css'
                 ,'main'
                 // ,'../thirdpartyjs/bower_components/codemirror/lib/codemirror'
@@ -135,9 +135,14 @@ var exports = {
               ,mapping: {
                   setupConnection: 'markdown/setupConnection.md',
                   setupConnectionHelp: 'markdown/setupConnectionHelp.md',
-                  enableCors: 'markdown/enableCors.md',
-                  replicate: 'markdown/replicate.md'
-                  ,help: 'markdown/help.md'
+                  enableCors: 'markdown/enableCors.md'
+                  ,simple: 'markdown/simple.md'
+                  ,info: 'markdown/info.md'
+                  ,'serverAdmins': 'markdown/serverAdmins.md'
+                  ,'users': 'markdown/users.md'
+                  ,'databases': 'markdown/databases.md'
+                  ,'scripts': 'markdown/scripts.md'
+                  ,'replications': 'markdown/replications.md'
               }
             },
             { src: 'views/help.html' 
@@ -145,7 +150,7 @@ var exports = {
               ,out: 'helpView.html'
               ,mapping: {
                   menu: 'html/helpmenu',
-                  doc: 'markdown/help.md'
+                  doc: 'markdown/info.md'
               }
             }
             ,{ src: 'views/manager.html' 

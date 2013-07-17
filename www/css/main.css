@@ -1258,10 +1258,11 @@ body {
     /* background: grey; */
 }
 
-#reset-link , #cors-link {
+#topmenu a.sublink {
     margin-top:5px;
-    padding-bottom:0;
+    padding-bottom:0; 
     padding-left:0;
+    padding-right:8px;
     font-size:10px;
 }
 
@@ -1271,6 +1272,7 @@ body {
 
 .btn.logbutton {
     margin-top:8px;
+    margin-right:14px;
 }
 
 body .modal {

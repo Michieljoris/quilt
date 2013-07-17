@@ -8,18 +8,18 @@ angular.module("myApp").factory('defaults', function() {
         couchDbUrl : "http://localhost:5984"
         ,corsProxy : "http://localhost:1234"
         ,timeout: 5000
-        ,firstScreen: '#help'
+        ,firstScreen: '#info'
         ,corsSettings : {
-            cors: {
-                headers:["accept", "origin", "authorization", "content-type",
+            httpd: {
+                enable_cors:['true']
+            } 
+            ,cors: {
+                origins:['*']
+                ,headers:["accept", "origin", "authorization", "content-type",
                          "X-CouchDB-WWW-Authenticate", "X-Couch-Full-Commit"]
                 ,methods:["DELETE", "GET", "HEAD", "POST", "OPTIONS", "PUT"]
                 ,credentials:['true']
-                ,origins:['*']
             }
-            ,httpd: {
-                enable_cors:['true']
-            } 
         }
     }; 
 });
@@ -70,6 +70,7 @@ angular.module("myApp").factory('state', function(defaults, config) {
         var vow = VOW.make();
         couchapi.config().when(
             function(data) {
+                state.configAccessible = true;
                 var settingKeys = Object.keys(corsSettings);
                 for (var i=0; i< settingKeys.length; i++) {
                     var setting = settingKeys[i];
@@ -97,6 +98,7 @@ angular.module("myApp").factory('state', function(defaults, config) {
                 vow.keep();
             }, 
             function(data) {
+                state.configAccessible = false;
                 state.corsConfigured = cookie.get('corsConfigured');
                 console.log('cors configured properly? Can\'t tell. What does cookie say?' + state.corsConfigured );
                 vow.keep(data);
@@ -165,8 +167,11 @@ angular.module("myApp").factory('state', function(defaults, config) {
                 vow.keep();
                 console.log('cors configured?', state.corsConfigured);
                 var url = state.connected; 
-                state.activeScreen = defaults.firstScreen;   
-                if (url === config.corsProxy ||
+                state.advanced = cookie.get('quilt_advanced');
+                state.activeScreen = state.advanced ? defaults.firstScreen : '#simple';
+                console.log('-----------', state.activeScreen, cookie.get('quilt_advanced'));
+                // if (url === config.corsProxy ||
+                if (
                     url.indexOf('1234') !== -1)  {
                     state.maybeCors = true;
                     state.activeScreen = '#enableCors';

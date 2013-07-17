@@ -1,9 +1,8 @@
-<div ng-show="state.connected" id="manmenu" class="navigation" >
+<div ng-show="state.connected && state.advanced" id="manmenu"
+     class="navigation" >
   <ul class="nav nav-list sidemenu" data-spy="affix"
       data-offset-top="130">
-    <li ng-class="isActive('#help')"><a   ng-click="click($event)" href="#help"><i class="icon-chevron-right"></i>Info</a></li>
-    <li ng-hide="true" ng-class="isActive('#enableCors')"><a   ng-click="click($event)" href="#enableCors"><i class="icon-chevron-right"></i>Enable CORS</a></li>
-    <li ng-class="isActive('#replicate')"><a   ng-click="click($event)" href="#replicate"><i class="icon-chevron-right"></i>Replicate</a></li>
+    <li ng-repeat="screen in screens" class="{{isActive('#' + screen.name)}}"><a   ng-click="click($event)" href="#{{screen.name}}"><i class="icon-chevron-right"></i>{{screen.menu}}</a></li>
   </ul>
 </div>
 
