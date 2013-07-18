@@ -70,7 +70,7 @@ angular.module("myApp").factory('state', function(defaults, config) {
         var vow = VOW.make();
         couchapi.config().when(
             function(data) {
-                state.configAccessible = true;
+                state.configAccessible = data;
                 var settingKeys = Object.keys(corsSettings);
                 for (var i=0; i< settingKeys.length; i++) {
                     var setting = settingKeys[i];
@@ -134,7 +134,7 @@ angular.module("myApp").factory('state', function(defaults, config) {
         );
     };
     
-    var init = function() {
+    var init = function($scope) {
         var vow = VOW.make();
         var timer = setTimeout(function() {
             console.log('timedout');
@@ -164,34 +164,111 @@ angular.module("myApp").factory('state', function(defaults, config) {
             }
         ).when(
             function() {
-                vow.keep();
                 console.log('cors configured?', state.corsConfigured);
                 var url = state.connected; 
                 state.advanced = cookie.get('quilt_advanced');
-                state.activeScreen = state.advanced ? defaults.firstScreen : '#simple';
-                console.log('-----------', state.activeScreen, cookie.get('quilt_advanced'));
-                // if (url === config.corsProxy ||
-                if (
-                    url.indexOf('1234') !== -1)  {
+                var activeScreen;
+                if (url.indexOf('1234') !== -1)  {
                     state.maybeCors = true;
-                    state.activeScreen = '#enableCors';
+                    activeScreen = '#enableCors';
                     
                 }
-                if (!state.corsConfigured) 
-                    state.activeScreen = '#enableCors';
+                else if (!state.corsConfigured) {
+                    activeScreen = '#enableCors';
+                }
+                else {  activeScreen = cookie.get('quilt_activeScreen');
+                        activeScreen =
+                        ( state.advanced ? (activeScreen ? activeScreen :defaults.firstScreen) : '#simple' );
+                     }
+                
                 clearTimeout(timer);
+                state.activeScreen = activeScreen;
+                return initScreen[activeScreen] ? initScreen[activeScreen]() : VOW.kept();
                 // couchapi.withCredentials(false);
-            },
-            function(err) {
-                vow.keep(err);
-                state.connected = false;
-                clearTimeout(timer);
-                // couchapi.withCredentials(false);
-            }
-        );
+            }).when(
+                vow.keep,
+                function(err) {
+                    state.connected = false;
+                    clearTimeout(timer);
+                    vow.keep(err);
+                    // couchapi.withCredentials(false);
+                }
+            );
         
         return vow.promise;
     }; 
+    var initScreen = {};
+    initScreen['#users'] = function() {
+        var vow = VOW.make();
+        couchapi.docAll('_users').when(
+            function(users) {
+                var admins = Object.keys(
+                    state.configAccessible ?
+                        (state.configAccessible.admins ?
+                         state.configAccessible.admins : {}) : {});
+                // console.log('in initsrfeen', users , admins);
+                state.users = users.rows.filter(function(doc) {
+                    if (doc.id.startsWith('org.couchdb.user:') &&
+                       admins.indexOf(doc.id.slice(17)) === -1) return true;
+                    return false;
+                }).map(function(user) {
+                    return user.id;
+                });
+                // console.log(state.users);               
+                vow.keep();
+                
+            },
+            function(err) {
+                state.users = null;
+                // vow['break']();
+                vow.keep();
+                
+            }
+        );
+        return vow.promise;
+    };
+    
+    initScreen['#databases'] = function() {
+        var vow = VOW.make();
+        couchapi.dbAll().when(
+            function(databases) {
+                // console.log(databases);
+                state.databases = databases.filter(function(str) {
+                    if (str.startsWith('_')) return false;
+                    return true;
+                // }).map(function(user) {
+                //     return user.id;
+                });
+                // console.log(state.users);               
+                vow.keep();
+                
+            },
+            function(err) {
+                console.log('ERROR: Couldn\'t get list of databases!!!', err);
+                // state.users = null;
+                // vow['break']();
+                vow.keep();
+                
+            }
+        );
+        return vow.promise;
+    };
+    
+    
+    state.setActiveScreen = function($scope, screen) {
+        state.activeScreen = screen;
+        if (initScreen[screen])
+            initScreen[screen]().when(
+                function(data){
+                    $scope.$apply();
+                }
+                ,function(err){
+                    console.log(err);
+                    
+                }
+            );
+    };
+    
     return state;   
 });
 

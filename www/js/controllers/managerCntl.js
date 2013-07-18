@@ -1,4 +1,4 @@
-/*global VOW:false scrollSpy:false $:false couchapi:false PBKDF2:false emit:false*/
+/*global VOW:false cookie:false $:false couchapi:false PBKDF2:false emit:false*/
 /*jshint strict:true unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
 /*jshint maxparams:4 maxcomplexity:7 maxlen:130 devel:true newcap:false*/
 
@@ -26,7 +26,9 @@ function managerCntl($scope, config, state, defaults) {
     
     $scope.click = function(event) {
         event.preventDefault();
-        state.activeScreen = event.currentTarget.hash;
+        // state.activeScreen = event.currentTarget.hash;
+        state.setActiveScreen( $scope, event.currentTarget.hash );
+        cookie.set('quilt_activeScreen', state.activeScreen);
         if (state.activeScreen === "#simple") {
             cookie.remove("quilt_advanced");
             state.advanced = false;
@@ -45,6 +47,7 @@ function managerCntl($scope, config, state, defaults) {
     
     
     $('#couchDBurl').editable({
+        unsavedclass: null,
         type: 'text',
         value: config.couchDbUrl,
         success: function(response, newValue) {
@@ -54,6 +57,7 @@ function managerCntl($scope, config, state, defaults) {
     });
     
     $('#corsProxy').editable({
+        unsavedclass: null,
         type: 'text',
         value: config.corsProxy,
         success: function(response, newValue) {
@@ -109,8 +113,8 @@ function managerCntl($scope, config, state, defaults) {
     };
     
     $scope.screens = [
-        { name: 'info', menu: 'Info'}
-        ,{ name: 'serverAdmins', menu: 'Server admins'}
+        // { name: 'info', menu: 'Info'},
+        { name: 'serverAdmins', menu: 'Server admins'}
         ,{ name: 'users', menu: 'Users'}
         ,{ name: 'databases', menu: 'Databases'}
         ,{ name: 'scripts', menu: 'Scripts'}
@@ -122,6 +126,7 @@ function managerCntl($scope, config, state, defaults) {
     
     
     $('#remoteUrl').editable({
+        unsavedclass: null,
         type: 'text',
         // value: state.remoteUrl,
         value: "http:multicapdb.iriscouch.com",
@@ -132,6 +137,7 @@ function managerCntl($scope, config, state, defaults) {
     });
     
     $('#remoteUserName').editable({
+        unsavedclass: null,
         type: 'text',
         value: state.remoteUserName,
         success: function(response, newValue) {
@@ -141,6 +147,7 @@ function managerCntl($scope, config, state, defaults) {
     });
     
     $('#remotePassword').editable({
+        unsavedclass: null,
         type: 'text',
         value: state.remotePassword,
         success: function(response, newValue) {
@@ -150,6 +157,7 @@ function managerCntl($scope, config, state, defaults) {
     });
     
     $('#locationsToSync').editable({
+        unsavedclass: null,
         // type: 'checklist',
         value: [2, 3],    
         source: [

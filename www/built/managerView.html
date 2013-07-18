@@ -9,7 +9,7 @@
 </div>
 
 </div>
-      <div id="manager--"  class="span6" ><div ng-hide="state.connected">
+      <div id="manager--"  class="span7" ><div ng-hide="state.connected">
   <div  id="setupConnection--" ><p ng-hide="disconnected"> 
 I have tried to connect to CouchDB with the following two addresses:
 </p>
@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#97;i&#108;&#116;&#111;:&#109;&#105;&#99;&#104;&#x69;e&#108;&#x6A;o&#x72;&#105;&#115;&#64;&#103;&#x6D;&#x61;&#105;&#108;&#x2E;&#x63;o&#x6D;">&#109;&#105;&#99;&#104;&#x69;e&#108;&#x6A;o&#x72;&#105;&#115;&#64;&#103;&#x6D;&#x61;&#105;&#108;&#x2E;&#x63;o&#x6D;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#105;&#x6C;t&#111;:&#109;&#x69;&#99;&#x68;&#x69;&#101;&#108;&#106;&#111;&#x72;&#105;&#x73;&#64;&#x67;ma&#105;&#108;&#x2E;&#99;&#111;&#x6D;">&#109;&#x69;&#99;&#x68;&#x69;&#101;&#108;&#106;&#111;&#x72;&#105;&#x73;&#64;&#x67;ma&#105;&#108;&#x2E;&#99;&#111;&#x6D;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -201,7 +201,7 @@ credentials so I can replicate this and the roster app to your CouchDB.</b>
 <span ng-show="state.configAccessible">
 To make this happen please click the button:<br><br>
 <button class="btn btn-small btn-primary" ng-click="enableCors($event)">
-Replicate this app and the roster app to the local database</button>
+Replicate this app and the roster app to your CouchDB</button>
 </span>
 </span></p>
 
@@ -244,14 +244,208 @@ data-original-title="Select locations"></a> <br></p>
 <p><button class="btn btn-small btn-primary"
 ng-click="setupSimple()">Setup your CouchDB!!</button></p></div>
   <div ng-show="isActive('#info')" id="info--"><p>Intro</p></div>
-  <div ng-show="isActive('#serverAdmins')" id="serverAdmins--"><p>Server admins</p></div>
-  <div ng-show="isActive('users')" id="users--"><div class='row' style='margin-left: 0; padding-left:10px; border:solid grey 1px; height:40; width:100%;'>placeholder for markdown/users.md</div></div>
-  <div ng-show="isActive('databases')" id="databases--"><div class='row' style='margin-left: 0; padding-left:10px; border:solid grey 1px; height:40; width:100%;'>placeholder for markdown/databases.md</div></div>
-  <div ng-show="isActive('scripts')" id="scripts--"><div class='row' style='margin-left: 0; padding-left:10px; border:solid grey 1px; height:40; width:100%;'>placeholder for markdown/scripts.md</div></div>
-  <div ng-show="isActive('replications')" id="replications--"><div class='row' style='margin-left: 0; padding-left:10px; border:solid grey 1px; height:40; width:100%;'>placeholder for markdown/replications.md</div></div>
+  <div ng-controller="serverAdminsCntl" ng-show="isActive('#serverAdmins')" id="serverAdmins--"><p>Server admins</p>
+
+<hr />
+
+<div ng-hide="state.configAccessible">
+<b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
+<button class="btn btn-small btn-primary" ng-click="openLogin()">Log
+in your CouchDB</button>
+</div>
+
+<div ng-show="state.configAccessible">
+<div ng-show="getAdminNames().length==0">Your CouchDB is in party
+mode! <p></p>Everyone is admin. Please add an server admin user to fix this.. </div>
+<ul >
+<li style="list-style-type:none;" ng-repeat="admin in getAdminNames()">
+<a style="color:orange;padding-right:5px;" href="" ng-click="removeAdminUser(admin)">x</a> <a href="" ng-click="setPwd(admin)">{{admin}}</a> 
+</li>
+</ul>
+
+<button class="btn btn-small btn-primary"
+ng-click="addAdminUserDialog()">Create new
+server admin</button>
+
+<!-- <pre>{{getAdminNames() | json}}</pre> -->
+
+<!-- <pre>{{state.configAccessible | json}}</pre> -->
+
+</div>
+
+<div id="addAdminDialog" modal="newAdminShouldBeOpen" close="closeAdmin()" options="logopts">
+  <div class="modal-header">
+    <h3 ng-hide="justPwd">Create server admin</h3>
+    <h3 ng-show="justPwd">{{userName}}</h3>
+  </div>
+  <div class="modal-body">
+    <form>
+      <fieldset>
+        <input ng-hide="justPwd" type="text" placeholder="new server admin name" ng-model="userName"><br>
+        <input type="password" placeholder="password" ng-model="password">
+      </fieldset>
+    </form>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-warning cancel pull-left" ng-click="closeAdmin()">Cancel</button>
+        <button ng-hide="justPwd" class="btn btn-primary" ng-click="addAdminUser()">Ok</button>
+        <button ng-show="justPwd" class="btn btn-primary" ng-click="addAdminUser()">Set</button>
+      </div>
+</div></div>
+  <div ng-controller="usersCntl" ng-show="isActive('#users')" id="users--">Users
+<hr>
+
+<p></p>
+
+<div ng-hide="state.configAccessible">
+  <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
+    <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
+      in your CouchDB</button>
+</div>
+
+<div ng-show="state.configAccessible">
+  <div class="row">
+    <div class="span3">
+      Search: <input style="width:140px;" ng-model="searchText"><p></p>
+      <div class="well well-small scrollBox" ng-show="state.configAccessible">
+	<ul>
+	  <li ng-repeat="user in state.users | filter:searchText">
+	    <a style="color:orange; padding-right:10px;" href="" ng-click="removeUser(user)">x</a>
+	    <a href="" ng-click="editUser(user)">{{user.slice(17)}}</a>
+	  </li>
+	</ul>
+
+      </div>
+      <button class="btn btn-small btn-primary"
+	      ng-click="addUserDialog()">Create new user</button>
+    </div>
+    <div ng-show="selectedUser" class="span4">
+      <h3>{{selectedUser._id.slice(17)}}</h3>
+      Password: <a href="#" id="changeUserPwd" data-type="password"></a><br>
+      
+      <!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -->
+      Roles: <br> <a href="#" id="userRoles" data-type="checklist"></a> <br>
+      <p></p>
+      
+      <button ng-show="edited" class="btn btn-small btn-primary" ng-click="apply()">Apply</button>
+      
+      <!-- <pre>{{selectedUser | json}}</pre> -->
+    </div>
+  </div>
+
+
+  <div id="addUserDialog" modal="newUserShouldBeOpen" close="closeUser()" options="logopts">
+    <div class="modal-header">
+      <h3>Create user</h3>
+    </div>
+    <div class="modal-body">
+      <form>
+	<fieldset>
+	  <input type="text" placeholder="new user name" ng-model="userName"><br>
+	  <input type="password" placeholder="password" ng-model="password">
+	</fieldset>
+      </form>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-warning cancel pull-left" ng-click="closeUser()">Cancel</button>
+      <button class="btn btn-primary" ng-click="addUser()">Ok</button>
+    </div>
+  </div>
+
+
+  <!-- <pre>{{getAdminNames() | json}}</pre> -->
+
+  <!-- <pre>{{state.configAccessible | json}}</pre> -->
 </div>
 </div>
-      <div id="rightBar--"  class="span3" >
+  <div ng-controller="databasesCntl" ng-show="isActive('#databases')" id="databases--">Databases
+<hr>
+
+<p></p>
+
+<div ng-hide="state.configAccessible">
+  <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
+    <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
+      in your CouchDB</button>
+</div>
+
+<div class="row">
+  <div class="span3">
+    Search: <input style="width:140px;" ng-model="searchText"><p></p>
+    
+      <div class="well well-small scrollBox" >
+      <ul>
+	<li ng-repeat="database in state.databases | filter:searchText">
+	  <a style="color:orange; padding-right:10px;" href="" ng-click="removeDatabase(database)">x</a>
+	  <a href="" ng-click="editDatabase(database)">{{database}}</a>
+	</li>
+      </ul>
+      </div>
+
+    <button class="btn btn-small btn-primary"
+    ng-click="addDatabaseDialog()">Create new database</button>
+  </div>
+  <div ng-show="selectedDatabase" class="span4">
+    <h3>{{selectedDatabase}}</h3>
+    
+    <!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -->
+    Names: <br> <a href="#" id="dbMemberNames" data-type="select2"></a> <br>
+    Roles: <br> <a href="#" id="dbMemberRoles" data-type="select2"></a> <br>
+    <p></p>
+    
+    <button ng-show="edited" class="btn btn-small btn-primary" ng-click="apply()">Apply</button>
+    
+    <pre>{{secObj | json}}</pre>
+  </div>
+</div>
+
+
+<div id="addDatabaseDialog" modal="newDatabaseShouldBeOpen" close="closeDatabase()" options="logopts">
+  <div class="modal-header">
+    <h3>Create database</h3>
+  </div>
+  <div class="modal-body">
+    <form>
+      <fieldset>
+	<input type="text" placeholder="new database name" ng-model="dbName"><br>
+      </fieldset>
+    </form>
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-warning cancel pull-left" ng-click="closeDatabase()">Cancel</button>
+    <button class="btn btn-primary" ng-click="addDatabase()">Ok</button>
+  </div>
+</div>
+
+
+<!-- <pre>{{getAdminNames() | json}}</pre> -->
+
+<!-- <pre>{{state.configAccessible | json}}</pre> -->
+
+</div>
+  <div ng-controller="scriptsCntl" ng-show="isActive('#scripts')" id="scripts--"><p>Function</p>
+
+<ul>
+<li>validate<em>doc</em>update</li>
+</ul>
+
+<p>Arrays:</p>
+
+<ul>
+<li>views _view</li>
+<li>shows _show</li>
+<li>lists _list</li>
+<li>filters</li>
+<li>updates _update</li>
+<li>rewrites _rewrite</li>
+</ul></div>
+  <div ng-controller="replicationsCntl" ng-show="isActive('#replications')" id="replications--"><div class='row' style='margin-left: 0; padding-left:10px; border:solid grey 1px; height:40; width:100%;'>placeholder for markdown/replications.md</div></div>
+</div>
+</div>
+      <div id="rightBar--"  class="span2" >
       </div>
     </div>
 </div> 

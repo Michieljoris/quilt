@@ -1279,3 +1279,20 @@ body .modal {
     width:300px;
     margin-left: -180px
 }
+
+.scrollBox {
+    width: 180px;
+    height: 400px;
+    overflow:-moz-scrollbars-vertical;
+    overflow-y:auto;
+    /* border: solid grey 1px */
+}
+
+.scrollBox li {
+    list-style-type: none;
+}
+
+.scrollBox ul {
+    margin-left: 0;
+}
+

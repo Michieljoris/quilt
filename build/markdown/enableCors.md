@@ -72,7 +72,7 @@ credentials so I can replicate this and the roster app to your CouchDB.</b>
 <span ng-show="state.configAccessible">
   To make this happen please click the button:<br><br>
 <button class="btn btn-small btn-primary" ng-click="enableCors($event)">
-Replicate this app and the roster app to the local database</button>
+Replicate this app and the roster app to your CouchDB</button>
 </span>
 </span>
 

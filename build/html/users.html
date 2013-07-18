@@ -1,0 +1,66 @@
+Users
+<hr>
+
+<p></p>
+
+<div ng-hide="state.configAccessible">
+  <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
+    <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
+      in your CouchDB</button>
+</div>
+
+<div ng-show="state.configAccessible">
+  <div class="row">
+    <div class="span3">
+      Search: <input style="width:140px;" ng-model="searchText"><p></p>
+      <div class="well well-small scrollBox" ng-show="state.configAccessible">
+	<ul>
+	  <li ng-repeat="user in state.users | filter:searchText">
+	    <a style="color:orange; padding-right:10px;" href="" ng-click="removeUser(user)">x</a>
+	    <a href="" ng-click="editUser(user)">{{user.slice(17)}}</a>
+	  </li>
+	</ul>
+
+      </div>
+      <button class="btn btn-small btn-primary"
+	      ng-click="addUserDialog()">Create new user</button>
+    </div>
+    <div ng-show="selectedUser" class="span4">
+      <h3>{{selectedUser._id.slice(17)}}</h3>
+      Password: <a href="#" id="changeUserPwd" data-type="password"></a><br>
+      
+      <!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -->
+      Roles: <br> <a href="#" id="userRoles" data-type="checklist"></a> <br>
+      <p></p>
+      
+      <button ng-show="edited" class="btn btn-small btn-primary" ng-click="apply()">Apply</button>
+      
+      <!-- <pre>{{selectedUser | json}}</pre> -->
+    </div>
+  </div>
+
+
+  <div id="addUserDialog" modal="newUserShouldBeOpen" close="closeUser()" options="logopts">
+    <div class="modal-header">
+      <h3>Create user</h3>
+    </div>
+    <div class="modal-body">
+      <form>
+	<fieldset>
+	  <input type="text" placeholder="new user name" ng-model="userName"><br>
+	  <input type="password" placeholder="password" ng-model="password">
+	</fieldset>
+      </form>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-warning cancel pull-left" ng-click="closeUser()">Cancel</button>
+      <button class="btn btn-primary" ng-click="addUser()">Ok</button>
+    </div>
+  </div>
+
+
+  <!-- <pre>{{getAdminNames() | json}}</pre> -->
+
+  <!-- <pre>{{state.configAccessible | json}}</pre> -->
+</div>

@@ -653,10 +653,13 @@ define(
             var vow = VOW.make(); 
             $.couch.userDb(function(data) {
                 var dbName = data.name;
-                $.couch.db(dbName).removeDoc(name, {
-                    success: vow.keep,
-                    error: vow.break
-                });
+                api.docRemove(name, dbName).when(
+                    vow.keep, vow['break']
+                );
+                // $.couch.db(dbName).removeDoc(name, {
+                //     success: vow.keep,
+                //     error: vow.break
+                // });
             });
             return vow.promise;
         };

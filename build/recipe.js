@@ -62,6 +62,8 @@ var exports = {
                 ,'angular-ui'
                 // ,'checkboxes'
                 ,'bootstrap-editable.css'
+                ,'select2.css'
+                ,'select2-bootstrap.css'
                 ,'main'
                 // ,'../thirdpartyjs/bower_components/codemirror/lib/codemirror'
                 ,'mycss'
@@ -92,10 +94,13 @@ var exports = {
                     ,'bower_components/ace-builds/src-min-noconflict/ace'
                     ,'bower_components/angular-ui-ace/ui-ace'
                     ,'jquery.couch'
+                    // ,'sha1'
+                    // ,'pbkdf2'
                     ,'vow'
                     ,'couchapi'
                     ,"scrollspy"
                     ,"cookie"
+                    ,"select2/select2.min"
                 ],
                 path: 'thirdpartyjs/'
             },
@@ -110,6 +115,11 @@ var exports = {
                     ,'controllers/mainCntl'
                     ,'controllers/helpCntl'
                     ,'controllers/testCntl'
+                    ,'controllers/serverAdminsCntl'
+                    ,'controllers/userCntl'
+                    ,'controllers/databasesCntl'
+                    ,'controllers/scriptsCntl'
+                    ,'controllers/replicationsCntl'
                     // ,'directives/compile'
                     
                 ],
@@ -139,8 +149,8 @@ var exports = {
                   ,simple: 'markdown/simple.md'
                   ,info: 'markdown/info.md'
                   ,'serverAdmins': 'markdown/serverAdmins.md'
-                  ,'users': 'markdown/users.md'
-                  ,'databases': 'markdown/databases.md'
+                  ,'users': 'html/users.html'
+                  ,'databases': 'html/databases.html'
                   ,'scripts': 'markdown/scripts.md'
                   ,'replications': 'markdown/replications.md'
               }

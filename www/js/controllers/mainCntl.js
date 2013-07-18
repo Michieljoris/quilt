@@ -45,7 +45,12 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
    
     $scope.logout = function() {
         console.log('logout');
-        couchapi.logout();
+        
+        // couchapi.logout();
+        
+        //the above gives error in firefox, but not chrome, so using
+        //nonsense login instead.
+        couchapi.login('____', '_____');
         delete state.user;
     };
     
