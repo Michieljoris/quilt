@@ -64,6 +64,8 @@ var exports = {
                 ,'bootstrap-editable.css'
                 ,'select2.css'
                 ,'select2-bootstrap.css'
+                ,'ace'
+                ,'tree'
                 ,'main'
                 // ,'../thirdpartyjs/bower_components/codemirror/lib/codemirror'
                 ,'mycss'
@@ -80,8 +82,10 @@ var exports = {
             {
                 id: 'thirdpartyjs',
                 files: [
-                    'jquery-1.8.3.min.js'
+                    'es6-shim'
+                    ,'jquery-1.8.3.min.js'
                     ,'jquery-ui-1.10.2.custom.min'
+                    ,'jquery.mjs.nestedSortable'
                     ,'bootstrap'
                     ,'angular.min'
                     ,'angular-ui'
@@ -90,9 +94,10 @@ var exports = {
                     // ,'bower_components/codemirror/lib/codemirror'
                     // ,'bower_components/angular-ui-codemirror/ui-codemirror'
                     ,'bootstrap-editable/js/bootstrap-editable.min.js'
-                    
-                    ,'bower_components/ace-builds/src-min-noconflict/ace'
-                    ,'bower_components/angular-ui-ace/ui-ace'
+                    ,'src-noconflict/ace'
+                    ,'src-noconflict/keybinding-vim'
+                    // ,'bower_components/ace-builds/src-min-noconflict/ace'
+                    // ,'bower_components/angular-ui-ace/ui-ace'
                     ,'jquery.couch'
                     // ,'sha1'
                     // ,'pbkdf2'
@@ -120,6 +125,7 @@ var exports = {
                     ,'controllers/databasesCntl'
                     ,'controllers/scriptsCntl'
                     ,'controllers/replicationsCntl'
+                    ,'controllers/treeCntl'
                     // ,'directives/compile'
                     
                 ],
@@ -151,7 +157,7 @@ var exports = {
                   ,'serverAdmins': 'markdown/serverAdmins.md'
                   ,'users': 'html/users.html'
                   ,'databases': 'html/databases.html'
-                  ,'scripts': 'markdown/scripts.md'
+                  ,'scripts': 'html/scripts'
                   ,'replications': 'markdown/replications.md'
               }
             },
@@ -195,6 +201,29 @@ var exports = {
                           ],
                     wrapper: [
                         'html/body'
+                        ,'thirdpartyjs'
+                        ,'myJsBlock'
+                        // ,'_scriptBlock'
+                    ]
+                }
+            }
+            ,{// id: 'page' 
+                pathOut: 'www/'
+                ,out: 'objecteditor.html' //optional, relative to root
+                ,src: 'html/basicPage.html'
+                //Maps tag ids to partial ids. Tag ids have to be
+                //postfixed with two dashes in the template. Partials
+                //with an extension will be loaded from the partials
+                //folder for this template. Markdown files will be
+                //converted to html. Partials in an array will be
+                //concatenated before inserted at the tag id element
+                ,mapping: {
+                    head: ['title', 'meta', 'html/ieshim',  'skewer'
+                           ,'headJsBlock', 'myLinkBlock'
+                           // ,'_linkBlock'
+                          ],
+                    wrapper: [
+                        'html/objecteditor'
                         ,'thirdpartyjs'
                         ,'myJsBlock'
                         // ,'_scriptBlock'

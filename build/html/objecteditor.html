@@ -1,0 +1,89 @@
+<div class="row" ng-controller="TreeController">
+  <div class="span8">
+    <div class="yatree" >
+      <div>
+	<button ng-click="addChild(data, 'object')">+ obj</button>
+	<button ng-click="addChild(data, 'array')">+ arr</button>
+	<button ng-click="addChild(data, 'val')">+ val</button>
+      </div>
+      <div class="live">
+	<ol ui-nested-sortable="{
+				listType: 'ol',
+				items: 'li',
+				doNotClear: true,
+				placeholder: 'ui-state-highlight',
+				forcePlaceholderSize: true,
+				toleranceElement: '> div'
+				}"
+	    ui-nested-sortable-stop="update($event, $ui)" 
+	    ui-nested-sortable-start="test($event,$ui)">
+	  <li ya-tree="child in data.children at ol" class="bg{{$depth%6}}" ng-class="{minimized:child.minimized}">
+            <div>
+              <button ng-hide="!child.children || child.children.length==0" 
+		      class="toggle" ng-click="toggleMinimized(child)" ng-switch on="child.minimized">
+		<span ng-switch-when="true">&#x25B6;</span><span ng-switch-default>&#x25BC;</span>
+              </button>
+	      
+	      <button class="btn btn-small btn-danger" ng-click="remove(child)">x</button>
+	      <span ng-show="isNumber(child.key)"  ng-click="click(child)">{{child.key}}</span>
+	      <input ng-hide="isNumber(child.key)" ng-model="child.key" ng-click="click(child)"/>
+	      
+	      <button ng-show="child.type=='object'||child.type=='array'"
+		      class="btn btn-small btn-info" ng-click="addChild(child)">+</button>
+	      {{child.type || ""}}
+              <!-- <input ng-hide="child.type=='object' || child.type=='array'" ng-model="child.value" /> -->
+            </div>
+            <ol ng-class="{pregnant:child.children.length}"></ol>
+	  </li>
+	</ol>
+      </div>
+      
+      <div class="live">
+	<ol >
+	  <li ya-tree="child in data.children at ol" class="bg{{$depth%6}}" ng-class="{minimized:child.minimized}">
+            <div>
+              <!-- <button ng-hide="!child.children || child.children.length==0"  -->
+	      <!-- 	      class="toggle" ng-click="toggleMinimized(child)" ng-switch on="child.minimized"> -->
+	      <!-- 	<span ng-switch-when="true">&#x25B6;</span><span ng-switch-default>&#x25BC;</span> -->
+              <!-- </button> -->
+	      <!-- <input ng-show="child.type=='object'||child.type=='array'" ng-model="child.key" ng-click="click(child)"/> -->
+	      <span ng-show="child.type=='object'||child.type=='array'" ng-click="click(child)">{{child.type}} </span>
+	      <!-- {{child.type || ""}} -->
+	      <!-- <button ng-click="addChild(child)">+</button> -->
+	      <!-- <button ng-click="remove(child)">x</button> -->
+              <input ng-hide="child.type=='object' || child.type=='array'" ng-model="child.value" /> 
+            </div>
+            <ol ng-class="{pregnant:child.children.length}"></ol>
+	  </li>
+	</ol>
+      </div>
+      
+        <!-- <div class="live">   -->
+        <!--   <ol>   -->
+        <!--     <li ya-tree="child in data.children at ol" class="bg{{$depth%6}}" ng-class="{minimized:child.minimized}">   -->
+        <!--       <div>   -->
+        <!--         <\!-- <! <input  value="{{child.key}}" /> <em>({{$depth}})</em>   > -\-> -->
+      
+        <!--         <input ng-model="child.value" />  -->
+
+        <!--       </div>   -->
+        <!--       <ol ng-class="{pregnant:child.children.length}"></ol>   -->
+        <!--     </li>   -->
+        <!--   </ol>   -->
+        <!-- </div>   -->
+    </div>
+  </div>
+  
+  <div class="span4">
+    from tree<br>
+    <pre>{{partObj | json}}</pre>
+    <pre>{{data | json}}</pre>
+    
+  </div>
+  <!-- <div class="span4"> -->
+  <!--   original: <br> -->
+  <!--   <pre>{{obj | json}}</pre> -->
+  <!--   <\!-- <pre>{{data | json}}</pre> -\-> -->
+    
+  <!-- </div> -->
+</div> 

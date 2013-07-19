@@ -304,7 +304,7 @@ define(
         //pass in a doc or id you suspect has conflicts.
         //resolver is called to decide between conflicting revs
         //if resolver is left out, a promise is returned with the revs to
-        //choose from, and a continuing function to call when you've decided
+        //choose from, and a continuing function (choose)  to call when you've decided
         //which is the winning rev, pass in its index. Again a promise
         //is returned of good things achieved..
         api.docResolveConflicts = function(doc, resolver, aDbName) {
@@ -344,7 +344,7 @@ define(
                         }
                         else vow.keep(
                             { revs: revs,
-                              fun: function(winningRev) {
+                              choose: function(winningRev) {
                                   prepRevs(revs, winningRev);
                                   return api.docBulkSave(revs);
                               }
@@ -782,5 +782,4 @@ define(
 
         return api;
       }});
-
 

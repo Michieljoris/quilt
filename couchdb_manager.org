@@ -10,3 +10,34 @@ methods:DELETE, GET, HEAD, POST, OPTIONS, PUT
 credentials:true
 enable_cors:true
 origins:*
+
+
+
+
+Array of objects
+* rewrites _rewrite
+
+Object of functions:
+
+| Design doc entry        | /_design/ddName/X/fnName  | signature                         | returns to server             | fn should return                 |   |
+|-------------------------+---------------------------+-----------------------------------+-------------------------------+----------------------------------+---|
+| views:  { fnName:{} }   | _view                     | (doc)                             | object (with result rows)     | nothing                          |   |
+| shows   same            | _show                     | (doc, req)                        | string (of eg html) or object | object or string                 |   |
+| lists                   | _list                     | (head, req)                       | string (of eg html)           | nothing, but call send()         |   |
+| updates                 | _update                   | (doc, req)                        | custom                        | [doc,resp]                       |   |
+| filters                 | ?filter=ddName/filterName | (doc, req)                        |                               | boolean value                    |   |
+| validate_doc_update: fn | N/A                       | (newDoc, oldDoc, userCtx, secObj) | N/A                           | throws forbidden or unauthorized |   |
+
+  
+* using filters in replication 
+  Invoke them as follows;
+{"source":"http://example.org/example-database","target":"http://admin:password@127.0.0.1:5984/example-database", "filter":"myddoc/myfilter"}
+You can even pass arguments to them;
+
+{"source":"http://example.org/example-database","target":"http://admin:password@127.0.0.1:5984/example-database", "filter":"myddoc/myfilter", "query_params": {"key":"value"}}
+Named Document Replication
+
+Sometimes you only want to replicate some documents. For this simple case you do not need to write a filter function. Simply add the list of keys in the doc_ids field;
+
+{"source":"http://example.org/example-database","target":"http://admin:password@127.0.0.1:5984/example-database", "doc_ids":["foo","bar","baz]}
+

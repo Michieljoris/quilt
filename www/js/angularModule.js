@@ -5,7 +5,7 @@
 var myAppModule = angular.module('myApp', ['ngView', 'ui',
                                            'ui.bootstrap',
                                            'ui.bootstrap.tabs'
-                                           ,'ui.ace'
+                                           // ,'ui.ace'
                                            // ,'ui.codemirror'
                                           ]);
 

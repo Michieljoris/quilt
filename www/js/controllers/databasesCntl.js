@@ -1,4 +1,4 @@
-/*global $:false angular:false couchapi:false */
+/*global VOW:false $:false angular:false couchapi:false */
 /*jshint strict:false unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
 /*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/ 
 
@@ -7,16 +7,27 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
     
     console.log('In databasesCntl');
     
+    function aggregrateDesignDocs(ddocs) {
+        var result =  { views:{}, shows: {}, lists: {}, updates: {},
+                          filters: {}, validate_doc_updates: []};
+        ddocs.forEach(function(d) {
+            if (d.validate_doc_update) result.validate_doc_updates.push(d.validate_doc_update);
+            // result.views
+        });
+        return result;
+        
+    }
+    
     $scope.editDatabase = function(dbName) {
         $scope.selectedDatabase = dbName;
         console.log(dbName);
         couchapi.dbSecurity(dbName).when(
             function(secObj) {
                 console.log(secObj);
+                $scope.secObj = secObj = secObj || {};
                 $('#dbMemberNames').editable('setValue', secObj.members ? secObj.members.names: [], false);
                 $('#dbMemberRoles').editable('setValue', secObj.members ? secObj.members.roles: [], false);
                 $('#dbMemberRoles').editable('option', 'select2', { tags: ['opt1', 'opt2']});
-                $scope.secObj = secObj;
                 
                 $scope.edited = false;
     
@@ -26,12 +37,41 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
                 
             },
             function(err) {
+                if (err === 401) 
+                alert('Unable to retrieve database info. Unauthorized');
+                else alert('Unable to retrieve database info. ' + err);
                 console.log(err);
                 
             }
         );
+        var designDocs = $scope.designDocs = {};
+        couchapi.docAllDesign(dbName).when(
+            function(data) {
+                console.log(data);
+                var ddocPromises = [];
+                $scope.ddocs = data.rows.map(function(d) {
+                    ddocPromises.push(couchapi.docGet(d.id));
+                    return d.id;
+                });
+                return VOW.every(ddocPromises);
+            }).when(
+                function(ddocs) {
+                    // designDocs = aggregrateDesignDocs(ddocs);
+                    $scope.designDocs = ddocs;
+                    window.ddocs = ddocs;
+                    console.log('got all ddocs:', ddocs);
+                    $scope.$apply();
+                
+                },
+                function(data) {
+                    console.log('error', data);
+                
+                }
+            );
+        
         
     };
+    $scope.designDocs = 'fetching..';
     
     $scope.addDatabase = function() {
         
@@ -95,7 +135,8 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
         ,success: function(response, newValue) {
             newMemberNames = newValue;
             console.log(newMemberNames);
-            if ($scope.secObj && $scope.secObj.members) $scope.secObj.members.names = newValue;
+            $scope.secObj.members = $scope.secObj.members || {};
+            $scope.secObj.members.names = newValue;
             //TODO don't set edited flag when no changes..
             // if ($scope.secObj.members.names.toString() !== newValue.toString())
             $scope.edited = true;
@@ -115,7 +156,8 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
         ,success: function(response, newValue) {
             newMemberRoles = newValue;
             console.log(newMemberNames);
-            if ($scope.secObj && $scope.secObj.members) $scope.secObj.members.roles = newValue;
+            $scope.secObj.members = $scope.secObj.members || {};
+            $scope.secObj.members.roles = newValue;
             //TODO don't set edited flag when no changes..
             // if ($scope.secObj.members.names.toString() !== newValue.toString())
             $scope.edited = true;
@@ -182,10 +224,5 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
         );
     };
     
-
-
-
-
-
 }); 
                                    

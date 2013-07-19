@@ -227,20 +227,20 @@ function testCntl($scope, $timeout) {
             );
     };
     
-    $scope.acetext = "hello!!!";
+    // $scope.acetext = "hello!!!";
     
-    // Editor part
-    var _editor = window.ace.edit("acediv");
-    var _session = _editor.session;
-    var _renderer = _editor.renderer;
+    // // Editor part
+    // var _editor = window.ace.edit("acediv");
+    // var _session = _editor.session;
+    // var _renderer = _editor.renderer;
 
-    // Options
-    _editor.setReadOnly(false);
-    // _session.setUndoManager(new UndoManager());
-    // _renderer.setHighlightActiveLine(false);
-    _editor.session.setMode('ace/mode/javascript');
-    // Events
-    _editor.on("changeSession", function(){ console.log('changeSession');  });
-    _session.on("change", function(){ console.log($scope.acetext); });
+    // // Options
+    // _editor.setReadOnly(false);
+    // // _session.setUndoManager(new UndoManager());
+    // // _renderer.setHighlightActiveLine(false);
+    // _editor.session.setMode('ace/mode/javascript');
+    // // Events
+    // _editor.on("changeSession", function(){ console.log('changeSession');  });
+    // _session.on("change", function(){ console.log($scope.acetext); });
 
 }

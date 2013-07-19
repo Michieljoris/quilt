@@ -1,7 +1,3 @@
-Server admins
-_______________________________
-
-
 <div ng-hide="state.configAccessible">
 <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
 <button class="btn btn-small btn-primary" ng-click="openLogin()">Log

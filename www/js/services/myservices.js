@@ -186,7 +186,10 @@ angular.module("myApp").factory('state', function(defaults, config) {
                 return initScreen[activeScreen] ? initScreen[activeScreen]() : VOW.kept();
                 // couchapi.withCredentials(false);
             }).when(
-                vow.keep,
+                function(data) {
+                    console.log('All good!!!' , data);
+                    vow.keep(data);
+                },
                 function(err) {
                     state.connected = false;
                     clearTimeout(timer);
@@ -199,6 +202,7 @@ angular.module("myApp").factory('state', function(defaults, config) {
     }; 
     var initScreen = {};
     initScreen['#users'] = function() {
+        console.log('initing #users');
         var vow = VOW.make();
         couchapi.docAll('_users').when(
             function(users) {
@@ -229,17 +233,18 @@ angular.module("myApp").factory('state', function(defaults, config) {
     };
     
     initScreen['#databases'] = function() {
+        console.log('initing #databases');
         var vow = VOW.make();
         couchapi.dbAll().when(
             function(databases) {
-                // console.log(databases);
+                console.log(databases);
                 state.databases = databases.filter(function(str) {
                     if (str.startsWith('_')) return false;
                     return true;
                 // }).map(function(user) {
                 //     return user.id;
                 });
-                // console.log(state.users);               
+                
                 vow.keep();
                 
             },
