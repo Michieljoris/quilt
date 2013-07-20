@@ -26,12 +26,12 @@ myAppModule.controller('TreeController', function ($scope, $timeout) {
             type:'object',
             value: obj,
             children: [
-                { key: 'a', value: obj.a }
+                { key: 'abc', value: obj.a }
                 ,{ key: 'b', type: 'array', value:obj.b, children: [
-                    {  key: 0, value: obj.b[0] }
-                    ,{  key: 1, value: obj.b[1] }
-                    ,{  key: 2, type: 'array', value: obj.b[2], children: [
-                    {key:0, value: obj.b[2][0]} , {key:1, value: obj.b[2][1]}]}
+                    {  ord: 0, value: obj.b[0] }
+                    ,{  ord: 1, value: obj.b[1] }
+                    ,{  ord: 2, type: 'array', value: obj.b[2], children: [
+                    {ord:0, value: obj.b[2][0]} , {ord:1, value: obj.b[2][1]}]}
                 ]}
                 ,{ key: 'c', value: obj.c }
                 ,{ key: 'd', type:'object', value: obj.d, children: [
@@ -41,8 +41,20 @@ myAppModule.controller('TreeController', function ($scope, $timeout) {
         }]
     };
     
+    
+    $('#abc').editable({
+        unsavedclass: null,
+        type: 'text',
+        // value: state.remoteUrl,
+        value: "cba",
+        success: function(response, newValue) {
+            // config.set({ couchDbUrl: newValue });
+            // $scope.$apply();
+        }
+    });
+    
     $scope.isNumber = function(thing) {
-        console.log(thing, typeof thing);
+        // console.log(thing, typeof thing);
         return typeof thing === 'number';
     };
 
@@ -100,15 +112,17 @@ myAppModule.controller('TreeController', function ($scope, $timeout) {
         }
         walk($scope.data);
     };
+    
 
     $scope.update = function (event, ui) {
-        console.log('update');
         var root = event.target,
             item = ui.item,
             parent = item.parent(),
             target = (parent[0] === root) ? $scope.data : parent.scope().child,
             child = item.scope().child,
             index = item.index();
+        console.log('update',child, target, index);
+        child.ord = 1;
 
         target.children || (target.children = []);
 
@@ -139,8 +153,19 @@ myAppModule.controller('TreeController', function ($scope, $timeout) {
         $scope.partObj = child.value;
         console.log('click', child.value);
        }; 
+    
+    $scope.inputStyle = function(val) {
+        var str = val + '';
+        str = str || '';
+        return  {"width": (str.length +1) * 7 + "px" };
+        };
+    $scope.testdata="hello";
 
 });
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 myAppModule.directive('yaTree', function () {
 
     return {
@@ -174,7 +199,7 @@ myAppModule.directive('yaTree', function () {
                 }
 
                 scope.$watch(rootExpr, function (root) {
-                    console.log('watch');
+                    // console.log('watch');
 
                     var currentCache = [];
 
@@ -300,7 +325,6 @@ myAppModule.directive('uiNestedSortable', ['$parse', function ($parse) {
     return {
         restrict: 'A',
         link: function (scope, element, attrs) {
-console.log('aaaaaaaaaaaaaaaaaaaa',element, attrs);
             var options = attrs.uiNestedSortable ? $parse(attrs.uiNestedSortable)() : {};
 
             angular.forEach(eventTypes, function (eventType) {
@@ -328,3 +352,36 @@ console.log('aaaaaaaaaaaaaaaaaaaa',element, attrs);
         }
     };
 }]);
+
+myAppModule.directive("editInline", function(){
+    return function(scope, element, attr){
+        var inputW = (element.val().length+1) * 8;
+        console.log(element.val(), inputW);
+        element.css('width', inputW + 'px');
+        element.bind("keyup keydown", function(){
+            var inputW = (element.val().length+1) * 8;
+            element.css('width', inputW + 'px');
+        });
+        
+    };
+});
+
+myAppModule.directive('xeditable', function($timeout) {
+    return {
+        restrict: 'A',
+        require: "ngModel",
+        link: function(scope, element, attrs, ngModel) {
+            var loadXeditable = function() {
+                angular.element(element).editable({
+                    display: function(value, srcData) {
+                        ngModel.$setViewValue(value);
+                        scope.$apply();
+                    }
+                });
+            }
+            $timeout(function() {
+                loadXeditable();
+            }, 10);
+        }
+    };
+});

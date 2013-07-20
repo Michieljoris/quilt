@@ -104,4 +104,4 @@ function scrollSpy(menu)  {
 
 initScrollToTop();
 
-$.fn.editable.defaults.mode = 'inline';
+$.fn.editable.defaults.mode = 'popup';
