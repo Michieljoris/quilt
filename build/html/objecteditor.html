@@ -1,61 +1,43 @@
 <div class="row" ng-controller="TreeController">
   <div class="span5">
- <a xeditable href="javascript:;" id="testdata" data-type="text"
- data-pk="1" data-name="testdata" data-ng-model="testdata"
- data-placement="right" data-placeholder="Required"
- data-showbuttons="true" data-original-title="Enter your name"
- class="editable editable-click">{{testdata}}</a>   
- 
-    
-    
-	      <!-- <input ng-style="inputStyle(testdata)" ng-model="testdata" /> -->
-	      
     <div class="yatree" >
       
       <div>
-	<button ng-click="addChild(data, 'object')">+ obj</button>
-	<button ng-click="addChild(data, 'array')">+ arr</button>
-	<button ng-click="addChild(data, 'val')">+ val</button>
+	<button class="btn btn-small btn-primary" ng-click="addObject(data)">+ obj</button>
+	<button class="btn btn-small btn-primary" ng-click="addArray(data)">+ arr</button>
+	<button class="btn btn-small btn-primary" ng-click="addValue(data)">+ val</button>
       </div>
       <div class="live">
-	<ol ui-nested-sortable="{
-				listType: 'ol',
-				items: 'li',
-				doNotClear: true,
-				placeholder: 'ui-state-highlight',
-				forcePlaceholderSize: true,
-				toleranceElement: '> div'
-				}"
+	<ol ui-nested-sortable=""
 	    ui-nested-sortable-stop="update($event, $ui)" 
 	    ui-nested-sortable-start="test($event,$ui)">
-	  <li ya-tree="child in data.children at ol" class="bg{{$depth%6}}" ng-class="{minimized:child.minimized}">
+	  <li ya-tree="child in data.children at ol"
+				class="bg{{$depth%6}}"
+				ng-class="{minimized:child.minimized}"
+				objtype="{{child.type}}">
             <div>
-              <button ng-hide="!child.children || child.children.length==0" 
-		      class="toggle" ng-click="toggleMinimized(child)" ng-switch on="child.minimized">
-		<span ng-switch-when="true">&#x25B6;</span><span ng-switch-default>&#x25BC;</span>
-              </button>
+              <button ng-hide="!child.children || child.children.length==0"  
+	      	      class="toggle" ng-click="toggleMinimized(child)" ng-switch on="child.minimized"> 
+	      	<span ng-switch-when="true" style="font-size:10px;">&#x25B6;</span><span ng-switch-default>&#x25BC;</span> 
+              </button> 
+              <!-- <a ng-hide="!child.children || child.children.length==0"  href="" -->
+	      <!-- 	      class="toggle" ng-click="toggleMinimized(child)" ng-switch on="child.minimized"> -->
+	      <!-- 	<span ng-switch-when="true">+</span><span ng-switch-default>-</span>  -->
+              <!-- </a> -->
 	      
-	      <img src="img/remove.png" class="pull-right" ng-click="remove(child)"/>
+	      <!-- <img src="img/remove.png" class="pull-right" ng-click="remove(child)"/> -->
 	      <!-- <button class="btn btn-small btn-danger" ng-click="remove(child)">x</button> -->
 	      <span ng-show="child.ord!=undefined"  ng-click="click(child)">{{child.ord}}</span>
 	      <!-- <input  -->
 	      <!-- ng-style="inputStyle(child.key)" -->
 	      <!-- ng-hide="child.ord!=undefined" ng-model="child.key" -->
 	      <!-- ng-click="click(child)"/>  -->
-	      <!-- <a id="{{child.key}}" href="" -->
-	      <!-- ng-style="inputStyle(child.key)" -->
-	      <!-- ng-hide="child.ord!=undefined" ng-model="child.key" -->
-	      <!-- ng-click="click(child)">{{child.key}}</a>  -->
 	      
  <a xeditable  ng-hide="child.ord!=undefined" href="javascript:;" id="child.key" data-type="text"
  data-pk="1" data-name="child.key" data-ng-model="child.key"
  data-placement="right" data-placeholder="Required"
  data-showbuttons="true" data-original-title="Enter your name"
  class="editable editable-click">{{child.key}}</a>  : 
-	      
-	      
-	      
-	      
 	      
               <!-- <input  ng-style="inputStyle(child.value)" -->
               <!-- ng-hide="child.type=='object' || child.type=='array'" -->
@@ -68,9 +50,9 @@
  data-showbuttons="true" data-original-title="Enter your name"
  class="editable editable-click">{{child.value}}</a>   
 	      
-	      <img src="img/add.png" class="pull-right" ng-show="child.type=='object'||child.type=='array'" ng-click="addChild(child)"/>
+	      <!-- <img src="img/add.png" class="pull-right" ng-show="child.type=='object'||child.type=='array'" ng-click="addChild(child)"/> -->
 	      <!-- <button ng-show="child.type=='object'||child.type=='array'" class="btn btn-small btn-info" ng-click="addChild(child)">+</button> -->
-	      {{child.type || ""}}
+	      <i>{{child.type || ""}}</i>
               <!-- <input ng-hide="child.type=='object' || child.type=='array'" ng-model="child.value" /> -->
             </div>
             <ol ng-class="{pregnant:child.children.length}"></ol>
@@ -116,8 +98,8 @@
   
   <div class="span4">
     from tree<br>
-    <pre>{{partObj | json}}</pre>
-    <pre>{{data | json}}</pre>
+    <pre>{{getObj() | json}}</pre>
+    <!-- <pre>{{data | json}}</pre> -->
     
   </div>
   <!-- <div class="span4"> -->

@@ -7,10 +7,11 @@
     font-size:12px;
 }
 .yatree li {
+    line-height: 12px;
     list-style:none;
     margin: 1px;
     border: 1px solid #ddd;
-    padding: 4px 8px 4px 8px;
+    padding: 2px 5px 0px 5px;
     background: #fff;
 }
 .yatree .ui-sortable li {
@@ -30,6 +31,7 @@
 
 .yatree .ui-state-highlight {
     border: 1px solid #fc0;
+    height:34px;
     background: #ffe;
 }
 .yatree .live, .shadow {
@@ -81,7 +83,9 @@
 .yatree .toggle {
     border: 0 none transparent;
     background:transparent;
-    width:15px;
+    font-size:13px;
+    width:17px;
+    height:10px;
     color:#aaa;
 }
 .yatree button {
