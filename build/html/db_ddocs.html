@@ -1,0 +1,8 @@
+<div ng-controller="databasesCntl">
+  <h5>Design documents</h5>
+  <ul>
+    <li ng-repeat="ddoc in designDocs">{{ddoc._id}}</li>
+  </ul>
+
+  <pre>{{designDocs | json}}</pre>
+</div>

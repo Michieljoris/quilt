@@ -27,7 +27,9 @@
       <div>
 	<button class="btn btn-small btn-primary" ng-click="addObject(data)">+ obj</button>
 	<button class="btn btn-small btn-primary" ng-click="addArray(data)">+ arr</button>
-	<button class="btn btn-small btn-primary" ng-click="addValue(data)">+ val</button>
+	<button class="btn btn-small btn-primary"
+	ng-click="addValue(data)">+ val</button>
+	<button class="btn btn-small btn-primary" ng-click="bla()">reset</button>
       </div>
       <div class="live">
 	<ol ui-nested-sortable=""
@@ -37,11 +39,13 @@
 				class="bg{{$depth%6}}"
 				ng-class="{minimized:child.minimized}"
 				objtype="{{child.type}}">
-            <div>
-              <button ng-hide="!child.children || child.children.length==0"  
+            <div class="yatree-line">
+	      <div ng-style="lineStyle(child)">
+              <a ng-hide="!child.children || child.children.length==0"  
 	      	      class="toggle" ng-click="toggleMinimized(child)" ng-switch on="child.minimized"> 
-	      	<span ng-switch-when="true" style="font-size:10px;">&#x25B6;</span><span ng-switch-default>&#x25BC;</span> 
-              </button> 
+	      	<span ng-switch-when="true"><i class="icon-plus-sign"></i></span><span ng-switch-default><i class="icon-minus"></i></span> 
+	      	<!-- <span ng-switch-when="true">&#x25B6;</span><span ng-switch-default>&#x25BC;</span>  -->
+              </a> 
               <!-- <a ng-hide="!child.children || child.children.length==0"  href="" -->
 	      <!-- 	      class="toggle" ng-click="toggleMinimized(child)" ng-switch on="child.minimized"> -->
 	      <!-- 	<span ng-switch-when="true">+</span><span ng-switch-default>-</span>  -->
@@ -58,6 +62,7 @@
  <a xeditable  ng-hide="child.ord!=undefined" href="javascript:;" id="child.key" data-type="text"
  data-pk="1" data-name="child.key" data-ng-model="child.key"
  data-placement="right" data-placeholder="Required"
+ data-unsavedclass="" data-update="sync"
  data-showbuttons="true" data-original-title="Enter your name"
  class="editable editable-click">{{child.key}}</a>  : 
 	      
@@ -69,13 +74,16 @@
  <a xeditable ng-hide="child.type=='object' || child.type=='array'"  href="javascript:;" id="child.value" data-type="text"
  data-pk="1" data-name="child.value" data-ng-model="child.value"
  data-placement="right" data-placeholder="Required"
+ data-unsavedclass="" data-update="sync"
  data-showbuttons="true" data-original-title="Enter your name"
  class="editable editable-click">{{child.value}}</a>   
 	      
 	      <!-- <img src="img/add.png" class="pull-right" ng-show="child.type=='object'||child.type=='array'" ng-click="addChild(child)"/> -->
 	      <!-- <button ng-show="child.type=='object'||child.type=='array'" class="btn btn-small btn-info" ng-click="addChild(child)">+</button> -->
 	      <i>{{child.type || ""}}</i>
-              <!-- <input ng-hide="child.type=='object' || child.type=='array'" ng-model="child.value" /> -->
+              <!-- <input ng-hide="child.type=='object' ||
+              child.type=='array'" ng-model="child.value" /> -->
+            </div>
             </div>
             <ol ng-class="{pregnant:child.children.length}"></ol>
 	  </li>
@@ -120,7 +128,7 @@
   
   <div class="span4">
     from tree<br>
-    <pre>{{getObj() | json}}</pre>
+    <pre>{{obj | json}}</pre>
     <!-- <pre>{{data | json}}</pre> -->
     
   </div>
@@ -132,7 +140,7 @@
   <!-- </div> -->
 </div> 
 <script type="text/javascript" src="thirdpartyjs/es6-shim.js"></script><script type="text/javascript" src="thirdpartyjs/jquery-1.8.3.min.js"></script><script type="text/javascript" src="thirdpartyjs/jquery-ui-1.10.2.custom.min.js"></script><script type="text/javascript" src="thirdpartyjs/jquery.mjs.nestedSortable.js"></script><script type="text/javascript" src="thirdpartyjs/bootstrap.js"></script><script type="text/javascript" src="thirdpartyjs/angular.min.js"></script><script type="text/javascript" src="thirdpartyjs/angular-ui.js"></script><script type="text/javascript" src="thirdpartyjs/ui-bootstrap-tpls-0.4.0.min.js"></script><script type="text/javascript" src="thirdpartyjs/modernizr.js"></script><script type="text/javascript" src="thirdpartyjs/bootstrap-editable/js/bootstrap-editable.min.js"></script><script type="text/javascript" src="thirdpartyjs/src-noconflict/ace.js"></script><script type="text/javascript" src="thirdpartyjs/src-noconflict/keybinding-vim.js"></script><script type="text/javascript" src="thirdpartyjs/jquery.couch.js"></script><script type="text/javascript" src="thirdpartyjs/vow.js"></script><script type="text/javascript" src="thirdpartyjs/couchapi.js"></script><script type="text/javascript" src="thirdpartyjs/scrollspy.js"></script><script type="text/javascript" src="thirdpartyjs/cookie.js"></script><script type="text/javascript" src="thirdpartyjs/select2/select2.min.js"></script>
-<script type="text/javascript" src="js/myjs.js"></script><script type="text/javascript" src="js/angularModule.js"></script><script type="text/javascript" src="js/router.js"></script><script type="text/javascript" src="js/services/myservices.js"></script><script type="text/javascript" src="js/controllers/managerCntl.js"></script><script type="text/javascript" src="js/controllers/mainCntl.js"></script><script type="text/javascript" src="js/controllers/helpCntl.js"></script><script type="text/javascript" src="js/controllers/testCntl.js"></script><script type="text/javascript" src="js/controllers/serverAdminsCntl.js"></script><script type="text/javascript" src="js/controllers/userCntl.js"></script><script type="text/javascript" src="js/controllers/databasesCntl.js"></script><script type="text/javascript" src="js/controllers/scriptsCntl.js"></script><script type="text/javascript" src="js/controllers/replicationsCntl.js"></script><script type="text/javascript" src="js/controllers/treeCntl.js"></script>
+<script type="text/javascript" src="js/myjs.js"></script><script type="text/javascript" src="js/angularModule.js"></script><script type="text/javascript" src="js/router.js"></script><script type="text/javascript" src="js/services/myservices.js"></script><script type="text/javascript" src="js/directives/uiNestedSortable.js"></script><script type="text/javascript" src="js/directives/xeditable.js"></script><script type="text/javascript" src="js/directives/yaTree.js"></script><script type="text/javascript" src="js/directives/objectEditor.js"></script><script type="text/javascript" src="js/controllers/managerCntl.js"></script><script type="text/javascript" src="js/controllers/mainCntl.js"></script><script type="text/javascript" src="js/controllers/helpCntl.js"></script><script type="text/javascript" src="js/controllers/testCntl.js"></script><script type="text/javascript" src="js/controllers/serverAdminsCntl.js"></script><script type="text/javascript" src="js/controllers/userCntl.js"></script><script type="text/javascript" src="js/controllers/databasesCntl.js"></script><script type="text/javascript" src="js/controllers/scriptsCntl.js"></script><script type="text/javascript" src="js/controllers/replicationsCntl.js"></script><script type="text/javascript" src="js/controllers/treeCntl.js"></script>
 </div> 
   </body>
 </html>	

@@ -36,8 +36,9 @@ angular.module("myApp").controller("scriptsCntl", function ($scope, $location, s
     
     editor.commands.addCommand({
         name: 'full screen',
-        bindKey: {win: 'F11',  mac: 'Command-M'},
+        bindKey: {win: 'F10',  mac: 'Command-M'},
         exec: function(editor) {
+            console.log('full?');
             dom.toggleCssClass(document.body, "fullScreen");
             dom.toggleCssClass(editor.container, "fullScreen");
             editor.resize();
@@ -77,14 +78,14 @@ angular.module("myApp").controller("scriptsCntl", function ($scope, $location, s
                 );
         // };
     };
-    // $scope.full=function() {
+    $scope.full=function() {
         
-    //     dom.toggleCssClass(document.body, "fullScreen");
-    //     dom.toggleCssClass(editor.container, "fullScreen");
-    //     editor.resize();
-    //     editor.setTheme("ace/theme/twilight");
+        dom.toggleCssClass(document.body, "fullScreen");
+        dom.toggleCssClass(editor.container, "fullScreen");
+        editor.resize();
+        editor.setTheme("ace/theme/twilight");
        
-    // };
+    };
     
     $scope.getContent = function() {
         

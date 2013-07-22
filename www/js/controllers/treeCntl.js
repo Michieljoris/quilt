@@ -2,7 +2,29 @@
 /*jshint strict:false unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
 /*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/ 
 
+myAppModule.value('uiNestedSortableOptions',  {
+    listType: 'ol',
+    items: 'li',
+    doNotClear: true,
+    placeholder: 'ui-state-highlight',
+    forcePlaceholderSize: true,
+    toleranceElement: '> div',
+    isAllowed: function(item, parent) {
+        if (!parent) return false;
+        var attrs = parent.context.attributes;
+        if (attrs) {
+            var objtype = attrs.getNamedItem('objtype');
+            if (objtype && (objtype.value === 'object' || objtype.value === 'array')) return true;
+        }
+        return false;
+    }
+});
+
+
 myAppModule.controller('TreeController', function ($scope, $timeout) {
+    
+    
+    $scope.obj =  [{ okthen:1, b:[1,2,['a', 'b']], c:"a string"  ,d: { a:1 } }];
     
     function parseObject(obj) {
         var values = [];
@@ -62,8 +84,19 @@ myAppModule.controller('TreeController', function ($scope, $timeout) {
         return array;   
     }
     
+    $scope.setData = function(obj) {
+        $scope.data = {
+            type: 'array', children: parseObject($scope.obj)
+        };
+    };
+    
+    $scope.setData($scope.obj);
+    
+    $scope.bla = function() {
+        $scope.obj =  [{ reset:1, b:[1,2,['a', 'b']], c:"a string"  ,d: { a:1 } }];
+    }
+    
     // var obj = $scope.obj = { a:1, b:[1,2,['a', 'b']], c:"a string"  ,d: { a:1 } };
-    var obj = $scope.obj =  [{ a:1, b:[1,2,['a', 'b']], c:"a string"  ,d: { a:1 } }];
     
 
     // $scope.data = {
@@ -87,10 +120,6 @@ myAppModule.controller('TreeController', function ($scope, $timeout) {
     //         ]
     //     }]
     // };
-    
-    $scope.data = {
-        type: 'array', children: parseObject(obj)
-    };
     
     
     // $('#abc').editable({
@@ -158,6 +187,7 @@ myAppModule.controller('TreeController', function ($scope, $timeout) {
                 c.ord = i++;
             });
         }
+        $scope.sync();
     }
 
     $scope.remove = function (child) {
@@ -234,8 +264,30 @@ myAppModule.controller('TreeController', function ($scope, $timeout) {
         }
         
         // $scope.obj = makeArray($scope.data.children);
-        console.log(obj);
+        $scope.sync();
+        console.log($scope.obj);
     };
+    
+    // $scope.mytest = function() {
+    //     console.log('mystes');
+    // }
+    $scope.$watch('obj', function(newVal, oldVal) {
+        if (!$scope.data.isInSync) {
+            $scope.data = {
+                type: 'array', children: parseObject($scope.obj)
+            };
+        } else {
+            $scope.data.isInSync = false;
+            return;   
+        }
+    });
+    
+    $scope.sync = function sync() {
+        // console.log('sync');
+        $scope.obj = makeArray($scope.data.children);
+        $scope.data.isInSync= true;
+        // console.log('sync', $scope.obj);
+    }
 
     $scope.getObj = function() {
         return makeObject($scope.data.children);
@@ -255,248 +307,16 @@ myAppModule.controller('TreeController', function ($scope, $timeout) {
         str = str || '';
         return  {"width": (str.length +1) * 7 + "px" };
     };
+    
+    $scope.lineStyle = function(child) {
+        if (!child.children || child.children.length === 0)
+            return  {"margin-left":"7px", "padding-left": "10px", "border-left":"0px solid black" };
+    };
 
 });
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-myAppModule.directive('yaTree', function () {
-
-    return {
-        restrict: 'A',
-        transclude: 'element',
-        priority: 1000,
-        terminal: true,
-        compile: function (tElement, tAttrs, transclude) {
-
-            var repeatExpr, childExpr, rootExpr, childrenExpr, branchExpr;
-
-            repeatExpr = tAttrs.yaTree.match(/^(.*) in ((?:.*\.)?(.*)) at (.*)$/);
-            childExpr = repeatExpr[1];
-            rootExpr = repeatExpr[2];
-            childrenExpr = repeatExpr[3];
-            branchExpr = repeatExpr[4];
-
-            return function link(scope, element, attrs) {
-
-                var rootElement = element[0].parentNode,
-                    cache = [];
-
-                // Reverse lookup object to avoid re-rendering elements
-                function lookup(child) {
-                    var i = cache.length;
-                    while (i--) {
-                        if (cache[i].scope[childExpr] === child) {
-                            return cache.splice(i, 1)[0];
-                        }
-                    }
-                }
-
-                scope.$watch(rootExpr, function (root) {
-                    // console.log('watch');
-
-                    var currentCache = [];
-
-                    // Recurse the data structure
-                    (function walk(children, parentNode, parentScope, depth) {
-
-                        var i = 0,
-                            n = children.length,
-                            last = n - 1,
-                            cursor,
-                            child,
-                            cached,
-                            childScope,
-                            grandchildren;
-
-                        // Iterate the children at the current level
-                        for (; i < n; ++i) {
-
-                            // We will compare the cached element to the element in 
-                            // at the destination index. If it does not match, then 
-                            // the cached element is being moved into this position.
-                            cursor = parentNode.childNodes[i];
-
-                            child = children[i];
-
-                            // See if this child has been previously rendered
-                            // using a reverse lookup by object reference
-                            cached = lookup(child);
-
-                            // If the parentScope no longer matches, we've moved.
-                            // We'll have to transclude again so that scopes 
-                            // and controllers are properly inherited
-                            if (cached && cached.parentScope !== parentScope) {
-                                cache.push(cached);
-                                cached = null;
-                            }
-
-                            // If it has not, render a new element and prepare its scope
-                            // We also cache a reference to its branch node which will
-                            // be used as the parentNode in the next level of recursion
-                            if (!cached) {
-                                transclude(parentScope.$new(), function (clone, childScope) {
-
-                                    childScope[childExpr] = child;
-
-                                    cached = {
-                                        scope: childScope,
-                                        parentScope: parentScope,
-                                        element: clone[0],
-                                        branch: clone.find(branchExpr)[0]
-                                    };
-
-                                    // This had to happen during transclusion so inherited 
-                                    // controllers, among other things, work properly
-                                    if (!cursor) parentNode.appendChild(cached.element);
-                                    else parentNode.insertBefore(cached.element, cursor);
 
 
-                                });
-                            } else if (cached.element !== cursor) {
-                                if (!cursor) parentNode.appendChild(cached.element);
-                                else parentNode.insertBefore(cached.element, cursor);
-
-                            }
-
-                            // Lets's set some scope values
-                            childScope = cached.scope;
-
-                            // Store the current depth on the scope in case you want 
-                            // to use it (for good or evil, no judgment).
-                            childScope.$depth = depth;
-
-                            // Emulate some ng-repeat values
-                            childScope.$index = i;
-                            childScope.$first = (i === 0);
-                            childScope.$last = (i === last);
-                            childScope.$middle = !(childScope.$first || childScope.$last);
-
-                            // Push the object onto the new cache which will replace
-                            // the old cache at the end of the walk.
-                            currentCache.push(cached);
-
-                            // If the child has children of its own, recurse 'em.             
-                            grandchildren = child[childrenExpr];
-                            if (grandchildren && grandchildren.length) {
-                                walk(grandchildren, cached.branch, childScope, depth + 1);
-                            }
-                        }
-                    })(root, rootElement, scope, 0);
-
-                    // Cleanup objects which have been removed.
-                    // Remove DOM elements and destroy scopes to prevent memory leaks.
-                    var i = cache.length;
-
-                    while (i--) {
-                        var cached = cache[i];
-                        if (cached.scope) {
-                            cached.scope.$destroy();
-                        }
-                        if (cached.element) {
-                            cached.element.parentNode.removeChild(cached.element);
-                        }
-                    }
-
-                    // Replace previous cache.
-                    cache = currentCache;
-
-                }, true);
-            };
-        }
-    };
-});
-
-
-
-myAppModule.value('uiNestedSortableOptions',  {
-    listType: 'ol',
-    items: 'li',
-    doNotClear: true,
-    placeholder: 'ui-state-highlight',
-    forcePlaceholderSize: true,
-    toleranceElement: '> div',
-    isAllowed: function(item, parent) {
-        if (!parent) return false;
-        var attrs = parent.context.attributes;
-        if (attrs) {
-            var objtype = attrs.getNamedItem('objtype');
-            if (objtype && (objtype.value === 'object' || objtype.value === 'array')) return true;
-        }
-        return false;
-    }
-});
-
-myAppModule.directive('uiNestedSortable', ['$parse', 'uiNestedSortableOptions',  function ($parse, options2) {
-
-    'use strict';
-
-    options2 = options2 || {};
-    var eventTypes = 'Create Start Sort Change BeforeStop Stop Update Receive Remove Over Out Activate Deactivate'.split(' ');
-
-    return {
-        restrict: 'A',
-        link: function (scope, element, attrs) {
-            var options = attrs.uiNestedSortable ? $parse(attrs.uiNestedSortable)() : {};
-            options = angular.extend(options, options2);
-
-            angular.forEach(eventTypes, function (eventType) {
-
-                var attr = attrs['uiNestedSortable' + eventType],
-                    callback;
-
-                if (attr) {
-                    callback = $parse(attr);
-                    options[eventType.charAt(0).toLowerCase() + eventType.substr(1)] = function (event, ui) {
-                        scope.$apply(function () {
-
-                            callback(scope, {
-                                $event: event,
-                                $ui: ui
-                            });
-                        });
-                    };
-                }
-
-            });
-            
-            options.isAllowed = 
-            element.nestedSortable(options);
-
-        }
-    };
-}]);
-
-myAppModule.directive("editInline", function(){
-    return function(scope, element, attr){
-        var inputW = (element.val().length+1) * 8;
-        console.log(element.val(), inputW);
-        element.css('width', inputW + 'px');
-        element.bind("keyup keydown", function(){
-            var inputW = (element.val().length+1) * 8;
-            element.css('width', inputW + 'px');
-        });
-        
-    };
-});
-
-myAppModule.directive('xeditable', function($timeout) {
-    return {
-        restrict: 'A',
-        require: "ngModel",
-        link: function(scope, element, attrs, ngModel) {
-            var loadXeditable = function() {
-                angular.element(element).editable({
-                    display: function(value, srcData) {
-                        ngModel.$setViewValue(value);
-                        scope.$apply();
-                    }
-                });
-            }
-            $timeout(function() {
-                loadXeditable();
-            }, 10);
-        }
-    };
-});

@@ -1,6 +1,6 @@
 <div  class="container manager" >
     <div class="row">
-      <div  id="manmenu--" class="span2 mmenu-sidebar"><div ng-show="state.connected && state.advanced" id="manmenu"
+      <!-- <div  id="manmenu--" class="span1 mmenu-sidebar"><div ng-show="state.connected && state.advanced" id="manmenu"
      class="navigation" >
   <ul class="nav nav-list sidemenu" data-spy="affix"
       data-offset-top="130">
@@ -8,8 +8,8 @@
   </ul>
 </div>
 
-</div>
-      <div id="manager--"  class="span10" ><div ng-hide="state.connected">
+</div> -->
+      <div id="manager--"  class="span12" ><div ng-hide="state.connected">
   <div  id="setupConnection--" ><p ng-hide="disconnected"> 
 I have tried to connect to CouchDB with the following two addresses:
 </p>
@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#x61;&#105;&#x6C;t&#111;:&#109;&#x69;&#99;&#x68;&#105;&#101;&#x6C;&#x6A;&#x6F;&#114;&#105;&#115;&#64;&#x67;&#x6D;&#97;i&#x6C;&#46;&#x63;&#111;&#x6D;">&#109;&#x69;&#99;&#x68;&#105;&#101;&#x6C;&#x6A;&#x6F;&#114;&#105;&#115;&#64;&#x67;&#x6D;&#97;i&#x6C;&#46;&#x63;&#111;&#x6D;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#97;&#105;&#108;&#116;&#111;:&#109;&#x69;&#99;&#104;i&#x65;&#x6C;&#106;&#x6F;&#x72;&#x69;&#x73;&#64;&#103;&#109;&#97;&#x69;l&#x2E;&#99;om">&#109;&#x69;&#99;&#104;i&#x65;&#x6C;&#106;&#x6F;&#x72;&#x69;&#x73;&#64;&#103;&#109;&#97;&#x69;l&#x2E;&#99;om</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -139,7 +139,9 @@ options.</p>
 
 <p ng-show="state.corsConfigured">
 It looks like your CouchDB is configured just the way I need it to
-be (<a href="#" ng-click="checkCors($event)">check again</a>). If you're happy with this (I would) go on to setting up your
+be (<a href="#" ng-click="checkCors($event)">check again</a>). If
+you're happy with this (I would) <a href="#"
+ng-click="checkCors($event)">go on</a> to setting up your
 database. If not read on.
 </p>
 
@@ -303,7 +305,12 @@ server admin</button>
 <div ng-show="state.configAccessible">
   <div class="row">
     <div class="span3">
-      Search: <input style="width:140px;" ng-model="searchText"><p></p>
+      
+      Search: <input style="width:140px;"
+      ng-model="searchText">
+      
+      <button class="pull-right btn btn-small btn-info"
+	      ng-click="addUserDialog()"><i class="icon-plus"></i></button><p></p>
       <div class="well well-small scrollBox" ng-show="state.configAccessible">
 	<ul>
 	  <li ng-repeat="user in state.users | filter:searchText">
@@ -313,8 +320,6 @@ server admin</button>
 	</ul>
 
       </div>
-      <button class="btn btn-small btn-primary"
-	      ng-click="addUserDialog()">Create new user</button>
     </div>
     <div ng-show="selectedUser" class="span4">
       <h3>{{selectedUser._id.slice(17)}}</h3>
@@ -368,39 +373,67 @@ server admin</button>
 </div>
 
 <div class="row">
-  <div class="span2">
-    Search: <input style="width:140px;" ng-model="searchText"><p></p>
+  <div class="span3">
+    Search: <input style="width:140px;" ng-model="searchText">
     
-      <div class="well well-small scrollBox" >
+    <button class="pull-right btn btn-small btn-info"
+	    ng-click="addDatabaseDialog()"><i class="icon-plus"></i></button><p></p>
+    
+    <div class="well well-small scrollBox" >
       <ul>
 	<li ng-repeat="database in state.databases | filter:searchText">
 	  <a style="color:orange; padding-right:10px;" href="" ng-click="removeDatabase(database)">x</a>
-	  <a href="" ng-click="editDatabase(database)">{{database}}</a>
+	  <a ng-style="styleSelectedDb(database)" href="" ng-click="editDatabase(database)">{{database}}</a>
 	</li>
       </ul>
-      </div>
+    </div>
 
-    <button class="btn btn-small btn-primary"
-    ng-click="addDatabaseDialog()">Create new database</button>
+    <!-- <button class="btn btn-small btn-primary" -->
+		 <!-- ng-click="addDatabaseDialog()">Create new database</button> -->
   </div>
-  <div ng-show="selectedDatabase" class="span8">
-    <h3>{{selectedDatabase}}</h3>
-    <h5>Read permissions</h5>
-    <!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -->
-    Users: <br> <a href="#" id="dbMemberNames" data-type="select2"></a> <br>
-    Roles: <br> <a href="#" id="dbMemberRoles" data-type="select2"></a> <br>
-    <p></p>
-    
-    <button ng-show="edited" class="btn btn-small btn-primary" ng-click="apply()">Apply</button>
-    
-    <h5>Design documents</h5>
-    <ul>
-      <li ng-repeat="ddoc in ddocs">{{ddoc}}</li>
-    </ul>
-    
-    <pre>{{designDocs | json}}</pre>
-    <pre>{{secObj | json}}</pre>
+  
+  <div class="span9">
+    <div ng-show="selectedDatabase">
+    <span class="title">{{selectedDatabase}}</span>
+    (docs:{{dbInfo.doc_count}} update_seq:{{dbInfo.update_seq}})
+    </div>
+    <span ng-hide="selectedDatabase">Select a  database</span>
+    <div class="tabbable span9"> 
+      <ul class="nav nav-tabs">
+	<li  ng-repeat="tab in tabs">
+	  <a href="#tab{{$index}}" data-toggle="tab">{{tab.title}}</a>
+	</li>
+      </ul>
+      <div class="tab-content" >
+	<div class="tab-pane" ng-repeat="tab in tabs"
+	     id="tab{{$index}}">
+	  <div ng-include src="tab.url"></div>
+	</div>
+      </div>
+    </div>
   </div>
+  
+  
+  <!-- <div ng-show="selectedDatabase" class="span8"> -->
+    
+    
+  <!--   <h3>{{selectedDatabase}}</h3> -->
+  <!--   <h5>Read permissions</h5> -->
+  <!--   <\!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -\-> -->
+  <!--   Users: <br> <a href="#" id="dbMemberNames" data-type="select2"></a> <br> -->
+  <!--   Roles: <br> <a href="#" id="dbMemberRoles" data-type="select2"></a> <br> -->
+  <!--   <p></p> -->
+    
+  <!--   <button ng-show="edited" class="btn btn-small btn-primary" ng-click="apply()">Apply</button> -->
+    
+  <!--   <h5>Design documents</h5> -->
+  <!--   <ul> -->
+  <!--     <li ng-repeat="ddoc in ddocs">{{ddoc}}</li> -->
+  <!--   </ul> -->
+    
+  <!--   <pre>{{designDocs | json}}</pre> -->
+  <!--   <pre>{{secObj | json}}</pre> 
+  <!-- </div> -->
 </div>
 
 

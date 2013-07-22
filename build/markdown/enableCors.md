@@ -10,7 +10,9 @@ options.
 
 <p ng-show="state.corsConfigured">
 It looks like your CouchDB is configured just the way I need it to
-be (<a href="#" ng-click="checkCors($event)">check again</a>). If you're happy with this (I would) go on to setting up your
+be (<a href="#" ng-click="checkCors($event)">check again</a>). If
+you're happy with this (I would) <a href="#"
+ng-click="checkCors($event)">go on</a> to setting up your
 database. If not read on.
 </p>
 

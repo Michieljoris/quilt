@@ -780,7 +780,8 @@ form.bs-docs-example {
 -------------------------------------------------- */
 
 .sidemenu {
-  width: 170px;
+    font-size:12px;
+  width: 110px;
   margin: 30px 0 0;
   padding: 0;
   background-color: #fff;
@@ -1258,16 +1259,29 @@ body {
     /* background: grey; */
 }
 
-#topmenu a.sublink {
+#topmenu a.sublink , #topmenu-advanced a.sublink {
     margin-top:5px;
     padding-bottom:0; 
-    padding-left:0;
+    padding-left:1px;
     padding-right:8px;
     font-size:10px;
 }
 
+#topmenu-advanced a.sublink {
+    margin-top:5px;
+    padding-bottom:0; 
+    padding-left:10px;
+    padding-right:8px;
+    font-size:12px;
+}
+#topmenu-advanced {
+    margin-left:50px;
+}
+
 #manager-- {
     padding-top:20px;
+    /* margin-left:50px; */
+    /* margin-right:-30px; */
 }
 
 .btn.logbutton {
@@ -1282,7 +1296,7 @@ body .modal {
 
 .scrollBox {
     /* width: 180px; */
-    height: 400px;
+    max-height: 400px;
     overflow:-moz-scrollbars-vertical;
     overflow-y:auto;
     /* border: solid grey 1px */
@@ -1295,4 +1309,15 @@ body .modal {
 .scrollBox ul {
     margin-left: 0;
 }
+
+.title {
+    font-size:30px;
+    padding-right:10px;
+}
+
+
+
+
+
+
 

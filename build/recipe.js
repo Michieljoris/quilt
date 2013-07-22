@@ -116,6 +116,10 @@ var exports = {
                     ,'angularModule'
                     ,'router'
                     ,'services/myservices'
+                    ,'directives/uiNestedSortable'
+                    ,'directives/xeditable'
+                    ,'directives/yaTree'
+                    ,'directives/objectEditor'
                     ,'controllers/managerCntl'
                     ,'controllers/mainCntl'
                     ,'controllers/helpCntl'
@@ -170,19 +174,43 @@ var exports = {
               }
             }
             ,{ src: 'views/manager.html' 
-              ,tagIdPostfix: '--' //can be overridden per template
-              ,out: 'managerView.html'
-              ,mapping: {
+               ,tagIdPostfix: '--' //can be overridden per template
+               ,out: 'managerView.html'
+               ,mapping: {
                    manmenu: 'html/manmenu',
                    manager: 'manager'
-              }
-            }
+               }
+             }
             ,{ src: 'views/test.html' 
-              ,tagIdPostfix: '--' //can be overridden per template
-              ,out: 'testView.html'
-              ,mapping: {
-              }
-            }
+               ,tagIdPostfix: '--' //can be overridden per template
+               ,out: 'testView.html'
+               ,mapping: {
+               }
+             }
+            ,{ src: 'html/db_security.html' 
+               ,tagIdPostfix: '--' //can be overridden per template
+               ,out: 'db_security.html'
+               ,mapping: {
+               }
+             }
+            ,{ src: 'html/db_ddocs.html' 
+               ,tagIdPostfix: '--' //can be overridden per template
+               ,out: 'db_ddocs.html'
+               ,mapping: {
+               }
+             } 
+            ,{ src: 'html/db_test.html' 
+               ,tagIdPostfix: '--' //can be overridden per template
+               ,out: 'db_test.html'
+               ,mapping: {
+               }
+             }
+            ,{ src: 'html/db_conflicts.html' 
+               ,tagIdPostfix: '--' //can be overridden per template
+               ,out: 'db_conflicts.html'
+               ,mapping: {
+               }
+             }
             //Main layout
             ,{// id: 'page' 
                 pathOut: 'www/'
@@ -224,6 +252,29 @@ var exports = {
                           ],
                     wrapper: [
                         'html/objecteditor'
+                        ,'thirdpartyjs'
+                        ,'myJsBlock'
+                        // ,'_scriptBlock'
+                    ]
+                }
+            }
+            ,{// id: 'page' 
+                pathOut: 'www/'
+                ,out: 'oe_directive.html' //optional, relative to root
+                ,src: 'html/basicPage.html'
+                //Maps tag ids to partial ids. Tag ids have to be
+                //postfixed with two dashes in the template. Partials
+                //with an extension will be loaded from the partials
+                //folder for this template. Markdown files will be
+                //converted to html. Partials in an array will be
+                //concatenated before inserted at the tag id element
+                ,mapping: {
+                    head: ['title', 'meta', 'html/ieshim',  'skewer'
+                           ,'headJsBlock', 'myLinkBlock'
+                           // ,'_linkBlock'
+                          ],
+                    wrapper: [
+                        'html/oedirective.html' 
                         ,'thirdpartyjs'
                         ,'myJsBlock'
                         // ,'_scriptBlock'

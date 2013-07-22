@@ -1,11 +1,11 @@
 <div class="navbar navbar-inverse navbar-fixed-top">
   <div class="navbar-inner">
     <div class="container">
-      <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
+      <!-- <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> -->
+      <!--   <span class="icon-bar"></span> -->
+      <!--   <span class="icon-bar"></span> -->
+      <!--   <span class="icon-bar"></span> -->
+      <!-- </button> -->
       <a title="Open futon" class="brand" target="_blank"
       href="http://localhost:5984/_utils">{{getTitle()}}</a> 
       <ul id="topmenu" ng-show="true" class="nav">
@@ -21,15 +21,20 @@
         <li class=""> 
 	  <a class="sublink" ng-show="state.connected && state.advanced" href="#" ng-click="simpleSetup($event)">simple</a>
         </li> 
-        <li class=""> 
-          <a href="#!manager">Manage</a> 
-        </li> 
-        <li class=""> 
-          <a href="#!help">Help</a> 
-        </li> 
-        <li class=""> 
-          <a href="#!test">test</a> 
-        </li> 
+        <!-- <li class="">  -->
+        <!--   <a href="#!manager">Manage</a>  -->
+        <!-- </li>  -->
+        <!-- <li class="">  -->
+        <!--   <a href="#!help">Help</a>  -->
+        <!-- </li>  -->
+        <!-- <li class="">  -->
+        <!--   <a href="#!test">test</a>  -->
+        <!-- </li>  -->
+      </ul>
+      <ul id="topmenu-advanced" class="nav" ng-show="state.advanced">
+	<li ng-repeat="screen in screens" class="{{isActive('#' +
+	screen.name)}}"><a   ng-click="click($event)"
+	href="#{{screen.name}}" class="sublink">{{screen.menu}}</a></li>
       </ul>
       
       <span class="pull-right" style="color:white; padding-top:10px">{{state.user.name}}</span>

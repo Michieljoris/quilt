@@ -12,7 +12,12 @@
 <div ng-show="state.configAccessible">
   <div class="row">
     <div class="span3">
-      Search: <input style="width:140px;" ng-model="searchText"><p></p>
+      
+      Search: <input style="width:140px;"
+      ng-model="searchText">
+      
+      <button class="pull-right btn btn-small btn-info"
+	      ng-click="addUserDialog()"><i class="icon-plus"></i></button><p></p>
       <div class="well well-small scrollBox" ng-show="state.configAccessible">
 	<ul>
 	  <li ng-repeat="user in state.users | filter:searchText">
@@ -22,8 +27,6 @@
 	</ul>
 
       </div>
-      <button class="btn btn-small btn-primary"
-	      ng-click="addUserDialog()">Create new user</button>
     </div>
     <div ng-show="selectedUser" class="span4">
       <h3>{{selectedUser._id.slice(17)}}</h3>

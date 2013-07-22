@@ -1,0 +1,24 @@
+<div ng-controller="OuterCntl">
+  
+  <div class="row">
+    <div class="span3 objectEditor" my-attr="parentModel"></div>
+    
+    <object-editor class="span3" my-attr="parentModel2">
+      <div ng-transclude></div>
+    
+    </object-editor>
+    <p></p>
+   </div> 
+    <div class="row">
+      <div class="span3">
+	<pre>{{parentModel | json}}</pre>
+      </div>
+      <div class="span3">
+	<pre>{{parentModel2 | json}}</pre>
+      </div>
+    </div>
+    <button ng-click="bla()">go</button>
+    
+    
+  </div> 
+</div>

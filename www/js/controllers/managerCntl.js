@@ -24,16 +24,16 @@ function managerCntl($scope, config, state, defaults) {
         return screen === state.activeScreen ? 'active' : '';
     };
     
-    $scope.click = function(event) {
-        event.preventDefault();
-        // state.activeScreen = event.currentTarget.hash;
-        state.setActiveScreen( $scope, event.currentTarget.hash );
-        cookie.set('quilt_activeScreen', state.activeScreen);
-        if (state.activeScreen === "#simple") {
-            cookie.remove("quilt_advanced");
-            state.advanced = false;
-        }
-    };
+    // $scope.click = function(event) {
+    //     event.preventDefault();
+    //     // state.activeScreen = event.currentTarget.hash;
+    //     state.setActiveScreen( $scope, event.currentTarget.hash );
+    //     cookie.set('quilt_activeScreen', state.activeScreen);
+    //     if (state.activeScreen === "#simple") {
+    //         cookie.remove("quilt_advanced");
+    //         state.advanced = false;
+    //     }
+    // };
     
     $scope.config = config;
     $scope.state = state;
@@ -112,17 +112,17 @@ function managerCntl($scope, config, state, defaults) {
             }); 
     };
     
-    $scope.screens = [
-        // { name: 'info', menu: 'Info'},
-        { name: 'serverAdmins', menu: 'Server admins'}
-        ,{ name: 'users', menu: 'Users'}
-        ,{ name: 'databases', menu: 'Databases'}
-        ,{ name: 'scripts', menu: 'Scripts'}
-        ,{ name: 'replications', menu: 'Replications'}
-        // ,{ name: 'simple', menu: 'Simple setup'}
+    // $scope.screens = [
+    //     // { name: 'info', menu: 'Info'},
+    //     { name: 'serverAdmins', menu: 'Server admins'}
+    //     ,{ name: 'users', menu: 'Users'}
+    //     ,{ name: 'databases', menu: 'Databases'}
+    //     ,{ name: 'scripts', menu: 'Scripts'}
+    //     ,{ name: 'replications', menu: 'Replications'}
+    //     // ,{ name: 'simple', menu: 'Simple setup'}
         
 
-        ];
+    //     ];
     
     
     $('#remoteUrl').editable({

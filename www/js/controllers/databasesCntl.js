@@ -7,21 +7,38 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
     
     console.log('In databasesCntl');
     
-    function aggregrateDesignDocs(ddocs) {
-        var result =  { views:{}, shows: {}, lists: {}, updates: {},
-                          filters: {}, validate_doc_updates: []};
-        ddocs.forEach(function(d) {
-            if (d.validate_doc_update) result.validate_doc_updates.push(d.validate_doc_update);
-            // result.views
-        });
-        return result;
-        
-    }
+    $scope.tabs = [
+        { title:"Security", content:"Dynamic content 1" , url: "built/db_security.html"},
+        { title:"Design documents", content:"", url: "built/db_ddocs.html" }
+        ,{ title:"Conflicts", content:"", url: "built/db_conflicts.html" }
+        ,{ title:"Playground", content:"", url: "built/db_test.html" }
+        // ,{ title:"", content:"", url: "test.html" }
+        // ,{ title:"", content:"", url: "test.html" }
+    ];
     
+    
+    
+    // function aggregrateDesignDocs(ddocs) {
+    //     var result =  { views:{}, shows: {}, lists: {}, updates: {},
+    //                       filters: {}, validate_doc_updates: []};
+    //     ddocs.forEach(function(d) {
+    //         if (d.validate_doc_update) result.validate_doc_updates.push(d.validate_doc_update);
+    //         // result.views
+    //     });
+    //     return result;
+        
+    // }
+    
+    $scope.testurl = "test.html";
     $scope.editDatabase = function(dbName) {
         $scope.selectedDatabase = dbName;
         console.log(dbName);
-        couchapi.dbSecurity(dbName).when(
+        couchapi.dbInfo(dbName).when(
+            function(data) {
+                $scope.dbInfo = data;
+                return couchapi.dbSecurity(dbName);       
+            }
+        ).when(
             function(secObj) {
                 console.log(secObj);
                 $scope.secObj = secObj = secObj || {};
@@ -39,7 +56,7 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
             function(err) {
                 if (err === 401) 
                 alert('Unable to retrieve database info. Unauthorized');
-                else alert('Unable to retrieve database info. ' + err);
+                else alert('Unable to retrieve database security info. ' + err);
                 console.log(err);
                 
             }
@@ -71,7 +88,7 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
         
         
     };
-    $scope.designDocs = 'fetching..';
+    // $scope.designDocs = 'fetching..';
     
     $scope.addDatabase = function() {
         
@@ -223,6 +240,15 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
                 console.log('error ', data); }
         );
     };
+    
+    $scope.styleSelectedDb = function(db) {
+        if (db === $scope.selectedDatabase)
+            return { //"color" : "green"
+                     "border-bottom" :  "solid 1px black"
+                     //,padding: "1px"
+                   };
+        return "";
+    }; 
     
 }); 
                                    
