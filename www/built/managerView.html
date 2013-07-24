@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#97;&#105;&#108;&#116;&#111;:&#109;&#x69;&#99;&#104;i&#x65;&#x6C;&#106;&#x6F;&#x72;&#x69;&#x73;&#64;&#103;&#109;&#97;&#x69;l&#x2E;&#99;om">&#109;&#x69;&#99;&#104;i&#x65;&#x6C;&#106;&#x6F;&#x72;&#x69;&#x73;&#64;&#103;&#109;&#97;&#x69;l&#x2E;&#99;om</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#x69;&#x6C;&#116;&#111;:&#109;&#x69;&#99;&#104;&#x69;e&#108;&#x6A;&#x6F;&#x72;&#105;&#115;&#x40;&#x67;&#109;&#97;&#105;&#108;&#x2E;&#x63;&#111;&#109;">&#109;&#x69;&#99;&#104;&#x69;e&#108;&#x6A;&#x6F;&#x72;&#105;&#115;&#x40;&#x67;&#109;&#97;&#105;&#108;&#x2E;&#x63;&#111;&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -361,17 +361,7 @@ server admin</button>
   <!-- <pre>{{state.configAccessible | json}}</pre> -->
 </div>
 </div>
-  <div ng-controller="databasesCntl" ng-show="isActive('#databases')" id="databases--"><!-- Databases -->
-<!-- <hr> -->
-
-<!-- <p></p> -->
-
-<div ng-hide="state.configAccessible">
-  <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
-    <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
-      in your CouchDB</button>
-</div>
-
+  <div ng-controller="databasesCntl" ng-show="isActive('#databases')" id="databases--">
 <div class="row">
   <div class="span3">
     Search: <input style="width:140px;" ng-model="searchText">
@@ -473,7 +463,114 @@ server admin</button>
 <button ng-click="full()">Full</button>
 <button ng-click="setDesign()">setDesign</button>
 </div>
-  <div ng-controller="replicationsCntl" ng-show="isActive('#replications')" id="replications--"><div class='row' style='margin-left: 0; padding-left:10px; border:solid grey 1px; height:40; width:100%;'>placeholder for markdown/replications.md</div></div>
+  <div ng-controller="replicationsCntl" ng-show="isActive('#replications')" id="replications--"><div ng-hide="state.configAccessible">
+  <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
+    <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
+      in your CouchDB</button>
+</div>
+<div ng-show="state.configAccessible">
+  
+  
+  <div class="row">
+    <div class="rep-buttons span6">
+      <button class="btn btn-info" ng-click="refresh()">Refresh</button>
+      <button class="btn btn-success" ng-click="new()">New</button>
+      <button ng-disabled="modifiedCount == 0" class="btn btn-warning" ng-click="undo()">Undo changes</button>
+      <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
+      <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
+      <button class="btn btn-danger" ng-click="apply()">Apply</button>
+    </div>
+    
+    <div class="span6">
+      
+      
+      <div class="btn-group pull-right " data-toggle="buttons-radio">
+	<button type="button" class="btn btn-inverse" ng-click="viewState('all')">All</button>
+	<button type="button" class="btn btn-inverse" ng-click="viewState('triggered')">Triggered</button>
+	<button type="button" class="btn btn-inverse" ng-click="viewState('error')">Error</button>
+	<button type="button" class="btn btn-inverse" ng-click="viewState('completed')">Completed</button>
+	<button type="button" class="btn btn-inverse" ng-click="viewState('stored')">Stored</button>
+      </div>
+      
+      <button type="button" class="btn btn-inverse pull-right"
+	      style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button>
+      
+      <span class="dropdown pull-right" >
+	<button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle">
+	  Fields
+	</button>
+	<ul class="dropdown-menu">
+	  <li ng-repeat="choice in pickFieldsMenu">
+	    <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a>
+	  </li>
+	</ul>
+      </span>
+    </div>
+    
+  </div>
+  
+  <div class="gridStyle" ng-grid="gridOptions"></div>
+
+  <pre> 
+    <!-- {{modifiedReps | json}}     -->
+    {{gridOptions.selectedItems | json}}    
+  </pre> 
+</div>
+</div>
+  <div ng-controller="logCntl" ng-show="isActive('#log')" id="log--"><div ng-hide="state.configAccessible">
+  <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
+    <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
+      in your CouchDB</button>
+</div>
+<div ng-show="state.configAccessible">
+  
+  
+  <div class="row">
+    <div class="rep-buttons span6">
+      <button class="btn btn-info" ng-click="refresh()">Refresh</button>
+      <button class="btn btn-success" ng-click="new()">New</button>
+      <button ng-disabled="modifiedCount == 0" class="btn btn-warning" ng-click="undo()">Undo changes</button>
+      <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
+      <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
+      <button class="btn btn-danger" ng-click="apply()">Apply</button>
+    </div>
+    
+    <div class="span6">
+      
+      
+      <div class="btn-group pull-right " data-toggle="buttons-radio">
+	<button type="button" class="btn btn-inverse" ng-click="viewState('all')">All</button>
+	<button type="button" class="btn btn-inverse" ng-click="viewState('triggered')">Triggered</button>
+	<button type="button" class="btn btn-inverse" ng-click="viewState('error')">Error</button>
+	<button type="button" class="btn btn-inverse" ng-click="viewState('completed')">Completed</button>
+	<button type="button" class="btn btn-inverse" ng-click="viewState('stored')">Stored</button>
+      </div>
+      
+      <button type="button" class="btn btn-inverse pull-right"
+	      style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button>
+      
+      <span class="dropdown pull-right" >
+	<button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle">
+	  Fields
+	</button>
+	<ul class="dropdown-menu">
+	  <li ng-repeat="choice in pickFieldsMenu">
+	    <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a>
+	  </li>
+	</ul>
+      </span>
+    </div>
+    
+  </div>
+  
+  <div class="gridStyle" ng-grid="gridOptions"></div>
+
+  <pre> 
+    <!-- {{modifiedReps | json}}     -->
+    {{gridOptions.selectedItems | json}}    
+  </pre> 
+</div>
+</div>
 </div>
 </div>
       <!-- <div id="rightBar--"  class="span2" > -->

@@ -1,0 +1,19 @@
+/*style.css*/
+.gridStyle {
+    border: 1px solid rgb(212,212,212);
+    /* width: 400px;  */
+    height: 300px;
+    font-size:10px;
+}
+.ngCellElement input {
+    font-size:10px;
+}
+
+.ngCell input {
+    font-size:10px;
+}
+
+.gray {
+    background: red;
+    
+}

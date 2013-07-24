@@ -38,10 +38,16 @@ define(
         api.info = function(){
             var vow = VOW.make(); 
             $.couch.info({
-                success: function(data){
-                   console.log(data);
-                  vow.keep(data);  
-                },
+                success: vow.keep,
+                error: vow.break
+            });
+            return vow.promise;
+        };
+        
+        api.log = function() {
+            var vow = VOW.make(); 
+            $.couch.log({
+                succes: vow.keep,
                 error: vow.break
             });
             return vow.promise;
@@ -111,7 +117,10 @@ define(
             if (name) dbName = name;
             var vow = VOW.make(); 
             $.couch.db(dbName).create({
-                success: vow.keep,
+                success: function(data) {
+                    console.log('keeping promise, created database ' + name);
+                    vow.keep(data);  
+                },
                 error: vow.break
             });
             return vow.promise;
@@ -404,6 +413,18 @@ define(
             });
             return vow.promise;
         };
+        
+        api.docAllInclude= function(aDbName) {
+            if (aDbName) dbName = aDbName;
+            var vow = VOW.make(); 
+            $.couch.db(dbName).allDocs({
+                "include_docs": true,
+                success: vow.keep,
+                error: vow.break
+            });
+            return vow.promise;
+        };
+        
         
         api.docAll= function(aDbName) {
             if (aDbName) dbName = aDbName;

@@ -9,6 +9,14 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
     $scope.connected = false;
     $scope.state = state;
     
+    $scope.changeCouchDbUrl = function(url) {
+      console.log("Switching to different couchDB url", url)  ;
+    };
+    
+    $scope.changeUser = function(userName) {
+      console.log("Switching to different user", userName)  ;
+    };
+    
     $scope.isManagerView = function() {
         return $location.$$url !== '/manager';
     };
@@ -23,7 +31,7 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
     };
     
     $scope.getTitle = function() {
-        return state.connected ? "Connected to " + state.connected : "Connect to CouchDB";
+        return state.connected ? "" + state.connected : "Connect to CouchDB";
     };
     $scope.reset = function($event) {
         if ($event) $event.preventDefault();
@@ -103,11 +111,17 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
         ,{ name: 'databases', menu: 'Databases'}
         ,{ name: 'scripts', menu: 'Scripts'}
         ,{ name: 'replications', menu: 'Replications'}
+        ,{ name: 'log', menu: 'Log'}
+        ,{ name: 'futon', menu: 'Futon'}
         // ,{ name: 'simple', menu: 'Simple setup'}
         ];
     
     $scope.click = function(event) {
         event.preventDefault();
+        if (event.currentTarget.hash === '#futon') {
+            window.open(state.connected + "/_utils", '_blank');
+            return;
+        }
         // state.activeScreen = event.currentTarget.hash;
         state.setActiveScreen( $scope, event.currentTarget.hash );
         cookie.set('quilt_activeScreen', state.activeScreen);

@@ -1220,7 +1220,7 @@ button { cursor: pointer }
 }
 
 .btn-group {
-    padding-right:20px;
+    /* padding-right:20px; */
 }
 
 #editButton {
@@ -1286,7 +1286,8 @@ body {
 
 .btn.logbutton {
     margin-top:8px;
-    margin-right:14px;
+    /* margin-right:14px; */
+    margin-left:17px;
 }
 
 body .modal {
@@ -1316,7 +1317,9 @@ body .modal {
 }
 
 
-
+.rep-buttons {
+    padding-bottom:10px;
+}
 
 
 

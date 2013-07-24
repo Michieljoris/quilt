@@ -54,7 +54,7 @@ angular.module("myApp").factory('config', function(defaults) {
 });
 
 //state
-angular.module("myApp").factory('state', function(defaults, config) {
+angular.module("myApp").factory('state', function(defaults, config, persist) {
     var state = {};
     
     function checkSetting(setting, data)  {
@@ -66,7 +66,7 @@ angular.module("myApp").factory('state', function(defaults, config) {
     function checkCors() {
         var corsSettings = defaults.corsSettings;
         console.log(corsSettings);
-        console.log('checking cors config');
+        // console.log('checking cors config');
         var vow = VOW.make();
         couchapi.config().when(
             function(data) {
@@ -92,7 +92,7 @@ angular.module("myApp").factory('state', function(defaults, config) {
                         }
                     }
                 }
-                console.log('cors configured properly.');
+                // console.log('cors configured properly.');
                 cookie.set('corsConfigured', true);
                 state.corsConfigured = true;
                 vow.keep();
@@ -147,14 +147,28 @@ angular.module("myApp").factory('state', function(defaults, config) {
         VOW.first([tryUrl(config.couchDbUrl), tryUrl(config.corsProxy)]).when(
             function(url) {
                 $.couch.urlPrefix = url;
-                state.connected = url;
-                // couchapi.withCredentials(false);
-                return couchapi.session();
+                state.dbUrl = state.connected = url;
+                return persist.init(url, 'create', state);
             }
         ).when(
+            function() {
+                state.couchDbUrlShortList = persist.get('couchDbUrlShortList') || [];
+                if (state.couchDbUrlShortList.indexOf(state.dbUrl) === -1) {
+                    state.couchDbUrlShortList.push(state.dbUrl);
+                    persist.put('couchDbUrlShortList', state.couchDbUrlShortList);
+                }
+                return couchapi.session();
+            } 
+        ).when(
            function(sessionInfo) {
-               if (sessionInfo && sessionInfo.userCtx && sessionInfo.userCtx.name)
+               if (sessionInfo && sessionInfo.userCtx && sessionInfo.userCtx.name) {
                    state.user = sessionInfo.userCtx;
+                   state.userShortList = persist.get('userShortList') || [];
+                   if (state.userShortList.indexOf(state.user.name) === -1) {
+                       state.userShortList.push(state.user.name);
+                       persist.put('userShortList', state.userShortList);
+                   }
+               }
                console.log(sessionInfo, state.user);
                return VOW.kept();
            } 
@@ -171,7 +185,6 @@ angular.module("myApp").factory('state', function(defaults, config) {
                 if (url.indexOf('1234') !== -1)  {
                     state.maybeCors = true;
                     activeScreen = '#enableCors';
-                    
                 }
                 else if (!state.corsConfigured) {
                     activeScreen = '#enableCors';
@@ -188,6 +201,7 @@ angular.module("myApp").factory('state', function(defaults, config) {
             }).when(
                 function(data) {
                     console.log('All good!!!' , data);
+                    clearTimeout(timer);
                     vow.keep(data);
                 },
                 function(err) {
@@ -259,6 +273,31 @@ angular.module("myApp").factory('state', function(defaults, config) {
         return vow.promise;
     };
     
+    initScreen['#replications'] = function() {
+        console.log('initing #reps');
+        var vow = VOW.make();
+        couchapi.docAllInclude('_replicator', { }).when(
+            function(reps) {
+                
+                state.reps = reps.rows.filter(function(row) {
+                    // console.log(row.id);
+                    // return true;
+                    return !(row.id.startsWith('_design'));
+                }).map(function(row) {
+                    return row.doc;
+                });
+                // console.log(state.users);               
+                vow.keep();
+            },
+            function(err) {
+                state.reps = null;
+                // vow['break']();
+                vow.keep();
+            }
+        );
+        return vow.promise;
+    };
+    
     
     state.setActiveScreen = function($scope, screen) {
         state.activeScreen = screen;
@@ -277,3 +316,111 @@ angular.module("myApp").factory('state', function(defaults, config) {
     return state;   
 });
 
+
+
+angular.module("myApp").factory('persist', function() {
+
+    var persistDoc; 
+    var api = {};
+    var state;
+    
+    function getDatabase(url, create) {
+        var vow = VOW.make();
+        couchapi.dbInfo('quilt', url)
+            .when(
+                function(data) {
+                    vow.keep(data);
+                }
+                ,function(error) {
+                    if (create)  couchapi.dbCreate('quilt').when(
+                        function(data) {
+                            vow.keep(data);
+                        }
+                        ,function(error) {
+                            console.log('Not able to create database quilt', error);
+                            vow.break();
+                        }
+                    );
+                    else {
+                        console.log('Not able to open database quilt and not creating one. ', error);
+                        vow.break();
+                    }
+                });
+        return vow.promise;
+    }
+    
+    function getPersistDoc() {
+        var vow = VOW.make();
+        couchapi.docGet('persist')
+            .when(
+                function(data) {
+                    vow.keep(data);
+                }
+                ,function(error) {
+                    console.log("Not able to open doc with id 'persist'. Creating one..", error);
+                    couchapi.docSave({ _id: 'persist'}).when(
+                        function(data) {
+                            vow.keep(data);
+                        }
+                        ,function(error) {
+                            console.log("Not able to write doc with id 'persist' to quilt database", error);
+                            vow.break();
+                        }
+                    );
+                });
+        return vow.promise;
+    }
+    
+    api.init = function(url, create, state) {
+        var vow = VOW.make();
+        state.persisting = false;
+        getDatabase(url, create)
+            .when(
+                function() {
+                    return getPersistDoc();
+                })
+            .when(
+                function(doc) {
+                    state.persisting = true;
+                    console.log('Read persistDoc from database quilt. Using CouchDB as backend.');
+                    persistDoc = doc;
+                    vow.keep(doc);
+                }
+                ,function() {
+                    vow.keep();
+                    console.log('CouchDB is not an option. Falling back to localStorage');
+                });
+        return vow.promise;
+    };
+    
+    
+    api.get = function(key) {
+        if (persistDoc) {
+            return persistDoc[key];
+        }
+        var item = localStorage.getItem(key);
+        try {
+            item = JSON.parse(item);
+        } catch(e) {  console.log('Error JSON parsing of local storage item'); }
+        return item;
+    };
+    
+    api.put = function(key, value) {
+        if (persistDoc) {
+            persistDoc[key] = value;
+            couchapi.docSave(persistDoc, 'quilt')
+                .when(
+                    function(data) {
+                        console.log('Saved persistDoc to couchDB', data);
+                    }
+                    ,function(error) {
+                        state.persisting = false;
+                        console.log('Unable to save persistDoc to database quilt at couchDB', error);
+                    });
+        }
+        value = JSON.stringify(value);
+        localStorage.setItem(key, value);
+    };
+    
+    return api;
+   }); 

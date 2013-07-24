@@ -65,7 +65,11 @@ var exports = {
                 ,'select2.css'
                 ,'select2-bootstrap.css'
                 ,'ace'
-                ,'tree'
+                ,'objectEditor'
+                ,'ng-grid'
+                ,'my-ng-grid'
+                // ,'../thirdpartyjs/SlickGrid/slick.grid'
+                // ,'../thirdpartyjs/SlickGrid/css/smoothness/jquery-ui-1.8.16.custom'
                 ,'main'
                 // ,'../thirdpartyjs/bower_components/codemirror/lib/codemirror'
                 ,'mycss'
@@ -106,6 +110,10 @@ var exports = {
                     ,"scrollspy"
                     ,"cookie"
                     ,"select2/select2.min"
+                    ,'ng-grid-2.0.7.debug'
+                    // ,'SlickGrid/lib/jquery.event.drag-2.2'
+                    // ,'SlickGrid/slick.core'
+                    // ,'SlickGrid/slick.grid'
                 ],
                 path: 'thirdpartyjs/'
             },
@@ -129,7 +137,8 @@ var exports = {
                     ,'controllers/databasesCntl'
                     ,'controllers/scriptsCntl'
                     ,'controllers/replicationsCntl'
-                    ,'controllers/treeCntl'
+                    ,'controllers/logCntl'
+                    // ,'controllers/treeCntl'
                     // ,'directives/compile'
                     
                 ],
@@ -161,8 +170,9 @@ var exports = {
                   ,'serverAdmins': 'markdown/serverAdmins.md'
                   ,'users': 'html/users.html'
                   ,'databases': 'html/databases.html'
-                  ,'scripts': 'html/scripts'
-                  ,'replications': 'markdown/replications.md'
+                  ,'scripts': 'html/scripts.html'
+                  ,'replications': 'html/replications.html'
+                  ,'log': 'html/log.html'
               }
             },
             { src: 'views/help.html' 

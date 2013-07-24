@@ -77,6 +77,14 @@
                 "Active task status could not be retrieved"
             );
         },
+        
+        log: function(options) {
+            ajax(
+                {url: this.urlPrefix + "/_log"},
+                options,
+                "CouchDb log could not be retrieved"
+            );
+        },
 
         /**
          * Returns a list of all the databases in the CouchDB instance
@@ -100,7 +108,7 @@
 
         withCredentials: function(withCred) {
             if (typeof withCred === 'boolean') withCredentials = withCred;
-            console.log(withCredentials);
+            // console.log(withCredentials);
             return withCredentials;
         },
         /**
