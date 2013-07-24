@@ -80,7 +80,7 @@
         
         log: function(options) {
             ajax(
-                {url: this.urlPrefix + "/_log"},
+                {url: this.urlPrefix + "/_log" + encodeOptions(options)},
                 options,
                 "CouchDb log could not be retrieved"
             );
@@ -1014,7 +1014,6 @@
      * @private
      */
     function ajax(obj, options, errorMessage, ajaxOptions) {
-
         var defaultAjaxOpts = {
             contentType: "application/json",
             headers:{"Accept": "application/json"}

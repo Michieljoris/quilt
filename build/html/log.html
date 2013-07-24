@@ -1,5 +1,6 @@
 <div ng-hide="state.configAccessible">
-  <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
+  <b><em>Please click the button to login as a server admin to view
+  the couchDB log</em></b><p>
     <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
       in your CouchDB</button>
 </div>
@@ -7,47 +8,16 @@
   
   
   <div class="row">
-    <div class="rep-buttons span6">
-      <button class="btn btn-info" ng-click="refresh()">Refresh</button>
-      <button class="btn btn-success" ng-click="new()">New</button>
-      <button ng-disabled="modifiedCount == 0" class="btn btn-warning" ng-click="undo()">Undo changes</button>
-      <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
-      <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
-      <button class="btn btn-danger" ng-click="apply()">Apply</button>
+   <button ng-click="refresh()" class="btn btn-info">Refresh</button> 
+   <button ng-disabled="state.bytes==defaults.logBytes" ng-click="less()" class="btn btn-info">Less</button> 
+   <button  ng-click="more()" class="btn btn-info">More</button> 
+   <!-- <input type="checkbox" ng-model="state.autoRefresh"/>Auto refresh -->
+   <!-- <input style="height:30px;" type="number" -->
+   <!-- ng-model="state.logRefresh"/>  -->
+   <!-- {{state.autoRefresh}} -->
     </div>
-    
-    <div class="span6">
-      
-      
-      <div class="btn-group pull-right " data-toggle="buttons-radio">
-	<button type="button" class="btn btn-inverse" ng-click="viewState('all')">All</button>
-	<button type="button" class="btn btn-inverse" ng-click="viewState('triggered')">Triggered</button>
-	<button type="button" class="btn btn-inverse" ng-click="viewState('error')">Error</button>
-	<button type="button" class="btn btn-inverse" ng-click="viewState('completed')">Completed</button>
-	<button type="button" class="btn btn-inverse" ng-click="viewState('stored')">Stored</button>
-      </div>
-      
-      <button type="button" class="btn btn-inverse pull-right"
-	      style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button>
-      
-      <span class="dropdown pull-right" >
-	<button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle">
-	  Fields
-	</button>
-	<ul class="dropdown-menu">
-	  <li ng-repeat="choice in pickFieldsMenu">
-	    <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a>
-	  </li>
-	</ul>
-      </span>
-    </div>
-    
-  </div>
-  
-  <div class="gridStyle" ng-grid="gridOptions"></div>
-
+  <p></p>
   <pre> 
-    <!-- {{modifiedReps | json}}     -->
-    {{gridOptions.selectedItems | json}}    
+    {{state.log }}    
   </pre> 
 </div>

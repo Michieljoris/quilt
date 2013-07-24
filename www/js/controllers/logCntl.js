@@ -6,6 +6,29 @@
 angular.module("myApp").controller("logCntl", function ($scope, state, defaults, persist) {
     
     console.log('In logCntl');
+    var mult = 1;
+    
+    
+    $scope.refresh = function() {
+        state.setActiveScreen($scope, '#log');
+        
+    };
+    
+    $scope.more = function() {
+        mult *= 2;
+        state.bytes = mult * defaults.logBytes;
+        console.log(state.bytes);
+        state.setActiveScreen($scope, '#log');
+    };
+    
+    $scope.less = function() {
+        mult /=2;
+        if (mult<1) mult = 1;
+        state.bytes = mult * defaults.logBytes;
+        console.log(state.bytes);
+        state.setActiveScreen($scope, '#log');
+        
+    };
     
 }); 
                                    

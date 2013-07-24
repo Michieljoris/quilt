@@ -20,15 +20,15 @@
   </div>
   
   <div class="span9">
-    <div ng-show="selectedDatabase">
+    <div class="pull-right" ng-show="selectedDatabase">
     <span class="title">{{selectedDatabase}}</span>
     (docs:{{dbInfo.doc_count}} update_seq:{{dbInfo.update_seq}})
     </div>
-    <span ng-hide="selectedDatabase">Select a  database</span>
+    <span class="pull-right" ng-hide="selectedDatabase">Select a  database</span>
     <div class="tabbable span9"> 
       <ul class="nav nav-tabs">
 	<li  ng-repeat="tab in tabs">
-	  <a href="#tab{{$index}}" data-toggle="tab">{{tab.title}}</a>
+	  <a ng-click="tabSelected(tab)" href="#tab{{$index}}" data-toggle="tab">{{tab.title}}</a>
 	</li>
       </ul>
       <div class="tab-content" >

@@ -44,11 +44,18 @@ define(
             return vow.promise;
         };
         
-        api.log = function() {
+        api.log = function(bytes, offset) {
             var vow = VOW.make(); 
             $.couch.log({
-                succes: vow.keep,
-                error: vow.break
+                //never gonna happen.. 
+                success: vow.keep,
+                //jquery.couch.js tries to parse the result, but it is not a json
+                error: function(status, req) {
+                    //luckily we can check the status and still return the responseText
+                    if (status === 200) vow.keep(req.responseText);
+                    else vow.break(status);
+                }
+                ,bytes:bytes || 1000 , offset:offset || 0
             });
             return vow.promise;
         };

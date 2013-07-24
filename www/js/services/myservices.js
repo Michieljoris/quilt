@@ -9,6 +9,8 @@ angular.module("myApp").factory('defaults', function() {
         ,corsProxy : "http://localhost:1234"
         ,timeout: 5000
         ,firstScreen: '#info'
+        ,logBytes: 3000
+        // ,logRefresh: 2000 //in ms
         ,corsSettings : {
             httpd: {
                 enable_cors:['true']
@@ -38,8 +40,8 @@ angular.module("myApp").factory('config', function(defaults) {
     var config = {
         set: function(obj) {
             setSettings(obj);
-            console.log('removing cookie??');
-            cookie.remove('corsConfigured');
+            // console.log('removing cookie??');
+            // cookie.remove('corsConfigured');
             cookie.set('couchdb_config', JSON.stringify(values));
         }
     }; 
@@ -272,7 +274,6 @@ angular.module("myApp").factory('state', function(defaults, config, persist) {
         );
         return vow.promise;
     };
-    
     initScreen['#replications'] = function() {
         console.log('initing #reps');
         var vow = VOW.make();
@@ -299,20 +300,74 @@ angular.module("myApp").factory('state', function(defaults, config, persist) {
     };
     
     
+    initScreen['#log'] = function() {
+        
+        // state.logRefresh = state.logRefresh || defaults.logRefresh;
+        console.log('initing #log');
+        var vow = VOW.make();
+        state.bytes = state.bytes || defaults.logBytes;
+        couchapi.log(state.bytes, 0).when(
+            function(data) {
+                data = data.split('\n');
+                data.reverse();
+                data = data.filter(function(r) {
+                    return r.indexOf('_log') === -1; 
+                });
+                data.slice(0, data.length-1);
+                state.log = data.join('\n');
+                vow.keep();
+            },
+            function(err) {
+                console.log('Error getting couchDB log. ', err);
+                vow.keep();
+            }
+        );
+        return vow.promise;
+    };
+    
+    
     state.setActiveScreen = function($scope, screen) {
+        // var timer;
         state.activeScreen = screen;
-        if (initScreen[screen])
+        console.log('screen =', screen);
+        if (initScreen[screen]) {
+            // if (screen === '#log' && !timer) {
+            //     state.logRefresh = state.logRefresh || defaults.logRefresh;
+            //     console.log('initing #log 1', state.logRefresh , state.autoRefresh);
+            //     timer = setInterval(function() {
+            //         if (!state.autoRefresh) {
+            //             clearInterval(timer);
+            //             timer = false;
+            //             return;
+            //         }
+            //         initScreen[screen]().when(
+            //             function(){
+            //                 $scope.$apply();
+            //             }
+            //             ,function(err){
+            //                 console.log(err);
+            //                 clearInterval(timer);
+            //                 timer = false;
+            //             }
+            //         );
+                 
+            //     }, state.logRefresh);
+            // }
+            // else{
+            // clearInterval(timer);
+            // timer = false;
             initScreen[screen]().when(
                 function(data){
                     $scope.$apply();
                 }
                 ,function(err){
                     console.log(err);
-                    
                 }
             );
+             
+        // }  
+        }
     };
-    
     return state;   
 });
 
@@ -360,7 +415,7 @@ angular.module("myApp").factory('persist', function() {
                     console.log("Not able to open doc with id 'persist'. Creating one..", error);
                     couchapi.docSave({ _id: 'persist'}).when(
                         function(data) {
-                            vow.keep(data);
+                            vow.keep({ _id: 'persist', _rev: data.rev});
                         }
                         ,function(error) {
                             console.log("Not able to write doc with id 'persist' to quilt database", error);
@@ -383,6 +438,7 @@ angular.module("myApp").factory('persist', function() {
                 function(doc) {
                     state.persisting = true;
                     console.log('Read persistDoc from database quilt. Using CouchDB as backend.');
+                    console.log('00000000000000000000',doc);
                     persistDoc = doc;
                     vow.keep(doc);
                 }

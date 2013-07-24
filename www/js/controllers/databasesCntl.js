@@ -3,7 +3,7 @@
 /*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/ 
 
 
-angular.module("myApp").controller("databasesCntl", function ($scope, $location, state, defaults) {
+angular.module("myApp").controller("databasesCntl", function ($scope, $location, state, defaults, persist) {
     
     console.log('In databasesCntl');
     
@@ -15,8 +15,43 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
         // ,{ title:"", content:"", url: "test.html" }
         // ,{ title:"", content:"", url: "test.html" }
     ];
+
+    $scope.tabSelected = function(tab) {
+        console.log(tab.title);
+        persist.put('databasesSubTab', tab.title);    
+        if (initTab[tab.title]) 
+            initTab[tab.title]();
+    };
     
+    var initTab = {};
+    initTab.Security = function() {
+        if (!$scope.selectedDatabase) return;
+        couchapi.dbSecurity($scope.selectedDatabase)
+            .when(
+                function(secObj) {
+                    console.log(secObj);
+                    $scope.secObj = secObj = secObj || {};
+                    $('#dbMemberNames').editable('setValue', secObj.members ? secObj.members.names: [], false);
+                    $('#dbMemberRoles').editable('setValue', secObj.members ? secObj.members.roles: [], false);
+                    $('#dbMemberRoles').editable('option', 'select2', { tags: ['opt1', 'opt2']});
+                
+                    $scope.edited = false;
     
+                    newMemberNames = newMemberRoles = null;
+                    // newRoles = null, newPwd = null;
+                    $scope.$apply();
+                
+                    //TODO inittab of the selected subtab
+                },
+                function(err) {
+                    if (err === 401) 
+                        alert('Unable to retrieve database info. Unauthorized');
+                    else alert('Unable to retrieve database security info. ' + err);
+                    console.log(err);
+                
+                }
+            );
+    };
     
     // function aggregrateDesignDocs(ddocs) {
     //     var result =  { views:{}, shows: {}, lists: {}, updates: {},
@@ -32,35 +67,24 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
     $scope.testurl = "test.html";
     $scope.editDatabase = function(dbName) {
         $scope.selectedDatabase = dbName;
+        
         console.log(dbName);
         couchapi.dbInfo(dbName).when(
             function(data) {
                 $scope.dbInfo = data;
-                return couchapi.dbSecurity(dbName);       
+                localStorage.setItem('quilt_selectedDatabase', dbName);
             }
-        ).when(
-            function(secObj) {
-                console.log(secObj);
-                $scope.secObj = secObj = secObj || {};
-                $('#dbMemberNames').editable('setValue', secObj.members ? secObj.members.names: [], false);
-                $('#dbMemberRoles').editable('setValue', secObj.members ? secObj.members.roles: [], false);
-                $('#dbMemberRoles').editable('option', 'select2', { tags: ['opt1', 'opt2']});
-                
-                $scope.edited = false;
-    
-                newMemberNames = newMemberRoles = null;
-                // newRoles = null, newPwd = null;
-                $scope.$apply();
-                
-            },
-            function(err) {
-                if (err === 401) 
+            ,function(err) {
+                // if (err === 401) 
+                $scope.dbInfo = null;
                 alert('Unable to retrieve database info. Unauthorized');
-                else alert('Unable to retrieve database security info. ' + err);
+                // else alert('Unable to retrieve database security info. ' + err);
+                localStorage.removeItem('quilt_selectedDatabase');
                 console.log(err);
                 
             }
         );
+        
         var designDocs = $scope.designDocs = {};
         couchapi.docAllDesign(dbName).when(
             function(data) {
