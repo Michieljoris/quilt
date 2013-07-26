@@ -31,9 +31,9 @@ button or refresh the page.
 <p><button class="btn btn-small btn-primary" ng-click="connect()">Connect</button></p></div>
   <!-- <div ng-show="disconnected" id="setupConnectionDisconnected--" ></div> -->
   <a  ng-click="isSetupConnectionHelpCollapsed =
-		!isSetupConnectionHelpCollapsed">Help on how to
-		enable access to CouchDB click here.</a>
-  <brk>
+                !isSetupConnectionHelpCollapsed">Help on how to
+    enable access to CouchDB click here.</a>
+  <br>
     <div id="setupConnectionHelp--" collapse="isSetupConnectionHelpCollapsed"><p>For windows do the following: </p>
 
 <ul>
@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#97;&#105;&#x6C;&#116;&#111;:m&#105;&#x63;h&#x69;&#x65;l&#x6A;&#x6F;r&#x69;&#115;&#64;&#103;&#x6D;a&#105;&#108;&#46;&#x63;&#x6F;&#x6D;">m&#105;&#x63;h&#x69;&#x65;l&#x6A;&#x6F;r&#x69;&#115;&#64;&#103;&#x6D;a&#105;&#108;&#46;&#x63;&#x6F;&#x6D;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#x61;&#x69;&#108;&#x74;&#x6F;:&#x6D;&#105;&#99;h&#x69;&#101;&#x6C;&#x6A;&#111;&#114;&#105;&#115;&#64;g&#x6D;&#97;&#105;&#108;&#46;&#x63;&#111;&#109;">&#x6D;&#105;&#99;h&#x69;&#101;&#x6C;&#x6A;&#111;&#114;&#105;&#115;&#64;g&#x6D;&#97;&#105;&#108;&#46;&#x63;&#111;&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -361,68 +361,78 @@ server admin</button>
   <!-- <pre>{{state.configAccessible | json}}</pre> -->
 </div>
 </div>
-  <div ng-controller="databasesCntl" ng-show="isActive('#databases')" id="databases--">
-<div class="row">
+  <div ng-controller="databasesCntl" ng-show="isActive('#databases')" id="databases--"><div class="row">
   <div class="span3">
     Search: <input style="width:140px;" ng-model="searchText">
-    
+
     <button class="pull-right btn btn-small btn-info"
-	    ng-click="addDatabaseDialog()"><i class="icon-plus"></i></button><p></p>
-    
+            ng-click="addDatabaseDialog()"><i class="icon-plus"></i></button><p></p>
+
     <div class="well well-small scrollBox" >
       <ul>
-	<li ng-repeat="database in state.databases | filter:searchText">
-	  <a style="color:orange; padding-right:10px;" href="" ng-click="removeDatabase(database)">x</a>
-	  <a ng-style="styleSelectedDb(database)" href="" ng-click="editDatabase(database)">{{database}}</a>
-	</li>
+        <li ng-repeat="database in state.databases | filter:searchText">
+          <a style="color:orange; padding-right:10px;" href="" ng-click="removeDatabase(database)">x</a>
+          <a ng-style="styleSelectedDb(database)" href="" ng-click="editDatabase(database)">{{database}}</a>
+        </li>
       </ul>
     </div>
 
     <!-- <button class="btn btn-small btn-primary" -->
-		 <!-- ng-click="addDatabaseDialog()">Create new database</button> -->
+                 <!-- ng-click="addDatabaseDialog()">Create new database</button> -->
   </div>
-  
   <div class="span9">
+
     <div class="pull-right" ng-show="selectedDatabase">
-    <span class="title">{{selectedDatabase}}</span>
-    (docs:{{dbInfo.doc_count}} update_seq:{{dbInfo.update_seq}})
+      <span class="title">{{selectedDatabase}}</span>
+      <span ng-hide="databaseError">
+        (docs:{{dbInfo.doc_count}} update_seq:{{dbInfo.update_seq}})
+      </span>
     </div>
-    <span class="pull-right" ng-hide="selectedDatabase">Select a  database</span>
-    <div class="tabbable span9"> 
-      <ul class="nav nav-tabs">
-	<li  ng-repeat="tab in tabs">
-	  <a ng-click="tabSelected(tab)" href="#tab{{$index}}" data-toggle="tab">{{tab.title}}</a>
-	</li>
+
+    <span class="pull-right" ng-hide="selectedDatabase">Select a database</span>
+
+    <div ng-show="databaseError" class="span9">
+      {{databaseError}}
+    </div>
+
+    <div ng-hide="databaseError || !selectedDatabase" class="tabbable span9">
+      <ul id="databasesTabs" class="nav nav-tabs">
+        <li  ng-repeat="tab in tabs">
+          <a ng-click="tabSelected(tab)" href="#{{tab.title}}" data-toggle="tab">{{tab.title}}</a>
+        </li>
       </ul>
       <div class="tab-content" >
-	<div class="tab-pane" ng-repeat="tab in tabs"
-	     id="tab{{$index}}">
-	  <div ng-include src="tab.url"></div>
-	</div>
+        <div class="tab-pane" ng-repeat="tab in tabs"
+             id="{{tab.title}}">
+          <span ng-switch on="isActive('#databases')">
+	    <div ng-switch-when="active" ng-include src="tab.url"></div>
+	  </span>
+          <!-- <div ng-include src="tab.url"></div> -->
+        </div>
       </div>
     </div>
   </div>
-  
-  
+
+
   <!-- <div ng-show="selectedDatabase" class="span8"> -->
-    
-    
+
+
   <!--   <h3>{{selectedDatabase}}</h3> -->
   <!--   <h5>Read permissions</h5> -->
   <!--   <\!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -\-> -->
   <!--   Users: <br> <a href="#" id="dbMemberNames" data-type="select2"></a> <br> -->
   <!--   Roles: <br> <a href="#" id="dbMemberRoles" data-type="select2"></a> <br> -->
   <!--   <p></p> -->
-    
+
   <!--   <button ng-show="edited" class="btn btn-small btn-primary" ng-click="apply()">Apply</button> -->
-    
+
   <!--   <h5>Design documents</h5> -->
   <!--   <ul> -->
   <!--     <li ng-repeat="ddoc in ddocs">{{ddoc}}</li> -->
   <!--   </ul> -->
-    
+
   <!--   <pre>{{designDocs | json}}</pre> -->
-  <!--   <pre>{{secObj | json}}</pre> 
+  <!--   <pre>{{secObj | json}}</pre>
   <!-- </div> -->
 </div>
 
@@ -434,7 +444,7 @@ server admin</button>
   <div class="modal-body">
     <form>
       <fieldset>
-	<input type="text" placeholder="new database name" ng-model="dbName"><br>
+        <input type="text" placeholder="new database name" ng-model="dbName"><br>
       </fieldset>
     </form>
 
@@ -449,7 +459,6 @@ server admin</button>
 <!-- <pre>{{getAdminNames() | json}}</pre> -->
 
 <!-- <pre>{{state.configAccessible | json}}</pre> -->
-
 </div>
   <div ng-controller="scriptsCntl" ng-show="isActive('#scripts')" id="scripts--">It's working!!
 <pre id="editor">function foo(items) {
@@ -542,6 +551,8 @@ server admin</button>
 </div>
 </div>
 </div>
+
+
 </div>
       <!-- <div id="rightBar--"  class="span2" > -->
       </div>

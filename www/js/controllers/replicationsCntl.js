@@ -59,10 +59,12 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                      {visGroup:'All', field:'_replication_id', displayName:'rep_id', enableCellEdit:false, visible:false},
                      {visGroup:'Essential', field:'_replication_state', displayName:'state', enableCellEdit:false, width:60},
                      {visGroup:'All', field:'_replication_state_time', displayName:'time', enableCellEdit:false, visible:false}
+                     ,{visGroup:'Essential', field:'commit', displayName:'commit',
+                       cellTemplate: checkBoxTemplate, enableCellEdit:false, width:50 }
                      ,{visGroup:'Essential', field:'store', displayName:'store',
                        cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40 }
-                     ,{visGroup:'Essential', field:'stop', displayName:'stop',
-                       cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40 }
+                     // ,{visGroup:'Essential', field:'stop', displayName:'stop',
+                     //   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40 }
                      ,{visGroup:'Essential', field:'cancel', displayName:'delete',
                        cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40}
                     ];

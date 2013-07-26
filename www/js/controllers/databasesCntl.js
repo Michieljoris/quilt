@@ -1,15 +1,15 @@
 /*global VOW:false $:false angular:false couchapi:false */
 /*jshint strict:false unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
-/*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/ 
+/*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/
 
 
 angular.module("myApp").controller("databasesCntl", function ($scope, $location, state, defaults, persist) {
-    
+
     console.log('In databasesCntl');
-    
+
     $scope.tabs = [
         { title:"Security", content:"Dynamic content 1" , url: "built/db_security.html"},
-        { title:"Design documents", content:"", url: "built/db_ddocs.html" }
+        { title:"Design", content:"", url: "built/db_ddocs.html" }
         ,{ title:"Conflicts", content:"", url: "built/db_conflicts.html" }
         ,{ title:"Playground", content:"", url: "built/db_test.html" }
         // ,{ title:"", content:"", url: "test.html" }
@@ -18,11 +18,14 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
 
     $scope.tabSelected = function(tab) {
         console.log(tab.title);
-        persist.put('databasesSubTab', tab.title);    
-        if (initTab[tab.title]) 
+        $scope.selectedDatabaseTab = tab.title;
+        // persist.put('databasesSubTab', tab.title);
+        console.log(tab);
+        localStorage.setItem('quilt_selectedDatabaseTab', tab.title);
+        if (initTab[tab.title])
             initTab[tab.title]();
     };
-    
+
     var initTab = {};
     initTab.Security = function() {
         if (!$scope.selectedDatabase) return;
@@ -31,28 +34,71 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
                 function(secObj) {
                     console.log(secObj);
                     $scope.secObj = secObj = secObj || {};
+
+                    $scope.securityError = false;
                     $('#dbMemberNames').editable('setValue', secObj.members ? secObj.members.names: [], false);
                     $('#dbMemberRoles').editable('setValue', secObj.members ? secObj.members.roles: [], false);
                     $('#dbMemberRoles').editable('option', 'select2', { tags: ['opt1', 'opt2']});
-                
+
                     $scope.edited = false;
-    
+
                     newMemberNames = newMemberRoles = null;
                     // newRoles = null, newPwd = null;
                     $scope.$apply();
-                
-                    //TODO inittab of the selected subtab
+
                 },
                 function(err) {
-                    if (err === 401) 
-                        alert('Unable to retrieve database info. Unauthorized');
-                    else alert('Unable to retrieve database security info. ' + err);
+                    if (err === 401) {
+                        $scope.securityError = "Unable to retrieve database info. Unauthorized";
+                    }
+                    else {
+                        $scope.securityError = "Unable to retrieve database security info. " + err;
+                    }
                     console.log(err);
-                
+                    $scope.$apply();
                 }
             );
     };
-    
+
+    initTab.Design = function() {
+        console.log('in design');
+        if (!$scope.selectedDatabase) return;
+        var designDocs = $scope.designDocs = {};
+        couchapi.docAllDesign($scope.selectedDatabase).when(
+                function(data) {
+                    console.log(data);
+                    var ddocPromises = [];
+                    $scope.ddocs = data.rows.map(function(d) {
+                            ddocPromises.push(couchapi.docGet(d.id));
+                        return d.id;
+                    });
+                    return VOW.every(ddocPromises);
+                }).when(
+                    function(ddocs) {
+                        // designDocs = aggregrateDesignDocs(ddocs);
+                        $scope.designError = false;
+                        $scope.designDocs = ddocs;
+                        window.ddocs = ddocs;
+                        console.log('got all ddocs:', ddocs);
+                        $scope.$apply();
+
+                    },
+                    function(data) {
+                        if (data.length === 0) console.log('No design docs');
+                        else console.log('error', data);
+                        if (data === 401) {
+                            $scope.designError = "Unable to retrieve database design docs. Unauthorized";
+                        }
+                        else {
+                            $scope.designError = "Unable to retrieve database design docs" + data;
+                        }
+                        $scope.designDocs = [];
+                        $scope.$apply();
+                    }
+                );
+    };
+
+
     // function aggregrateDesignDocs(ddocs) {
     //     var result =  { views:{}, shows: {}, lists: {}, updates: {},
     //                       filters: {}, validate_doc_updates: []};
@@ -61,61 +107,53 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
     //         // result.views
     //     });
     //     return result;
-        
+
     // }
-    
+
+    $scope.isActiveTab = function(tabTitle) {
+        console.log(tabTitle, $scope.selectedDatabaseTab);
+        if (tabTitle===$scope.selectedDatabaseTab)
+            return 'active';
+        else return '';
+    };
+
     $scope.testurl = "test.html";
     $scope.editDatabase = function(dbName) {
         $scope.selectedDatabase = dbName;
-        
+        localStorage.setItem('quilt_selectedDatabase', dbName);
+        $scope.databaseError = false;
         console.log(dbName);
         couchapi.dbInfo(dbName).when(
             function(data) {
                 $scope.dbInfo = data;
-                localStorage.setItem('quilt_selectedDatabase', dbName);
+                console.log($scope.selectedDatabaseTab);
+
+                $('#databasesTabs a[href=#' + $scope.selectedDatabaseTab + ']').tab('show');
+                initTab[$scope.selectedDatabaseTab]();
+                $scope.$apply();
             }
             ,function(err) {
-                // if (err === 401) 
                 $scope.dbInfo = null;
-                alert('Unable to retrieve database info. Unauthorized');
-                // else alert('Unable to retrieve database security info. ' + err);
-                localStorage.removeItem('quilt_selectedDatabase');
-                console.log(err);
+
+                console.log('database info error', err);
+                if (err === 401) {
+                    $scope.databaseError = "Unable to retrieve database info docs. Unauthorized";
+                }
+                else {
+                    $scope.databaseError = "Unable to retrieve database info" + err;
+                }
                 
+                $scope.$apply();
+                // localStorage.removeItem('quilt_selectedDatabase');
+
             }
         );
-        
-        var designDocs = $scope.designDocs = {};
-        couchapi.docAllDesign(dbName).when(
-            function(data) {
-                console.log(data);
-                var ddocPromises = [];
-                $scope.ddocs = data.rows.map(function(d) {
-                    ddocPromises.push(couchapi.docGet(d.id));
-                    return d.id;
-                });
-                return VOW.every(ddocPromises);
-            }).when(
-                function(ddocs) {
-                    // designDocs = aggregrateDesignDocs(ddocs);
-                    $scope.designDocs = ddocs;
-                    window.ddocs = ddocs;
-                    console.log('got all ddocs:', ddocs);
-                    $scope.$apply();
-                
-                },
-                function(data) {
-                    console.log('error', data);
-                
-                }
-            );
-        
-        
+
+
     };
-    // $scope.designDocs = 'fetching..';
-    
+
     $scope.addDatabase = function() {
-        
+
         couchapi.dbCreate($scope.dbName).when(
             function(data) {
                 console.log(data);
@@ -128,18 +166,18 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
                 alert('The database already exists probably. Anyway the database has not been created.', data);
             }
         );
-        
+
     };
-    
+
     $scope.addDatabaseDialog = function() {
         $scope.newDatabaseShouldBeOpen = true;
     };
-    
+
     $scope.closeDatabase = function() {
         $scope.newDatabaseShouldBeOpen = false;
     };
-    
-    
+
+
     $scope.removeDatabase = function(id) {
         console.log(id);
         if (confirm('Are you sure?'))
@@ -151,20 +189,22 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
                         if (db!==id) return true;
                         return false;
                     });
-                    $scope.$apply();
+                    localStorage.removeItem('quilt_selectedDatabase');
+                    $scope.selectedDatabase = false;
+                    state.initialize($scope);
                 },
                 function(data) {
                     console.log("error",data);
                     alert('Not able to remove database..', data);
                 }
             );
-        
+
     };
-    
+
     $scope.edited = false;
-    
+
     var newMemberRoles, newMemberNames;
-    
+
     $('#dbMemberNames').editable({
         inputclass: 'input-large',
         value: [],
@@ -183,15 +223,15 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
             $scope.edited = true;
             $scope.$apply();
         }
-    });   
-    
+    });
+
     $('#dbMemberRoles').editable({
         inputclass: 'input-large',
         value: ['bla'],
         unsavedclass: null,
         select2: {
             tags: ['read-users', 'write-users', 'read-persons', 'write-persons', 'read-locations', 'write-locations',
-                  'read-waterfordwest', 'write-waterfordwest'],
+                   'read-waterfordwest', 'write-waterfordwest'],
             tokenSeparators: [",", " "]
         }
         ,success: function(response, newValue) {
@@ -204,9 +244,11 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
             $scope.edited = true;
             $scope.$apply();
         }
-    });   
+
+
+    });
     // $('#dbMemberNames').editable({
-    //     value: [2, 3],    
+    //     value: [2, 3],
     //     unsavedclass: null,
     //     source: [
     //         {value: 'read-user', text: 'read-user'},
@@ -224,11 +266,11 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
     //         $scope.$apply();
     //         // $scope.$apply();
     //     }
-    // });   
-    
-    
+    // });
+
+
     // $('#dbMemberRoles').editable({
-    //     value: [2, 3],    
+    //     value: [2, 3],
     //     unsavedclass: null,
     //     source: [
     //         {value: 'read-user', text: 'read-user'},
@@ -246,16 +288,16 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
     //         $scope.$apply();
     //         // $scope.$apply();
     //     }
-    // });   
-    
+    // });
+
     $scope.apply = function() {
         console.log('apply', newMemberNames, newMemberRoles, $scope.secObj);
         // var props = {};
         // if (newMemberNames || newMemberRoles) props.roles = newRoles;
-        
+
         couchapi.dbSecurity($scope.secObj, $scope.selectedDatabase).when(
             function(data) { console.log(data);
-                             $scope.edited = false;    
+                             $scope.edited = false;
                              newMemberNames = newMemberRoles = null;
                              $scope.$apply();
                            }
@@ -264,15 +306,36 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
                 console.log('error ', data); }
         );
     };
-    
+
     $scope.styleSelectedDb = function(db) {
         if (db === $scope.selectedDatabase)
             return { //"color" : "green"
-                     "border-bottom" :  "solid 1px black"
-                     //,padding: "1px"
-                   };
+                "border-bottom" :  "solid 1px black"
+                //,padding: "1px"
+            };
         return "";
-    }; 
-    
-}); 
-                                   
+    };
+
+    // $scope.$watch("selectedDatabase", function() {
+    //     console.log('watch', arguments);
+    // });
+
+    if (!state.databasesDone) {
+        state.databasesDone = true;
+
+        var dereg = $scope.$on('initDatabases',
+                               function() {
+                                   dereg();
+                                   console.log("HELLO", $scope.selectedDatabase, $scope.selectedDatabaseTab);
+                                   $scope.editDatabase($scope.selectedDatabase);
+
+                                   // if (initTab[$scope.selectedDatabaseTab]) initTab[$scope.selectedDatabaseTab]();
+                                   $('#databasesTabs a[href=#' + $scope.selectedDatabaseTab + ']').tab('show');
+                               });
+
+    }
+
+
+
+
+});

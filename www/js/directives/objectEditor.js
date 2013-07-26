@@ -2,6 +2,25 @@
 /*jshint strict:false unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
 /*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/ 
 
+myAppModule.value('uiNestedSortableOptions',  {
+    listType: 'ol',
+    items: 'li',
+    doNotClear: true,
+    placeholder: 'ui-state-highlight',
+    forcePlaceholderSize: true,
+    toleranceElement: '> div',
+    isAllowed: function(item, parent) {
+        if (!parent) return false;
+        var attrs = parent.context.attributes;
+        if (attrs) {
+            var objtype = attrs.getNamedItem('objtype');
+            if (objtype && (objtype.value === 'object' || objtype.value === 'array')) return true;
+        }
+        return false;
+    }
+});
+
+
 function OuterCntl($scope) {
   // $scope.title = 'Lorem Ipsum';
   // $scope.text = 'Neque porro quisquam est qui dolorem ipsum quia dolor...';

@@ -1,4 +1,11 @@
-<div ng-show="selectedDatabase" ng-controller="databasesCntl">
+
+<div ng-hide="selectedDatabase" ng-controller="databasesCntl">
+  Select a database
+ </div> 
+<div ng-show="securityError">
+  {{securityError}}
+</div>
+<div ng-show="selectedDatabase && !securityError" ng-controller="databasesCntl">
   
   <h5>Read permissions</h5>
   <!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -->

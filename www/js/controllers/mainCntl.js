@@ -58,8 +58,16 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
         
         //the above gives error in firefox, but not chrome, so using
         //nonsense login instead.
-        couchapi.login('____', '_____');
-        delete state.user;
+        couchapi.login('____', '_____').when(
+            function() {
+                console.log('What????');
+                alert("No! There isn't a user ____ with pwd ____. Can't be!!!");
+            },function() {
+                console.log("Logged out..");
+                state.initialize($scope);
+                delete state.user;
+            }
+        );
     };
     
     $scope.login = function () {

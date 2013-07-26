@@ -1,65 +1,75 @@
-
 <div class="row">
   <div class="span3">
     Search: <input style="width:140px;" ng-model="searchText">
-    
+
     <button class="pull-right btn btn-small btn-info"
-	    ng-click="addDatabaseDialog()"><i class="icon-plus"></i></button><p></p>
-    
+            ng-click="addDatabaseDialog()"><i class="icon-plus"></i></button><p></p>
+
     <div class="well well-small scrollBox" >
       <ul>
-	<li ng-repeat="database in state.databases | filter:searchText">
-	  <a style="color:orange; padding-right:10px;" href="" ng-click="removeDatabase(database)">x</a>
-	  <a ng-style="styleSelectedDb(database)" href="" ng-click="editDatabase(database)">{{database}}</a>
-	</li>
+        <li ng-repeat="database in state.databases | filter:searchText">
+          <a style="color:orange; padding-right:10px;" href="" ng-click="removeDatabase(database)">x</a>
+          <a ng-style="styleSelectedDb(database)" href="" ng-click="editDatabase(database)">{{database}}</a>
+        </li>
       </ul>
     </div>
 
     <!-- <button class="btn btn-small btn-primary" -->
-		 <!-- ng-click="addDatabaseDialog()">Create new database</button> -->
+                 <!-- ng-click="addDatabaseDialog()">Create new database</button> -->
   </div>
-  
   <div class="span9">
+
     <div class="pull-right" ng-show="selectedDatabase">
-    <span class="title">{{selectedDatabase}}</span>
-    (docs:{{dbInfo.doc_count}} update_seq:{{dbInfo.update_seq}})
+      <span class="title">{{selectedDatabase}}</span>
+      <span ng-hide="databaseError">
+        (docs:{{dbInfo.doc_count}} update_seq:{{dbInfo.update_seq}})
+      </span>
     </div>
-    <span class="pull-right" ng-hide="selectedDatabase">Select a  database</span>
-    <div class="tabbable span9"> 
-      <ul class="nav nav-tabs">
-	<li  ng-repeat="tab in tabs">
-	  <a ng-click="tabSelected(tab)" href="#tab{{$index}}" data-toggle="tab">{{tab.title}}</a>
-	</li>
+
+    <span class="pull-right" ng-hide="selectedDatabase">Select a database</span>
+
+    <div ng-show="databaseError" class="span9">
+      {{databaseError}}
+    </div>
+
+    <div ng-hide="databaseError || !selectedDatabase" class="tabbable span9">
+      <ul id="databasesTabs" class="nav nav-tabs">
+        <li  ng-repeat="tab in tabs">
+          <a ng-click="tabSelected(tab)" href="#{{tab.title}}" data-toggle="tab">{{tab.title}}</a>
+        </li>
       </ul>
       <div class="tab-content" >
-	<div class="tab-pane" ng-repeat="tab in tabs"
-	     id="tab{{$index}}">
-	  <div ng-include src="tab.url"></div>
-	</div>
+        <div class="tab-pane" ng-repeat="tab in tabs"
+             id="{{tab.title}}">
+          <span ng-switch on="isActive('#databases')">
+	    <div ng-switch-when="active" ng-include src="tab.url"></div>
+	  </span>
+          <!-- <div ng-include src="tab.url"></div> -->
+        </div>
       </div>
     </div>
   </div>
-  
-  
+
+
   <!-- <div ng-show="selectedDatabase" class="span8"> -->
-    
-    
+
+
   <!--   <h3>{{selectedDatabase}}</h3> -->
   <!--   <h5>Read permissions</h5> -->
   <!--   <\!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -\-> -->
   <!--   Users: <br> <a href="#" id="dbMemberNames" data-type="select2"></a> <br> -->
   <!--   Roles: <br> <a href="#" id="dbMemberRoles" data-type="select2"></a> <br> -->
   <!--   <p></p> -->
-    
+
   <!--   <button ng-show="edited" class="btn btn-small btn-primary" ng-click="apply()">Apply</button> -->
-    
+
   <!--   <h5>Design documents</h5> -->
   <!--   <ul> -->
   <!--     <li ng-repeat="ddoc in ddocs">{{ddoc}}</li> -->
   <!--   </ul> -->
-    
+
   <!--   <pre>{{designDocs | json}}</pre> -->
-  <!--   <pre>{{secObj | json}}</pre> 
+  <!--   <pre>{{secObj | json}}</pre>
   <!-- </div> -->
 </div>
 
@@ -71,7 +81,7 @@
   <div class="modal-body">
     <form>
       <fieldset>
-	<input type="text" placeholder="new database name" ng-model="dbName"><br>
+        <input type="text" placeholder="new database name" ng-model="dbName"><br>
       </fieldset>
     </form>
 
@@ -86,4 +96,3 @@
 <!-- <pre>{{getAdminNames() | json}}</pre> -->
 
 <!-- <pre>{{state.configAccessible | json}}</pre> -->
-

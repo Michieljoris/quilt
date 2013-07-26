@@ -56,7 +56,7 @@ angular.module("myApp").factory('config', function(defaults) {
 });
 
 //state
-angular.module("myApp").factory('state', function(defaults, config, persist) {
+angular.module("myApp").factory('state', function(defaults, config, persist, $rootScope) {
     var state = {};
     
     function checkSetting(setting, data)  {
@@ -127,7 +127,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist) {
     
     state.initialize = function($scope) {
         state.connecting = true;
-        init().when(
+        init($scope).when(
             function() {
                 state.initialized = true;
                 state.connecting = false;
@@ -261,6 +261,12 @@ angular.module("myApp").factory('state', function(defaults, config, persist) {
                 //     return user.id;
                 });
                 
+                console.log($rootScope);
+                $rootScope.selectedDatabase = localStorage.getItem('quilt_selectedDatabase');
+                $rootScope.selectedDatabaseTab = localStorage.getItem('quilt_selectedDatabaseTab');
+                console.log('broadcasting');
+                $rootScope.$broadcast('initDatabases');
+                
                 vow.keep();
                 
             },
@@ -274,6 +280,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist) {
         );
         return vow.promise;
     };
+    
     initScreen['#replications'] = function() {
         console.log('initing #reps');
         var vow = VOW.make();
