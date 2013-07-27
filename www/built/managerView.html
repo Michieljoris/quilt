@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#x61;&#x69;&#108;&#x74;&#x6F;:&#x6D;&#105;&#99;h&#x69;&#101;&#x6C;&#x6A;&#111;&#114;&#105;&#115;&#64;g&#x6D;&#97;&#105;&#108;&#46;&#x63;&#111;&#109;">&#x6D;&#105;&#99;h&#x69;&#101;&#x6C;&#x6A;&#111;&#114;&#105;&#115;&#64;g&#x6D;&#97;&#105;&#108;&#46;&#x63;&#111;&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#97;&#105;lt&#x6F;:&#x6D;&#x69;&#99;&#104;&#x69;e&#x6C;&#106;&#111;&#x72;&#x69;&#x73;&#64;&#x67;&#x6D;&#97;&#105;&#x6C;&#46;&#99;&#111;&#x6D;">&#x6D;&#x69;&#99;&#104;&#x69;e&#x6C;&#106;&#111;&#x72;&#x69;&#x73;&#64;&#x67;&#x6D;&#97;&#105;&#x6C;&#46;&#99;&#111;&#x6D;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -245,7 +245,11 @@ data-original-title="Select locations"></a> <br></p>
 
 <p><button class="btn btn-small btn-primary"
 ng-click="setupSimple()">Setup your CouchDB!!</button></p></div>
-  <div ng-show="isActive('#info')" id="info--"><p>Intro</p></div>
+  <div ng-show="isActive('#info')" id="info--"><p>You've switched to the advanced version of this app. If you didn't
+mean to this please switch back to the <a href="#"
+ng-click="simpleSetup($event)">simple</a> version.</p>
+
+<p>If you are where you want to be, please select an section to configure in the top bar.</p></div>
   <div ng-controller="serverAdminsCntl" ng-show="isActive('#serverAdmins')" id="serverAdmins--"><div ng-hide="state.configAccessible">
 <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
 <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
@@ -460,18 +464,6 @@ server admin</button>
 
 <!-- <pre>{{state.configAccessible | json}}</pre> -->
 </div>
-  <div ng-controller="scriptsCntl" ng-show="isActive('#scripts')" id="scripts--">It's working!!
-<pre id="editor">function foo(items) {
-  var i;
-  for (i = 0; i &lt; items.length; i++) {
-  alert("Ace Rocks " + items[i]);
-  }
-
-  }</pre>
-
-<button ng-click="full()">Full</button>
-<button ng-click="setDesign()">setDesign</button>
-</div>
   <div ng-controller="replicationsCntl" ng-show="isActive('#replications')" id="replications--"><div ng-hide="state.configAccessible">
   <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
     <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
@@ -484,7 +476,7 @@ server admin</button>
     <div class="rep-buttons span6">
       <button class="btn btn-info" ng-click="refresh()">Refresh</button>
       <button class="btn btn-success" ng-click="new()">New</button>
-      <button ng-disabled="modifiedCount == 0" class="btn btn-warning" ng-click="undo()">Undo changes</button>
+      <button ng-disabled="modifiedCount == 0" class="btn btn-warning" ng-click="undo()">Undo</button>
       <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
       <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
       <button class="btn btn-danger" ng-click="apply()">Apply</button>
@@ -498,11 +490,12 @@ server admin</button>
 	<button type="button" class="btn btn-inverse" ng-click="viewState('triggered')">Triggered</button>
 	<button type="button" class="btn btn-inverse" ng-click="viewState('error')">Error</button>
 	<button type="button" class="btn btn-inverse" ng-click="viewState('completed')">Completed</button>
-	<button type="button" class="btn btn-inverse" ng-click="viewState('stored')">Stored</button>
+	<button type="button" class="btn btn-inverse" ng-click="viewState('_rep')">_rep</button>
+	<button type="button" class="btn btn-inverse" ng-click="viewState('quilt')">quilt</button>
       </div>
       
-      <button type="button" class="btn btn-inverse pull-right"
-	      style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button>
+      <!-- <button type="button" class="btn btn-inverse pull-right" -->
+      <!-- 	      style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button> -->
       
       <span class="dropdown pull-right" >
 	<button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle">
@@ -520,9 +513,10 @@ server admin</button>
   
   <div class="gridStyle" ng-grid="gridOptions"></div>
 
+  <h3>reps</h3>
   <pre> 
     <!-- {{modifiedReps | json}}     -->
-    {{gridOptions.selectedItems | json}}    
+    {{state.reps | json}}    
   </pre> 
 </div>
 </div>

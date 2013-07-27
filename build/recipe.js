@@ -135,9 +135,10 @@ var exports = {
                     ,'controllers/serverAdminsCntl'
                     ,'controllers/userCntl'
                     ,'controllers/databasesCntl'
-                    ,'controllers/scriptsCntl'
+                    // ,'controllers/scriptsCntl'
                     ,'controllers/replicationsCntl'
                     ,'controllers/logCntl'
+                    ,'controllers/designDocCntl'
                     // ,'controllers/treeCntl'
                     // ,'directives/compile'
                     
@@ -170,7 +171,7 @@ var exports = {
                   ,'serverAdmins': 'markdown/serverAdmins.md'
                   ,'users': 'html/users.html'
                   ,'databases': 'html/databases.html'
-                  ,'scripts': 'html/scripts.html'
+                  // ,'scripts': 'html/scripts.html'
                   ,'replications': 'html/replications.html'
                   ,'log': 'html/log.html'
               }

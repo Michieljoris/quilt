@@ -6,7 +6,7 @@
 angular.module("myApp").controller("replicationsCntl", function ($scope, $location, state, defaults, persist) {
     
     var screenState = {
-        fieldGroup: 'All'
+        fieldGroup: 'Essential'
         ,filterState: 'triggered'
         ,grouped: false
     };
@@ -17,12 +17,12 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     ];
     
     $scope.pickFields = function(sel) {
-        console.log(sel);
+        // console.log(sel);
         sel = $scope.pickFieldsMenu.indexOf(sel);
         $scope.columnDefs.forEach(function(c){
             var visGroup = $scope.pickFieldsMenu.indexOf(c.visGroup);
             c.visible = sel <= visGroup;
-            console.log(c.field, sel, visGroup, c.visible);
+            // console.log(c.field, sel, visGroup, c.visible);
         }); 
     };
     
@@ -37,68 +37,6 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         
     };
     
-    $scope.columnDefs = [{visGroup:'Essential', field:'_id', displayName:'id', enableCellEdit: true, visible:true},
-                     {visGroup:'All', field:'_rev', displayName:'rev', enableCellEdit: false, visible:false},
-                     // {visGroup:'Essential', field:'modified', displayName:'modified',
-                     // enableCellEdit:false },
-                     {visGroup:'All', field:'auth', displayName:'auth', enableCellEdit:true, width:100},
-                     {visGroup:'Essential', field:'source', displayName:'source', enableCellEdit:true},
-                     {visGroup:'Essential', field:'target', displayName:'target'},
-                     {visGroup:'Essential', field:'continuous', displayName:'continuous', width:64,
-                      cellTemplate: checkBoxTemplate, enableCellEdit:false
-                     },
-                     {visGroup:'Essential', field:'create_target', displayName:'create_target', width: 77,
-                      cellTemplate: checkBoxTemplate, enableCellEdit:false
-                                          
-                     },
-                     {visGroup:'More', field:'filter', displayName:'filter', visible:false},
-                     {visGroup:'More', field:'query_params', displayName:'params', visible:false},
-                     {visGroup:'More', field:'doc_ids', displayName:'doc_ids', visible:false},
-                     {visGroup:'All', field:'owner', displayName:'owner', enableCellEdit:false, visible:false},
-                     {visGroup:'More', field:'user_ctx', displayName:'user_ctx', visible:false},
-                     {visGroup:'All', field:'_replication_id', displayName:'rep_id', enableCellEdit:false, visible:false},
-                     {visGroup:'Essential', field:'_replication_state', displayName:'state', enableCellEdit:false, width:60},
-                     {visGroup:'All', field:'_replication_state_time', displayName:'time', enableCellEdit:false, visible:false}
-                     ,{visGroup:'Essential', field:'commit', displayName:'commit',
-                       cellTemplate: checkBoxTemplate, enableCellEdit:false, width:50 }
-                     ,{visGroup:'Essential', field:'store', displayName:'store',
-                       cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40 }
-                     // ,{visGroup:'Essential', field:'stop', displayName:'stop',
-                     //   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40 }
-                     ,{visGroup:'Essential', field:'cancel', displayName:'delete',
-                       cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40}
-                    ];
-    
-    $scope.gridOptions = { data: 'state.reps'
-                           ,columnDefs: "columnDefs"
-                           // ,columnDefs: $scope.columnDefs
-                           ,rowHeight:25 
-                           ,headerRowHeight: 30
-                           ,rowTemplate:'<div style="height: 100%" ng-class="{gray: row.getProperty(\'modified\')==true}"><div ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell ">' +
-                           '<div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }"> </div>' +
-                           '<div ng-cell></div>' +
-                           '</div></div>'
-                           ,enableRowSelection: true
-                           ,enableCellEditOnFocus: true
-                           ,selectWithCheckboxOnly: true
-                           ,enableCellEdit: true
-                           ,showSelectionCheckbox: true
-                           ,enableColumnResize: true
-                           ,enableColumnReordering: true
-                           ,enableRowReordering: true
-                           ,showColumnMenu: true
-                           ,showFilter: true
-                           // ,showGroupPanel: true
-                           ,init:function(grid, scope) {
-                               console.log(grid, scope);
-                               // $scope.$gridScope = scope;
-                               window.grid = grid;
-                               window.gridScope = scope;
-                               window.appScope = $scope;
-                               // $scope.pickFields(screenState.fieldGroup);
-                               // $scope.viewState(screenState.filterState);
-                           }
-                         };
     
     $scope.modifiedCount = 0;
     function endEdit(rep, field, old) {
@@ -124,6 +62,74 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         }
     } 
     
+    
+    function defineGrid() {
+       console.log('making grid');
+        $scope.columnDefs = [{visGroup:'Essential', field:'_id', displayName:'id', enableCellEdit: true, visible:true},
+                             {visGroup:'All', field:'_rev', displayName:'rev', enableCellEdit: false, visible:false},
+                             // {visGroup:'Essential', field:'modified', displayName:'modified',
+                             // enableCellEdit:false },
+                             {visGroup:'All', field:'auth', displayName:'auth', enableCellEdit:true, width:100},
+                             {visGroup:'Essential', field:'source', displayName:'source', enableCellEdit:true},
+                             {visGroup:'Essential', field:'target', displayName:'target'},
+                             {visGroup:'Essential', field:'continuous', displayName:'continuous', width:64,
+                              cellTemplate: checkBoxTemplate, enableCellEdit:false},
+                             {visGroup:'Essential', field:'create_target', displayName:'create_target', width: 77,
+                              cellTemplate: checkBoxTemplate, enableCellEdit:false},
+                             {visGroup:'More', field:'filter', displayName:'filter', visible:false},
+                             {visGroup:'More', field:'query_params', displayName:'params', visible:false},
+                             {visGroup:'More', field:'doc_ids', displayName:'doc_ids', visible:false},
+                             {visGroup:'All', field:'owner', displayName:'owner', enableCellEdit:false, visible:false},
+                             {visGroup:'More', field:'user_ctx', displayName:'user_ctx', visible:false},
+                             {visGroup:'All', field:'_replication_id', displayName:'rep_id', enableCellEdit:false, visible:false},
+                             {visGroup:'Essential', field:'_replication_state', displayName:'state', enableCellEdit:false, width:60},
+                             {visGroup:'All', field:'_replication_state_time', displayName:'time', enableCellEdit:false, visible:false}
+                             ,{visGroup:'Essential', field:'commit', displayName:'_rep',
+                               cellTemplate: checkBoxTemplate, enableCellEdit:false, width:50, visible:true }
+                             ,{visGroup:'Essential', field:'store', displayName:'quilt',
+                               cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true }
+                             // ,{visGroup:'Essential', field:'stop', displayName:'stop',
+                             //   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40 }
+                             // ,{visGroup:'Essential', field:'cancel', displayName:'delete',
+                             //   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true}
+                            ];
+    
+    
+        $scope.gridOptions = { data: 'state.reps'
+                               ,columnDefs: "columnDefs"
+                               // ,columnDefs: $scope.columnDefs
+                               ,rowHeight:25 
+                               ,headerRowHeight: 30
+                               ,rowTemplate:'<div style="height: 100%" ng-class="{gray: row.getProperty(\'modified\')==true}"><div ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell ">' +
+                               '<div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }"> </div>' +
+                               '<div ng-cell></div>' +
+                               '</div></div>'
+                               ,enableRowSelection: true
+                               ,enableCellEditOnFocus: true
+                               ,selectWithCheckboxOnly: true
+                               ,enableCellEdit: true
+                               ,showSelectionCheckbox: true
+                               ,enableColumnResize: true
+                               ,enableColumnReordering: true
+                               ,enableRowReordering: true
+                               ,showColumnMenu: true
+                               ,showFilter: true
+                               // ,showGroupPanel: true
+                               ,init:function(grid, scope) {
+                                   console.log(grid, scope);
+                                   // $scope.$gridScope = scope;
+                                   window.grid = grid;
+                                   window.gridScope = scope;
+                                   window.appScope = $scope;
+                                   // $scope.pickFields(screenState.fieldGroup);
+                                   // $scope.viewState(screenState.filterState);
+                              }
+                             };
+        console.log('Done making grid');
+       
+    } 
+    // makeGrid();
+    
     $scope.originalReps = {};
     // $scope.$on('ngGridEventDigestGridParent', function(event, rep, field, old) {
     //     console.log('digest');
@@ -147,9 +153,10 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     
     
     $scope.refresh = function() {
-        console.log('undo');
+        console.log('refresh', state.reps);
         window.test = $scope.gridOptions;
         state.setActiveScreen($scope, '#replications');
+        // defineGrid();
     }; 
     
     
@@ -169,10 +176,9 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     
     $scope.apply = function() {
         console.log('apply');
-        $scope.columnDefs[0] = {field:'_id', displayName:'id', enableCellEdit: true, visible:!$scope.columnDefs[0].visible};
     };
 
-    $scope.new = function() {
+    $scope.newRep = function() {
         state.reps.push({
             _id: prompt("Replication id?"),
             _replication_state: 'stored'
@@ -185,8 +191,23 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         console.log('------------------',repState);
         if (!repState || repState === 'all') repState = '';
         if (repState === 'stored') 
-            $scope.gridOptions.$gridScope.filterText = "store:true";
+            $scope.gridOptions.$gridScope.filterText = "quilt:true";
         else $scope.gridOptions.$gridScope.filterText = "_replication_state:" + repState;
     };
+    
+    
+    if (!state.repsDone) {
+        state.repsDone = true;
+        defineGrid();
+
+        $scope.$on('initReps',
+                   function() {
+                       // dereg()
+                       // console.log("REPS", state.reps);
+                       // makeGrid();
+                       $scope.pickFields(screenState.fieldGroup);
+                       // console.log($scope.columnDefs);
+                   });
+    } 
 }); 
                                    

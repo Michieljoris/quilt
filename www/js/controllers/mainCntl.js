@@ -117,7 +117,7 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
         { name: 'serverAdmins', menu: 'Server admins'}
         ,{ name: 'users', menu: 'Users'}
         ,{ name: 'databases', menu: 'Databases'}
-        ,{ name: 'scripts', menu: 'Scripts'}
+        // ,{ name: 'scripts', menu: 'Scripts'}
         ,{ name: 'replications', menu: 'Replications'}
         ,{ name: 'log', menu: 'Log'}
         ,{ name: 'futon', menu: 'Futon'}

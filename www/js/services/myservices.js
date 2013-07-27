@@ -266,6 +266,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 $rootScope.selectedDatabaseTab = localStorage.getItem('quilt_selectedDatabaseTab');
                 console.log('broadcasting');
                 $rootScope.$broadcast('initDatabases');
+                $rootScope.$broadcast('initDesign');
                 
                 vow.keep();
                 
@@ -286,7 +287,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         var vow = VOW.make();
         couchapi.docAllInclude('_replicator', { }).when(
             function(reps) {
-                
+                console.log('received reps', reps);
                 state.reps = reps.rows.filter(function(row) {
                     // console.log(row.id);
                     // return true;
@@ -295,6 +296,8 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                     return row.doc;
                 });
                 // console.log(state.users);               
+                
+                $rootScope.$broadcast('initReps');
                 vow.keep();
             },
             function(err) {
@@ -365,6 +368,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
             // timer = false;
             initScreen[screen]().when(
                 function(data){
+                    console.log( 'in setActiveScreen', state.reps);
                     $scope.$apply();
                 }
                 ,function(err){

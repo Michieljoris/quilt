@@ -10,7 +10,7 @@
     <div class="rep-buttons span6">
       <button class="btn btn-info" ng-click="refresh()">Refresh</button>
       <button class="btn btn-success" ng-click="new()">New</button>
-      <button ng-disabled="modifiedCount == 0" class="btn btn-warning" ng-click="undo()">Undo changes</button>
+      <button ng-disabled="modifiedCount == 0" class="btn btn-warning" ng-click="undo()">Undo</button>
       <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
       <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
       <button class="btn btn-danger" ng-click="apply()">Apply</button>
@@ -24,11 +24,12 @@
 	<button type="button" class="btn btn-inverse" ng-click="viewState('triggered')">Triggered</button>
 	<button type="button" class="btn btn-inverse" ng-click="viewState('error')">Error</button>
 	<button type="button" class="btn btn-inverse" ng-click="viewState('completed')">Completed</button>
-	<button type="button" class="btn btn-inverse" ng-click="viewState('stored')">Stored</button>
+	<button type="button" class="btn btn-inverse" ng-click="viewState('_rep')">_rep</button>
+	<button type="button" class="btn btn-inverse" ng-click="viewState('quilt')">quilt</button>
       </div>
       
-      <button type="button" class="btn btn-inverse pull-right"
-	      style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button>
+      <!-- <button type="button" class="btn btn-inverse pull-right" -->
+      <!-- 	      style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button> -->
       
       <span class="dropdown pull-right" >
 	<button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle">
@@ -46,8 +47,9 @@
   
   <div class="gridStyle" ng-grid="gridOptions"></div>
 
+  <h3>reps</h3>
   <pre> 
     <!-- {{modifiedReps | json}}     -->
-    {{gridOptions.selectedItems | json}}    
+    {{state.reps | json}}    
   </pre> 
 </div>

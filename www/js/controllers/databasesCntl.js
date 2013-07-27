@@ -11,7 +11,8 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
         { title:"Security", content:"Dynamic content 1" , url: "built/db_security.html"},
         { title:"Design", content:"", url: "built/db_ddocs.html" }
         ,{ title:"Conflicts", content:"", url: "built/db_conflicts.html" }
-        ,{ title:"Playground", content:"", url: "built/db_test.html" }
+        ,{ title:"Changes", content:"", url: "built/db_changes.html" }
+        ,{ title:"Docs", content:"", url: "built/db_test.html" }
         // ,{ title:"", content:"", url: "test.html" }
         // ,{ title:"", content:"", url: "test.html" }
     ];
@@ -63,7 +64,7 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
     initTab.Design = function() {
         console.log('in design');
         if (!$scope.selectedDatabase) return;
-        var designDocs = $scope.designDocs = {};
+        $scope.designDocs = {};
         couchapi.docAllDesign($scope.selectedDatabase).when(
                 function(data) {
                     console.log(data);
@@ -135,7 +136,6 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
             ,function(err) {
                 $scope.dbInfo = null;
 
-                console.log('database info error', err);
                 if (err === 401) {
                     $scope.databaseError = "Unable to retrieve database info docs. Unauthorized";
                 }
@@ -143,6 +143,7 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
                     $scope.databaseError = "Unable to retrieve database info" + err;
                 }
                 
+                console.log('database info error', err, $scope.databaseError);
                 $scope.$apply();
                 // localStorage.removeItem('quilt_selectedDatabase');
 
@@ -323,17 +324,19 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
     if (!state.databasesDone) {
         state.databasesDone = true;
 
-        var dereg = $scope.$on('initDatabases',
-                               function() {
-                                   dereg();
-                                   console.log("HELLO", $scope.selectedDatabase, $scope.selectedDatabaseTab);
-                                   $scope.editDatabase($scope.selectedDatabase);
+        // var dereg =
+        $scope.$on('initDatabases',
+                   function() {
+                       // dereg();
+                       console.log("HELLO", $scope.selectedDatabase, $scope.selectedDatabaseTab);
+                       $scope.editDatabase($scope.selectedDatabase);
 
-                                   // if (initTab[$scope.selectedDatabaseTab]) initTab[$scope.selectedDatabaseTab]();
-                                   $('#databasesTabs a[href=#' + $scope.selectedDatabaseTab + ']').tab('show');
-                               });
+                       // if (initTab[$scope.selectedDatabaseTab]) initTab[$scope.selectedDatabaseTab]();
+                       $('#databasesTabs a[href=#' + $scope.selectedDatabaseTab + ']').tab('show');
+                   });
 
     }
+    
 
 
 

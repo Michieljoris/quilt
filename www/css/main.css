@@ -1322,5 +1322,8 @@ body .modal {
 }
 
 
+.btn-inverse.active {
+    background:rgba(0, 0, 0, 0.63);
+}
 
 

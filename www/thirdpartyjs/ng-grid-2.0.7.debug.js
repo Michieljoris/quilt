@@ -2673,7 +2673,6 @@ var ngSelectionProvider = function (grid, $scope, $parse) {
     self.lastClickedRow = undefined;
     self.ignoreSelectedItemChanges = false; // flag to prevent circular event loops keeping single-select var in sync
     self.pKeyParser = $parse(grid.config.primaryKey);
-
     // function to manage the selection action of a data item (entity)
     self.ChangeSelection = function (rowItem, evt) {
         // ctrl-click + shift-click multi-selections
@@ -2681,7 +2680,10 @@ var ngSelectionProvider = function (grid, $scope, $parse) {
         var charCode = evt.which || evt.keyCode;
         var isUpDownKeyPress = (charCode === 40 || charCode === 38);
 
-        if (evt && evt.shiftKey && !evt.keyCode && self.multi && grid.config.enableRowSelection) {
+console.log(evt);
+        if (evt && evt.shiftKey && !evt.keyCode &&
+            self.multi && grid.config.enableRowSelection) {
+            console.log('shift',evt);
             if (self.lastClickedRow) {
                 var rowsArr;
                 if ($scope.configGroups.length > 0) {
@@ -2741,16 +2743,27 @@ var ngSelectionProvider = function (grid, $scope, $parse) {
         }
         else if (!self.multi) {
             if (self.lastClickedRow === rowItem) {
-                self.setSelection(self.lastClickedRow, grid.config.keepLastSelected ? true : !rowItem.selected);
+                self.setSelection(self.lastClickedRow,
+                                  grid.config.keepLastSelected ? true : !rowItem.selected);
             } else {
-                if (self.lastClickedRow) {
+                if (self.lastClickedRow && !evt.ctrlKey) {
                     self.setSelection(self.lastClickedRow, false);
                 }
                 self.setSelection(rowItem, !rowItem.selected);
             }
         }
         else if (!evt.keyCode || isUpDownKeyPress && !grid.config.selectWithCheckboxOnly) {
-            self.setSelection(rowItem, !rowItem.selected);
+            var wasSelected = rowItem.selected;
+            if (!evt.ctrlKey) {
+                self.toggleSelectAll(false, true);
+                if (self.lastClickedRow === rowItem) {
+                    self.setSelection(rowItem, !wasSelected);
+                }
+                else self.setSelection(rowItem, true);
+            }
+            else  {
+                self.setSelection(rowItem, !rowItem.selected);
+            }
         }
         self.lastClickedRow = rowItem;
         self.lastClickedRowIndex = rowItem.rowIndex;
