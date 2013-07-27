@@ -9,12 +9,11 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
 
     $scope.tabs = [
         { title:"Security", content:"Dynamic content 1" , url: "built/db_security.html"},
-        { title:"Design", content:"", url: "built/db_ddocs.html" }
+        { title:"Design", content:"", url: "built/db_design.html" }
         ,{ title:"Conflicts", content:"", url: "built/db_conflicts.html" }
         ,{ title:"Changes", content:"", url: "built/db_changes.html" }
-        ,{ title:"Docs", content:"", url: "built/db_test.html" }
-        // ,{ title:"", content:"", url: "test.html" }
-        // ,{ title:"", content:"", url: "test.html" }
+        ,{ title:"Query", content:"", url: "built/db_query.html" }
+        ,{ title:"Test", content:"", url: "built/db_test.html" }
     ];
 
     $scope.tabSelected = function(tab) {
@@ -112,6 +111,13 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
     // }
 
     $scope.isActiveTab = function(tabTitle) {
+        // console.log(tabTitle, $scope.selectedDatabaseTab);
+        if (tabTitle===$scope.selectedDatabaseTab)
+            return 'active';
+        else return '';
+    };
+    
+    $scope.isActiveTabAndSelected = function(tabTitle) {
         console.log(tabTitle, $scope.selectedDatabaseTab);
         if (tabTitle===$scope.selectedDatabaseTab)
             return 'active';

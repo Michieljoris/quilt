@@ -3,9 +3,9 @@
 /*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/ 
 
 
-angular.module("myApp").controller("testCntl", function ($scope, $location, state, defaults, persist) {
+angular.module("myApp").controller("changesCntl", function ($scope, $location, state, defaults, persist) {
     
-    console.log('In testCntl');
+    console.log('In changesCntl');
     
     var checkBoxTemplate = '<input style="margin-left:5px;margin-top:5px" class="ngSelectionCheckbox" ng-click="checkBoxClicked(row, col)" ' +
         'type="checkbox" ng-checked="row.getProperty(col.field)"></input>';

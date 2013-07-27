@@ -8,8 +8,6 @@ var ngView = angular.module('ngView', [], function($routeProvider, $locationProv
     var mapping =
         [
             ["manager", "/built/managerView.html", managerCntl]
-,["help", "/built/helpView.html", helpCntl]
-,["test", "/built/testView.html", testCntl]
 
             // ['home', '/built/view-home.html', HomeCntl],
             // ['aboutus', '/build/markdown/aboutus.md'],

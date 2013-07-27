@@ -23,11 +23,6 @@ function managerCntl($scope, config, state, defaults) {
         return screen === state.activeScreen ? 'active' : '';
     };
     
-    $scope.isActive2 = function(screen) {
-        console.log('screen=',screen, state.activeScreen);
-        return screen === state.activeScreen ? 'active' : '';
-    };
-    
     
     // $scope.click = function(event) {
     //     event.preventDefault();

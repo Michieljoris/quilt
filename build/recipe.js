@@ -23,9 +23,9 @@ var exports = {
         ,js: 'www/js'
     }
     ,routes : [
-        ['manager', '/built/managerView.html', 'managerCntl'],
-        ['help', '/built/helpView.html', 'helpCntl']
-        ,['test', '/built/testView.html', 'testCntl']
+        ['manager', '/built/managerView.html', 'managerCntl']
+        // ,['help', '/built/helpView.html', 'helpCntl']
+        // ,['test', '/built/testView.html', 'testCntl']
     ]
     
     //Every partial generates a string. How the partial is generated
@@ -100,7 +100,6 @@ var exports = {
                     ,'bootstrap-editable/js/bootstrap-editable.min.js'
                     ,'src-noconflict/ace'
                     ,'src-noconflict/keybinding-vim'
-                    // ,'bower_components/ace-builds/src-min-noconflict/ace'
                     // ,'bower_components/angular-ui-ace/ui-ace'
                     ,'jquery.couch'
                     // ,'sha1'
@@ -128,17 +127,20 @@ var exports = {
                     ,'directives/xeditable'
                     ,'directives/yaTree'
                     ,'directives/objectEditor'
-                    ,'controllers/managerCntl'
+                    
                     ,'controllers/mainCntl'
+                    ,'controllers/managerCntl'
                     ,'controllers/helpCntl'
-                    ,'controllers/testCntl'
                     ,'controllers/serverAdminsCntl'
                     ,'controllers/userCntl'
                     ,'controllers/databasesCntl'
-                    // ,'controllers/scriptsCntl'
+                    , 'controllers/designCntl'
+                    , 'controllers/conflictsCntl'
+                    , 'controllers/changesCntl'
+                    , 'controllers/queryCntl'
+                    , 'controllers/testCntl'
                     ,'controllers/replicationsCntl'
                     ,'controllers/logCntl'
-                    ,'controllers/designDocCntl'
                     // ,'controllers/treeCntl'
                     // ,'directives/compile'
                     
@@ -198,27 +200,41 @@ var exports = {
                ,mapping: {
                }
              }
+            
+            
             ,{ src: 'html/db_security.html' 
                ,tagIdPostfix: '--' //can be overridden per template
                ,out: 'db_security.html'
                ,mapping: {
                }
              }
-            ,{ src: 'html/db_ddocs.html' 
+            ,{ src: 'html/db_design.html' 
                ,tagIdPostfix: '--' //can be overridden per template
-               ,out: 'db_ddocs.html'
+               ,out: 'db_design.html'
                ,mapping: {
                }
              } 
-            ,{ src: 'html/db_test.html' 
-               ,tagIdPostfix: '--' //can be overridden per template
-               ,out: 'db_test.html'
-               ,mapping: {
-               }
-             }
             ,{ src: 'html/db_conflicts.html' 
                ,tagIdPostfix: '--' //can be overridden per template
                ,out: 'db_conflicts.html'
+               ,mapping: {
+               }
+              } 
+            ,{ src: 'html/db_changes.html' 
+               ,tagIdPostfix: '--' //can be overridden per template
+               ,out: 'db_changes.html'
+               ,mapping: {
+               }
+             }
+            ,{ src: 'html/db_query.html' 
+               ,tagIdPostfix: '--' //can be overridden per template
+               ,out: 'db_query.html'
+               ,mapping: {
+               }
+             }
+            ,{ src: 'html/db_test.html' 
+               ,tagIdPostfix: '--' //can be overridden per template
+               ,out: 'db_test.html'
                ,mapping: {
                }
              }

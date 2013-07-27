@@ -17,6 +17,7 @@
     <!-- <button class="btn btn-small btn-primary" -->
                  <!-- ng-click="addDatabaseDialog()">Create new database</button> -->
   </div>
+  
   <div class="span9">
 
     <div class="pull-right" ng-show="selectedDatabase">
@@ -41,9 +42,12 @@
       <div class="tab-content" >
         <div class="tab-pane" ng-repeat="tab in tabs"
              id="{{tab.title}}">
-          <span ng-switch on="isActive('#databases')">
-	    <div ng-switch-when="active" ng-include src="tab.url"></div>
-	  </span>
+
+          <span ng-switch on="isActiveTab(tab.title)">
+            <div ng-switch-when="active" ng-include src="tab.url"></div>
+          </span>
+
+
           <!-- <div ng-include src="tab.url"></div> -->
         </div>
       </div>
@@ -51,48 +55,26 @@
   </div>
 
 
-  <!-- <div ng-show="selectedDatabase" class="span8"> -->
 
+  <div id="addDatabaseDialog" modal="newDatabaseShouldBeOpen" close="closeDatabase()" options="logopts">
+    <div class="modal-header">
+      <h3>Create database</h3>
+    </div>
+    <div class="modal-body">
+      <form>
+        <fieldset>
+          <input type="text" placeholder="new database name" ng-model="dbName"><br>
+        </fieldset>
+      </form>
 
-  <!--   <h3>{{selectedDatabase}}</h3> -->
-  <!--   <h5>Read permissions</h5> -->
-  <!--   <\!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -\-> -->
-  <!--   Users: <br> <a href="#" id="dbMemberNames" data-type="select2"></a> <br> -->
-  <!--   Roles: <br> <a href="#" id="dbMemberRoles" data-type="select2"></a> <br> -->
-  <!--   <p></p> -->
-
-  <!--   <button ng-show="edited" class="btn btn-small btn-primary" ng-click="apply()">Apply</button> -->
-
-  <!--   <h5>Design documents</h5> -->
-  <!--   <ul> -->
-  <!--     <li ng-repeat="ddoc in ddocs">{{ddoc}}</li> -->
-  <!--   </ul> -->
-
-  <!--   <pre>{{designDocs | json}}</pre> -->
-  <!--   <pre>{{secObj | json}}</pre>
-  <!-- </div> -->
-</div>
-
-
-<div id="addDatabaseDialog" modal="newDatabaseShouldBeOpen" close="closeDatabase()" options="logopts">
-  <div class="modal-header">
-    <h3>Create database</h3>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-warning cancel pull-left" ng-click="closeDatabase()">Cancel</button>
+      <button class="btn btn-primary" ng-click="addDatabase()">Ok</button>
+    </div>
   </div>
-  <div class="modal-body">
-    <form>
-      <fieldset>
-        <input type="text" placeholder="new database name" ng-model="dbName"><br>
-      </fieldset>
-    </form>
-
-  </div>
-  <div class="modal-footer">
-    <button class="btn btn-warning cancel pull-left" ng-click="closeDatabase()">Cancel</button>
-    <button class="btn btn-primary" ng-click="addDatabase()">Ok</button>
-  </div>
-</div>
 
 
-<!-- <pre>{{getAdminNames() | json}}</pre> -->
+  <!-- <pre>{{getAdminNames() | json}}</pre> -->
 
-<!-- <pre>{{state.configAccessible | json}}</pre> -->
+  <!-- <pre>{{state.configAccessible | json}}</pre> -->
