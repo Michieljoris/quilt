@@ -2,12 +2,13 @@
 
   <div class="row">
     <div class="rep-buttons span3">
-      <button class="btn btn-info" ng-click="refresh()">Refresh</button>
+      <!-- <button class="btn btn-info" ng-click="refresh()">Refresh</button> -->
       <button class="btn btn-success" ng-click="newRow()">New</button>
-      <button ng-disabled="modifiedCount == 0" class="btn btn-warning" ng-click="undo()">Undo</button>
       <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
       <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
       <button class="btn btn-danger" ng-click="apply()">Apply</button>
+      <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
+      ng-click="undo()">Undo edits</button>
     </div>
 
     <div class="span6">

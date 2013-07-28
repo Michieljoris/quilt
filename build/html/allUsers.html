@@ -1,0 +1,102 @@
+<div ng-hide="state.configAccessible">
+  <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
+    <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
+      in your CouchDB</button>
+</div>
+<div ng-show="state.configAccessible">
+
+
+  <div class="row">
+    <div class="rep-buttons span6">
+      <button class="btn btn-success" ng-click="addUserDialog()">New</button>
+      <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
+      <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
+      <button class="btn btn-danger" ng-click="apply()">Apply</button>
+      <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
+              ng-click="undo()">Undo edits</button>
+    </div>
+
+    <div class="span6">
+
+
+      <div class="btn-group pull-right ">
+        <button ng-class="viewState.admins" style="width:100px" type="button" class="btn btn-inverse" ng-click="toggleAdminsUsers('admins')">Server admins</button>
+        <button ng-class="viewState.users" style="width:100px" type="button" class="btn btn-inverse" ng-click="toggleAdminsUsers('users')">Regular users</button>
+      </div>
+
+
+
+
+    </div>
+
+  </div>
+  <div class="row">
+    <div style="padding-bottom:10px;" class="span3">
+      Search: <input ng-change="search()"  ng-model="searchText">
+    </div>
+
+
+    <!-- <select ui-select2 ng-model="select2" data-placeholder="Pick a number"> -->
+    <!--   <option value=""></option> -->
+    <!--   <option value="one">First</option> -->
+    <!--   <option value="two">Second</option> -->
+    <!--   <option value="three">Third</option> -->
+    <!-- </select> -->
+    <!-- <input type="text" ui-select2="select2Options" ng-model="list_of_string" /> -->
+
+  </div>
+  <div class="row">
+    <div class="span9 gridStyle" ng-grid="usersGridOptions"></div>
+
+    <div ng-show="selectedUser" class="span2">
+      <h3>{{selectedUser._id.slice(17)}}</h3>
+      Password: <a href="#" id="changeUserPwd" data-type="password"></a><br>
+
+      <div ng-hide="viewState.admins">
+        <!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -->
+        Roles: <br> <a href="#" id="userRoles" class="userRoles"
+                       data-type="checklist"></a> <br>
+      </div>
+      <p></p>
+
+      <button ng-show="edited" class="btn btn-small btn-primary" ng-click="applySingle()">Apply</button>
+
+      <!-- <pre>{{selectedUser | json}}</pre> -->
+    </div>
+
+  </div>
+
+
+
+  <h3>all users</h3>
+  <pre>
+    <!-- {{modifiedReps | json}}     -->
+    {{state.allUsers | json}}
+  </pre>
+</div>
+
+
+
+
+<div id="addUserDialog" modal="newUserShouldBeOpen" close="closeUser()" options="logopts">
+  <div class="modal-header">
+    <h3 ng-show="viewState.users">Create user</h3>
+    <h3 ng-show="viewState.admins&&!justPwd">Create server admin</h3>
+    <h3 ng-show="justPwd">{{userName}}</h3>
+
+  </div>
+  <div class="modal-body">
+    <form>
+      <fieldset>
+        <input ng-hide="justPwd" type="text" placeholder="name" ng-model="userName"><br>
+        <input type="password" placeholder="password" ng-model="password">
+      </fieldset>
+    </form>
+    
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-warning cancel pull-left" ng-click="closeUser()">Cancel</button>
+    <button class="btn btn-primary" ng-click="addUser()">Ok</button>
+  </div>
+</div>

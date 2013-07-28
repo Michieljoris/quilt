@@ -2680,7 +2680,6 @@ var ngSelectionProvider = function (grid, $scope, $parse) {
         var charCode = evt.which || evt.keyCode;
         var isUpDownKeyPress = (charCode === 40 || charCode === 38);
 
-console.log(evt);
         if (evt && evt.shiftKey && !evt.keyCode &&
             self.multi && grid.config.enableRowSelection) {
             console.log('shift',evt);
@@ -2944,7 +2943,7 @@ ngGridDirectives.directive('ngCellText',
           elm.bind('mouseover', function(evt) {
               evt.preventDefault();
               elm.css({
-                  'cursor': 'text'
+                  'cursor': 'pointer'
               });
           });
           elm.bind('mouseleave', function(evt) {

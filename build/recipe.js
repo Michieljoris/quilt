@@ -109,6 +109,7 @@ var exports = {
                     ,"scrollspy"
                     ,"cookie"
                     ,"select2/select2.min"
+                    ,'angular-ui/select2'
                     ,'ng-grid-2.0.7.debug'
                     // ,'SlickGrid/lib/jquery.event.drag-2.2'
                     // ,'SlickGrid/slick.core'
@@ -131,6 +132,7 @@ var exports = {
                     ,'controllers/mainCntl'
                     ,'controllers/managerCntl'
                     ,'controllers/helpCntl'
+                    ,'controllers/allUsersCntl'
                     ,'controllers/serverAdminsCntl'
                     ,'controllers/userCntl'
                     ,'controllers/databasesCntl'
@@ -170,10 +172,10 @@ var exports = {
                   enableCors: 'markdown/enableCors.md'
                   ,simple: 'markdown/simple.md'
                   ,info: 'markdown/info.md'
-                  ,'serverAdmins': 'markdown/serverAdmins.md'
-                  ,'users': 'html/users.html'
+                  ,'allUsers': 'html/allUsers.html'
+                  // ,'serverAdmins': 'markdown/serverAdmins.md'
+                  // ,'users': 'html/users.html'
                   ,'databases': 'html/databases.html'
-                  // ,'scripts': 'html/scripts.html'
                   ,'replications': 'html/replications.html'
                   ,'log': 'html/log.html'
               }

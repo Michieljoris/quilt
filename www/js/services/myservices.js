@@ -217,6 +217,55 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         return vow.promise;
     }; 
     var initScreen = {};
+    
+    initScreen['#allUsers']  = function() {
+        console.log('initing #users');
+        var vow = VOW.make();
+            
+        var admins = Object.keys(
+            state.configAccessible ?
+                (state.configAccessible.admins ?
+                 state.configAccessible.admins : []) : []);
+        
+        couchapi.docAll('_users').when(
+            function(users) {
+                // console.log('in initsrfeen', users , admins);
+                users = users.rows.filter(function(doc) {
+                    if (doc.id.startsWith('org.couchdb.user:') &&
+                        admins.indexOf(doc.id.slice(17)) === -1) return true;
+                    return false;
+                }).map(function(user) {
+                    return { _id: user.id, pwd: '***', type:'user', roles:"?" };
+                });
+                
+                admins.forEach(function(a) {
+                    users.push( {
+                        _id: a, pwd: '', type: 'admin'
+                    });
+                });
+                console.log('USERS:', users);               
+                
+                // users.forEach()
+                state.allUsers = users;
+                return VOW.keep();
+            }).when(
+                function(users) {
+                    state.allUsers = users;
+                    vow.keep();
+                    $rootScope.$broadcast('initAllUsers');
+                    
+                }
+                ,function(err) {
+                    state.users = null;
+                    
+                    $rootScope.$broadcast('initAllUsers');
+                    vow.keep();
+                
+                }
+            );
+        return vow.promise;
+    };
+    
     initScreen['#users'] = function() {
         console.log('initing #users');
         var vow = VOW.make();
@@ -226,7 +275,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                     state.configAccessible ?
                         (state.configAccessible.admins ?
                          state.configAccessible.admins : {}) : {});
-                // console.log('in initsrfeen', users , admins);
+                console.log('in initsrfeen', users , admins);
                 state.users = users.rows.filter(function(doc) {
                     if (doc.id.startsWith('org.couchdb.user:') &&
                        admins.indexOf(doc.id.slice(17)) === -1) return true;
@@ -234,19 +283,23 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 }).map(function(user) {
                     return user.id;
                 });
-                // console.log(state.users);               
+                console.log('USERS:', state.users);               
+                
+                $rootScope.$broadcast('initUsers');
                 vow.keep();
                 
             },
             function(err) {
                 state.users = null;
-                // vow['break']();
+                
+                $rootScope.$broadcast('initUsers');
                 vow.keep();
                 
             }
         );
         return vow.promise;
     };
+    
     
     initScreen['#databases'] = function() {
         console.log('initing #databases');
@@ -273,6 +326,9 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
             },
             function(err) {
                 console.log('ERROR: Couldn\'t get list of databases!!!', err);
+                state.database = [];
+                $rootScope.$broadcast('initDatabases');
+                $rootScope.$broadcast('initDesign');
                 // state.users = null;
                 // vow['break']();
                 vow.keep();
@@ -302,6 +358,8 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
             },
             function(err) {
                 state.reps = null;
+                
+                $rootScope.$broadcast('initReps');
                 // vow['break']();
                 vow.keep();
             }
@@ -368,7 +426,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
             // timer = false;
             initScreen[screen]().when(
                 function(data){
-                    console.log( 'in setActiveScreen', state.reps);
+                    console.log( 'in setActiveScreen');
                     $scope.$apply();
                 }
                 ,function(err){

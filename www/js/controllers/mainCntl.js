@@ -114,8 +114,9 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
     
     $scope.screens = [
         // { name: 'info', menu: 'Info'},
-        { name: 'serverAdmins', menu: 'Server admins'}
-        ,{ name: 'users', menu: 'Users'}
+        { name: 'allUsers', menu: 'Users'}
+        // ,{ name: 'serverAdmins', menu: 'Server admins'}
+        // ,{ name: 'users', menu: 'Users'}
         ,{ name: 'databases', menu: 'Databases'}
         // ,{ name: 'scripts', menu: 'Scripts'}
         ,{ name: 'replications', menu: 'Replications'}

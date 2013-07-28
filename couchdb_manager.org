@@ -2,6 +2,19 @@
 ** regex the urls entered
 url ending in letter after portnumber hangs
 maybe do a timeout that resolves the promise in state.init ?
+
+
+** make database list a table with multiselect, and bulk delete
+** put select2 in the tables.?
+** paging for users, databases and documents
+** users info next to table as before
+** full width pages
+   
+** in users: 
+no second apply button, but a roles column, not editable and apply
+applies all the changes to to the user database. Also bring select
+checkbox back
+   
 * good to know
 ** local.ini settings
 headers:accept, origin, authorization, content-type,
@@ -40,4 +53,6 @@ Named Document Replication
 Sometimes you only want to replicate some documents. For this simple case you do not need to write a filter function. Simply add the list of keys in the doc_ids field;
 
 {"source":"http://example.org/example-database","target":"http://admin:password@127.0.0.1:5984/example-database", "doc_ids":["foo","bar","baz]}
+
+
 
