@@ -7,43 +7,271 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
 
     console.log('In databasesCntl');
 
-    $scope.tabs = [
-        { title:"Security", content:"Dynamic content 1" , url: "built/db_security.html"},
-        { title:"Design", content:"", url: "built/db_design.html" }
-        ,{ title:"Conflicts", content:"", url: "built/db_conflicts.html" }
-        ,{ title:"Changes", content:"", url: "built/db_changes.html" }
-        ,{ title:"Query", content:"", url: "built/db_query.html" }
-        ,{ title:"Test", content:"", url: "built/db_test.html" }
-    ];
+    $scope.getGridWidth = function() {
+        // if ($scope.viewState.admins) return "narrow";
+        return '';
+    };
+    
+    $scope.getRowClass = function(row) {
+        // console.log('row', row);
+        if (row.selected && row.getProperty('modified')) return 'selectedAndModified';
+        if (row.getProperty('modified')) return 'modified';
+        return '';
+    }; 
+    
+    $scope.gridClick = function(field, row) {
+         editRow(row);
+    };
+    
 
-    $scope.tabSelected = function(tab) {
-        console.log(tab.title);
-        $scope.selectedDatabaseTab = tab.title;
-        // persist.put('databasesSubTab', tab.title);
-        console.log(tab);
-        localStorage.setItem('quilt_selectedDatabaseTab', tab.title);
-        if (initTab[tab.title])
-            initTab[tab.title]();
+    $scope.search = function (){
+        console.log($scope.searchText);
+        $scope.databaseGridOptions.$gridScope.filterText = "name:" + $scope.searchText;
+    };
+    
+    // var editableCellTemplate = '<input type="text" ui-select2="select2Options" ng-model="row.entity.roles" />';
+    
+    
+  var cellTemplate =
+        '<div ng-click="gridClick(col.field, row.entity)" class="ngCellText" ng-class="col.colIndex()"><span ng-cell-text>{{COL_FIELD}}</span></div>';
+    
+    var checkBoxTemplate = '<input style="margin-left:5px;margin-top:5px" class="ngSelectionCheckbox" ng-click="checkBoxClicked(row, col)" ' +
+        'type="checkbox" ng-checked="row.getProperty(col.field)"></input>';
+    $scope.checkBoxClicked = function ( row, col) {
+        // console.log($scope, row, col.field);
+        row.entity[col.field] = !row.entity[col.field];
+        row.entity.modified=true;
+
+        endEdit( row.entity, col.field, !row.entity[col.field]);
+
     };
 
-    var initTab = {};
-    initTab.Security = function() {
-        if (!$scope.selectedDatabase) return;
-        couchapi.dbSecurity($scope.selectedDatabase)
+
+    $scope.modifiedCount = 0;
+    function endEdit(row, field, old) {
+console.log(row, field, old, row[field]);
+        if (row[field] !== old) {
+            console.log(row, $scope.originalRows[row.name]);
+            delete row.modified;
+            if (!row.cancel) delete row.cancel;
+            if (angular.equals(row, $scope.originalRows[row.name])) {
+                row.modified = false;
+                $scope.modifiedCount--;
+            }
+            else {
+                if (!$scope.originalRows[row.name]) {
+                    $scope.originalRows[row.name] = angular.copy(row);
+                    $scope.originalRows[row.name][field] = old;
+                    delete $scope.originalRows[row.name].cancel;
+                }
+                $scope.modifiedCount++;
+                row.modified = true;
+            }
+        }
+    }
+    
+
+    function defineGrid() {
+        console.log('making grid');
+        $scope.columnDefs = [
+            {visGroup:'Essential',
+             // editableCellTemplate : editableCellTemplate,
+             cellTemplate : cellTemplate, width:120,
+             field:'name', displayName:'name', enableCellEdit: false, visible:true}
+            
+            ,{visGroup:'Essential',
+             cellTemplate : cellTemplate,
+             field:'names', displayName:'users', enableCellEdit: false, visible:true}
+            
+            ,{visGroup:'Essential',
+             cellTemplate : cellTemplate,
+             field:'roles', displayName:'roles', enableCellEdit: false, visible:true}
+            
+            ,{visGroup:'Essential',
+             cellTemplate : cellTemplate, width:50,
+             field:'count', displayName:'count', enableCellEdit: false, visible:true}
+            
+            ,{visGroup:'Essential',
+             cellTemplate : cellTemplate, width:70,
+              field:'size', displayName:'size',
+              enableCellEdit: false, visible:true}
+            
+            ,{visGroup:'Essential',
+             cellTemplate : cellTemplate, width:70,
+              field:'update_seq', displayName:'update_seq',
+              enableCellEdit: false, visible:true}
+            
+            ,{visGroup:'Essential', field:'delete', displayName:'delete',
+              cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true }
+            // {visGroup:'Essential', field:'pwd', displayName:'password', enableCellEdit: true, visible:true},
+            // {visGroup:'UserOnly', field:'roles', displayName:'roles', enableCellEdit: true, visible:true},
+            // {visGroup:'Essential', field:'type', displayName:'type', enableCellEdit: false, visible:true},
+            // ,{visGroup:'Essential', field:'stop', displayName:'stop',
+            //   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40 }
+            // ,{visGroup:'Essential', field:'cancel', displayName:'delete',
+            //   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true}
+        ];
+
+
+        $scope.databaseGridOptions = { data: 'rows'
+                                    ,columnDefs: "columnDefs"
+                                    // ,columnDefs: $scope.columnDefs
+                                    ,rowHeight:25
+                                    ,headerRowHeight: 30
+                                    
+                                    ,rowTemplate:'<div style="height: 100%" ng-class="getRowClass(row)"><div ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell ">' +
+                                    '<div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }"> </div>' +
+                                    '<div ng-cell></div>' +
+                                    '</div></div>'
+                                    
+                                    // ,rowTemplate:'<div style="height: 100%" ng-class="{gray: row.getProperty(\'modified\')==true}"><div ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell ">' +
+                                    // '<div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }"> </div>' +
+                                    // '<div ng-cell></div>' +
+                                    // '</div></div>'
+                                    ,enableRowSelection: true
+                                    ,enableCellEditOnFocus: true
+                                    ,selectWithCheckboxOnly: false
+                                    ,enableCellEdit: true
+                                    ,showSelectionCheckbox: true
+                                    ,enableColumnResize: true
+                                    ,enableColumnReordering: true
+                                    ,enableRowReordering: true
+                                    ,showColumnMenu: false
+                                    ,showFilter: false
+                                    ,multiSelect: true
+                                    // ,showGroupPanel: true
+                                    // ,afterSelectionChange: function(row) {
+                                    //     editUser(row.entity);
+                                    // }
+                                    ,init:function(grid, scope) {
+                                        console.log(grid, scope);
+                                        // $scope.$gridScope = scope;
+                                        window.grid = grid;
+                                        window.gridScope = scope;
+                                        window.appScope = $scope;
+                                        // $scope.pickFields(screenState.fieldGroup);
+                                        // $scope.viewState(screenState.filterState);
+                                    }
+                                  };
+        console.log('Done making grid');
+
+    }
+    // // makeGrid();
+
+    $scope.originalRows = {};
+    // // $scope.$on('ngGridEventDigestGridParent', function(event, rep, field, old) {
+    // //     console.log('digest');
+    // // });
+    // // $scope.$on('ngGridEventDigestGrid', function(event, rep, field, old) {
+    // //     console.log('digest1');
+    // // });
+
+    $scope.$on('ngGridEventEndCellEdit', function(event, row, field, old) {
+        console.log('edited', $scope, 'field:', field, 'old:'+old,'row:'+ row);
+        endEdit(row, field, old);
+        $scope.$apply();
+    });
+
+    // var grouped;
+    // $scope.groupByState = function() {
+    //     console.log('groupbystate');
+
+    //     $scope.databaseGridOptions.groupBy(grouped ? '' : '_replication_state');
+    // };
+
+
+    // $scope.refresh = function() {
+    //     console.log('refresh' state.reps);
+    //     window.test = $scope.databaseGridOptions;
+    //     state.setActiveScreen($scope, '#replications');
+    //     // defineGrid();
+    // };
+
+
+    $scope.undo = function() {
+        console.log('undo');
+        var selRows = $scope.databaseGridOptions.$gridScope.selectedItems;
+        // var selRows = $scope.rows;
+        angular.forEach(selRows, function(selRow) {
+            var originalRow = $scope.originalRows[selRow.name];
+            if (originalRow) {
+                $scope.rows.forEach(function(row) {
+                    if (row.name === originalRow.name)
+                        angular.copy(originalRow, row);
+                    delete $scope.originalRows[selRow.name];
+                    // $scope.modifiedCount--;
+                });
+            }
+        });
+        $scope.selectedUser = false;
+    };
+
+    
+    var selectedRow;
+    var editRow = function(row) {
+        $scope.selectedDatabase = row;
+        console.log(row);
+        selectedRow = row;
+        
+        $scope.databaseError = false;
+        couchapi.dbInfo(row.name).when(
+            function(data) {
+                row.update_seq = data.update_seq;
+                row.count = data.doc_count;
+                row.size = data.disk_size;
+                var suffix = " bytes";
+                if (row.size > 1024) {
+                    row.size = Math.floor(((row.size/1024)*10))/10;
+                    suffix = " KB";
+                    if (row.size > 1024) {
+                        row.size = Math.floor(((row.size/1024)*10))/10;
+                        suffix = " MB";
+                    }
+                }
+                row.size = row.size + suffix;
+                $scope.$apply();
+                $scope.dbInfo = data;
+                console.log(data);
+
+            }
+            ,function(err) {
+                $scope.dbInfo = null;
+                if (err === 401) {
+                    $scope.databaseError = "Unable to retrieve database info docs. Unauthorized";
+                }
+                else {
+                    $scope.databaseError = "Unable to retrieve database info" + err;
+                }
+                
+                console.log('database info error', err, $scope.databaseError);
+                $scope.$apply();
+
+            }
+        );
+        
+        
+        
+        if (row.rolesArray) {
+            $('#dbMemberNames').editable('setValue', row.namesArray || [], false);
+            $('#dbMemberRoles').editable('setValue', row.rolesArray || [], false);
+            return;
+        }
+        
+        couchapi.dbSecurity($scope.selectedDatabase.name)
             .when(
                 function(secObj) {
                     console.log(secObj);
-                    $scope.secObj = secObj = secObj || {};
+                    // $scope.secObj = secObj = secObj || {};
 
                     $scope.securityError = false;
-                    $('#dbMemberNames').editable('setValue', secObj.members ? secObj.members.names: [], false);
-                    $('#dbMemberRoles').editable('setValue', secObj.members ? secObj.members.roles: [], false);
+                    row.namesArray = secObj.members ? secObj.members.names: [];
+                    row.rolesArray = secObj.members ? secObj.members.roles: [];
+                    $('#dbMemberNames').editable('setValue', row.namesArray, false);
+                    $('#dbMemberRoles').editable('setValue', row.rolesArray, false);
                     $('#dbMemberRoles').editable('option', 'select2', { tags: ['opt1', 'opt2']});
+                    row.names = row.namesArray.toString();
+                    row.roles = row.rolesArray.toString();
 
-                    $scope.edited = false;
-
-                    newMemberNames = newMemberRoles = null;
-                    // newRoles = null, newPwd = null;
                     $scope.$apply();
 
                 },
@@ -59,106 +287,8 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
                 }
             );
     };
-
-    initTab.Design = function() {
-        console.log('in design');
-        if (!$scope.selectedDatabase) return;
-        $scope.designDocs = {};
-        couchapi.docAllDesign($scope.selectedDatabase).when(
-                function(data) {
-                    console.log(data);
-                    var ddocPromises = [];
-                    $scope.ddocs = data.rows.map(function(d) {
-                            ddocPromises.push(couchapi.docGet(d.id));
-                        return d.id;
-                    });
-                    return VOW.every(ddocPromises);
-                }).when(
-                    function(ddocs) {
-                        // designDocs = aggregrateDesignDocs(ddocs);
-                        $scope.designError = false;
-                        $scope.designDocs = ddocs;
-                        window.ddocs = ddocs;
-                        console.log('got all ddocs:', ddocs);
-                        $scope.$apply();
-
-                    },
-                    function(data) {
-                        if (data.length === 0) console.log('No design docs');
-                        else console.log('error', data);
-                        if (data === 401) {
-                            $scope.designError = "Unable to retrieve database design docs. Unauthorized";
-                        }
-                        else {
-                            $scope.designError = "Unable to retrieve database design docs" + data;
-                        }
-                        $scope.designDocs = [];
-                        $scope.$apply();
-                    }
-                );
-    };
-
-
-    // function aggregrateDesignDocs(ddocs) {
-    //     var result =  { views:{}, shows: {}, lists: {}, updates: {},
-    //                       filters: {}, validate_doc_updates: []};
-    //     ddocs.forEach(function(d) {
-    //         if (d.validate_doc_update) result.validate_doc_updates.push(d.validate_doc_update);
-    //         // result.views
-    //     });
-    //     return result;
-
-    // }
-
-    $scope.isActiveTab = function(tabTitle) {
-        // console.log(tabTitle, $scope.selectedDatabaseTab);
-        if (tabTitle===$scope.selectedDatabaseTab)
-            return 'active';
-        else return '';
-    };
     
-    $scope.isActiveTabAndSelected = function(tabTitle) {
-        console.log(tabTitle, $scope.selectedDatabaseTab);
-        if (tabTitle===$scope.selectedDatabaseTab)
-            return 'active';
-        else return '';
-    };
-
-    $scope.testurl = "test.html";
-    $scope.editDatabase = function(dbName) {
-        $scope.selectedDatabase = dbName;
-        localStorage.setItem('quilt_selectedDatabase', dbName);
-        $scope.databaseError = false;
-        console.log(dbName);
-        couchapi.dbInfo(dbName).when(
-            function(data) {
-                $scope.dbInfo = data;
-                console.log($scope.selectedDatabaseTab);
-
-                $('#databasesTabs a[href=#' + $scope.selectedDatabaseTab + ']').tab('show');
-                initTab[$scope.selectedDatabaseTab]();
-                $scope.$apply();
-            }
-            ,function(err) {
-                $scope.dbInfo = null;
-
-                if (err === 401) {
-                    $scope.databaseError = "Unable to retrieve database info docs. Unauthorized";
-                }
-                else {
-                    $scope.databaseError = "Unable to retrieve database info" + err;
-                }
-                
-                console.log('database info error', err, $scope.databaseError);
-                $scope.$apply();
-                // localStorage.removeItem('quilt_selectedDatabase');
-
-            }
-        );
-
-
-    };
-
+    
     $scope.addDatabase = function() {
 
         couchapi.dbCreate($scope.dbName).when(
@@ -175,7 +305,7 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
         );
 
     };
-
+    
     $scope.addDatabaseDialog = function() {
         $scope.newDatabaseShouldBeOpen = true;
     };
@@ -183,168 +313,95 @@ angular.module("myApp").controller("databasesCntl", function ($scope, $location,
     $scope.closeDatabase = function() {
         $scope.newDatabaseShouldBeOpen = false;
     };
-
-
-    $scope.removeDatabase = function(id) {
-        console.log(id);
-        if (confirm('Are you sure?'))
-            couchapi.dbRemove(id).when(
+    
+    
+    $scope.apply = function ( ){
+        var vows = [];
+        // if (!confirm('Are you sure?')) return;
+        $scope.rows.forEach(function(row) {
+            if (!row.modified) return;
+            if (row.delete === true)
+                vows.push(couchapi.dbRemove(row.name));
+            else {
+                var secObj = { members: {} };
+                if (row.rolesArray) secObj.roles = row.rolesArray;
+                if (row.namesArray) secObj.names = row.namesArray;
+                vows.push(couchapi.dbSecurity(secObj, row.name).when(
+                    function(data) { console.log(data);
+                                     $scope.$apply();
+                                   }
+                    ,function(data) {
+                        alert('Unable to update the database\'s details. ' + data);
+                        console.log('error ', data); }
+                ));
+            } 
+	});
+        
+        if (vows.length > 0)
+            VOW.every(vows).when(
                 function(data) {
                     console.log(data);
-                    //TODO bit overkill, only need to fetch updated database list, or just remove from state.database..
-                    state.databases = state.databases.filter(function(db) {
-                        if (db!==id) return true;
-                        return false;
-                    });
-                    localStorage.removeItem('quilt_selectedDatabase');
-                    $scope.selectedDatabase = false;
                     state.initialize($scope);
+                    $scope.modifiedCount = 0;
                 },
-                function(data) {
-                    console.log("error",data);
-                    alert('Not able to remove database..', data);
+                function(err) {
+                    alert('Error removing or updating at least one of the users..');
+                    console.log(err);
+                    $scope.modifiedCount = 0;
+                    state.initialize($scope);
                 }
             );
-
     };
-
-    $scope.edited = false;
-
-    var newMemberRoles, newMemberNames;
-
+        
+    
     $('#dbMemberNames').editable({
-        inputclass: 'input-large',
-        value: [],
-        unsavedclass: null,
-        select2: {
-            tags: [],
-            tokenSeparators: [",", " "]
+        unsavedclass: null
+        ,select2: {
+            tags: ['read-_users', 'write-_users']
         }
         ,success: function(response, newValue) {
-            newMemberNames = newValue;
-            console.log(newMemberNames);
-            $scope.secObj.members = $scope.secObj.members || {};
-            $scope.secObj.members.names = newValue;
-            //TODO don't set edited flag when no changes..
-            // if ($scope.secObj.members.names.toString() !== newValue.toString())
-            $scope.edited = true;
+            console.log(newValue);
+            selectedRow.namesArray = newValue;
+            var oldValue = selectedRow.names; 
+            selectedRow.names = newValue.toString();
+            endEdit(selectedRow, 'names', oldValue);
             $scope.$apply();
         }
     });
+
 
     $('#dbMemberRoles').editable({
-        inputclass: 'input-large',
-        value: ['bla'],
-        unsavedclass: null,
-        select2: {
-            tags: ['read-users', 'write-users', 'read-persons', 'write-persons', 'read-locations', 'write-locations',
-                   'read-waterfordwest', 'write-waterfordwest'],
-            tokenSeparators: [",", " "]
+        unsavedclass: null
+        ,select2: {
+            tags: ['read-_users', 'write-_users']
         }
         ,success: function(response, newValue) {
-            newMemberRoles = newValue;
-            console.log(newMemberNames);
-            $scope.secObj.members = $scope.secObj.members || {};
-            $scope.secObj.members.roles = newValue;
-            //TODO don't set edited flag when no changes..
-            // if ($scope.secObj.members.names.toString() !== newValue.toString())
-            $scope.edited = true;
+            console.log(newValue);
+            selectedRow.rolesArray = newValue;
+            var oldValue = selectedRow.roles;
+            selectedRow.roles = newValue.toString();
+            endEdit(selectedRow, 'roles', oldValue);
             $scope.$apply();
         }
-
-
     });
-    // $('#dbMemberNames').editable({
-    //     value: [2, 3],
-    //     unsavedclass: null,
-    //     source: [
-    //         {value: 'read-user', text: 'read-user'},
-    //         {value: 'bla', text: 'bla'},
-    //         {value: 'write-users', text: 'write-users'},
-    //         {value: 'read-persons', text: 'read-persons'},
-    //         {value: 'write-persons', text: 'write-persons'}
-    //     ]
-    //     ,success: function(response, newValue) {
-    //         newMemberNames = newValue;
-    //         console.log(newMemberNames);
-    //         if ($scope.secObj && $scope.secObj.members) $scope.secObj.members.names = newValue;
-    //         // if ($scope.secObj.members.names.toString() !== newValue.toString())
-    //         $scope.edited = true;
-    //         $scope.$apply();
-    //         // $scope.$apply();
-    //     }
-    // });
-
-
-    // $('#dbMemberRoles').editable({
-    //     value: [2, 3],
-    //     unsavedclass: null,
-    //     source: [
-    //         {value: 'read-user', text: 'read-user'},
-    //         {value: 'bla', text: 'bla'},
-    //         {value: 'write-users', text: 'write-users'},
-    //         {value: 'read-persons', text: 'read-persons'},
-    //         {value: 'write-persons', text: 'write-persons'}
-    //     ]
-    //     ,success: function(response, newValue) {
-    //         newMemberRoles = newValue;
-    //         console.log(newMemberRoles);
-    //         if ($scope.secObj && $scope.secObj.members) $scope.secObj.members.roles = newValue;
-    //         // if ($scope.secObj.members.roles.toString() !== newValue.toString())
-    //         $scope.edited = true;
-    //         $scope.$apply();
-    //         // $scope.$apply();
-    //     }
-    // });
-
-    $scope.apply = function() {
-        console.log('apply', newMemberNames, newMemberRoles, $scope.secObj);
-        // var props = {};
-        // if (newMemberNames || newMemberRoles) props.roles = newRoles;
-
-        couchapi.dbSecurity($scope.secObj, $scope.selectedDatabase).when(
-            function(data) { console.log(data);
-                             $scope.edited = false;
-                             newMemberNames = newMemberRoles = null;
-                             $scope.$apply();
-                           }
-            ,function(data) {
-                alert('Unable to update the database\'s details. ' + data);
-                console.log('error ', data); }
-        );
-    };
-
-    $scope.styleSelectedDb = function(db) {
-        if (db === $scope.selectedDatabase)
-            return { //"color" : "green"
-                "border-bottom" :  "solid 1px black"
-                //,padding: "1px"
-            };
-        return "";
-    };
-
-    // $scope.$watch("selectedDatabase", function() {
-    //     console.log('watch', arguments);
-    // });
-
+    
     if (!state.databasesDone) {
+        defineGrid();
         state.databasesDone = true;
-
-        // var dereg =
         $scope.$on('initDatabases',
                    function() {
-                       // dereg();
-                       console.log("HELLO", $scope.selectedDatabase, $scope.selectedDatabaseTab);
-                       $scope.editDatabase($scope.selectedDatabase);
+                       console.log('initDatabases event');
+                       // dereg()
+                       
+                       // $scope.toggleAdminsUsers(localStorage.getItem('quilt_usersViewState') || 'users');
+                       $scope.rows = state.databases;
 
-                       // if (initTab[$scope.selectedDatabaseTab]) initTab[$scope.selectedDatabaseTab]();
-                       $('#databasesTabs a[href=#' + $scope.selectedDatabaseTab + ']').tab('show');
+                       // defineGrid();
+                       // console.log("REPS", state.reps);
+                       // makeGrid();
+                       // $scope.pickFields(screenState.fieldGroup);
+                       // console.log($scope.columnDefs);
                    });
-
     }
-    
-
-
-
 
 });

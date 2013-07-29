@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#97;&#105;lto:&#x6D;&#105;&#x63;&#x68;i&#101;&#108;&#x6A;o&#x72;&#105;&#115;&#x40;&#x67;&#109;&#x61;il&#46;&#x63;&#111;&#109;">&#x6D;&#105;&#x63;&#x68;i&#101;&#108;&#x6A;o&#x72;&#105;&#115;&#x40;&#x67;&#109;&#x61;il&#46;&#x63;&#111;&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#x61;&#x69;&#108;&#x74;&#x6F;:&#109;&#105;&#x63;&#x68;&#x69;&#x65;&#x6C;&#106;o&#x72;&#105;&#115;&#x40;&#x67;&#109;&#97;&#105;&#108;&#x2E;&#x63;&#111;&#109;">&#109;&#105;&#x63;&#x68;&#x69;&#x65;&#x6C;&#106;o&#x72;&#105;&#115;&#x40;&#x67;&#109;&#97;&#105;&#108;&#x2E;&#x63;&#111;&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -250,6 +250,7 @@ mean to this please switch back to the <a href="#"
 ng-click="simpleSetup($event)">simple</a> version.</p>
 
 <p>If you are where you want to be, please select an section to configure in the top bar.</p></div>
+  
   <div ng-controller="allUsersCntl" ng-show="isActive('#allUsers')" id="allUsers--"><div ng-hide="state.configAccessible">
   <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
     <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
@@ -259,16 +260,28 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
 
 
   <div class="row">
-    <div class="rep-buttons span6">
+    <div class="rep-buttons span9">
       <button class="btn btn-success" ng-click="addUserDialog()">New</button>
       <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
       <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
       <button class="btn btn-danger" ng-click="apply()">Apply</button>
       <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
               ng-click="undo()">Undo edits</button>
+
+      Search: <input ng-change="search()"  ng-model="searchText">
+      <!-- <span class="btn-group"> -->
+      <!--   <button ng-class="searchState.names" style="width:100px" -->
+		     <!--           type="button" class="btn btn-small btn-inverse" ng-click="toggleSearch('names')">names</button> -->
+		     <!--   <button ng-class="searchState.roles" style="width:100px" -->
+				    <!--           type="button" class="btn btn-small btn-inverse" -->
+				    <!--           ng-click="toggleSearch('roles')">roles</button> -->
+				    <!-- </span> -->
+				    <!-- <div style="padding-bottom:10px;" > -->
+				    <!--      Search: <input ng-change="search()"  ng-model="searchText"> -->
+				    <!-- </div> -->
     </div>
 
-    <div class="span6">
+    <div class="span3">
 
 
       <div class="btn-group pull-right ">
@@ -282,37 +295,44 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
     </div>
 
   </div>
+  <!-- <div class="row"> -->
+  <!-- <div style="padding-bottom:10px;" class="span3"> -->
+  <!--   Search: <input ng-change="search()"  ng-model="searchText"> -->
+  <!-- </div> -->
+
+
+  <!-- <select ui-select2 ng-model="select2" data-placeholder="Pick a number"> -->
+  <!--   <option value=""></option> -->
+  <!--   <option value="one">First</option> -->
+  <!--   <option value="two">Second</option> -->
+  <!--   <option value="three">Third</option> -->
+  <!-- </select> -->
+  <!-- <input type="text" ui-select2="select2Options" ng-model="list_of_string" /> -->
+
+  <!-- </div> -->
   <div class="row">
-    <div style="padding-bottom:10px;" class="span3">
-      Search: <input ng-change="search()"  ng-model="searchText">
+    <div ng-class="getGridWidth()" class="span10 gridStyle" ng-grid="usersGridOptions"></div>
+
+    <div  ng-show="viewState.admins" class="well span2">
+   Click on a row to set the server admin's password, or tick the
+   delete boxes for the server admins you want to delete and click Apply.
     </div>
+    <div  ng-hide="viewState.admins" class="well span2">
+      <div ng-hide="selectedUser">Click on a row to load and edit a user's
+	password and roles</div>
+      <div ng-show="selectedUser">
+        <h3>{{selectedUser._id.slice(17)}}</h3>
+        Password: <a href="#" id="changeUserPwd" data-type="password"></a><br>
 
+        <div ng-hide="viewState.admins">
+          <!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -->
+          Roles: <br> <a href="#" id="userRoles" class="userRoles"
+                         data-type="select2"></a> <br>
+        </div>
+        <p></p>
 
-    <!-- <select ui-select2 ng-model="select2" data-placeholder="Pick a number"> -->
-    <!--   <option value=""></option> -->
-    <!--   <option value="one">First</option> -->
-    <!--   <option value="two">Second</option> -->
-    <!--   <option value="three">Third</option> -->
-    <!-- </select> -->
-    <!-- <input type="text" ui-select2="select2Options" ng-model="list_of_string" /> -->
-
-  </div>
-  <div class="row">
-    <div class="span9 gridStyle" ng-grid="usersGridOptions"></div>
-
-    <div ng-show="selectedUser" class="well span2">
-      <h3>{{selectedUser._id.slice(17)}}</h3>
-      Password: <a href="#" id="changeUserPwd" data-type="password"></a><br>
-
-      <div ng-hide="viewState.admins">
-        <!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -->
-        Roles: <br> <a href="#" id="userRoles" class="userRoles"
-                       data-type="checklist"></a> <br>
+        <!-- <button ng-show="edited" class="btn btn-small btn-primary" ng-click="applySingle()">Apply</button> -->
       </div>
-      <p></p>
-
-      <button ng-show="edited" class="btn btn-small btn-primary" ng-click="applySingle()">Apply</button>
-
       <!-- <pre>{{selectedUser | json}}</pre> -->
     </div>
 
@@ -344,7 +364,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
         <input type="password" placeholder="password" ng-model="password">
       </fieldset>
     </form>
-    
+
 
   </div>
   <div class="modal-footer">
@@ -353,29 +373,87 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
   </div>
 </div>
 </div>
-  
-  <div ng-controller="logCntl" ng-show="isActive('#log')" id="log--"><div ng-hide="state.configAccessible">
-  <b><em>Please click the button to login as a server admin to view
-  the couchDB log</em></b><p>
+  <div ng-controller="databasesCntl" ng-show="state.activeScreen=='#databases'" id="databases--"><div ng-hide="state.configAccessible">
+  <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
     <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
       in your CouchDB</button>
 </div>
 <div ng-show="state.configAccessible">
-  
-  
+
+
   <div class="row">
-   <button ng-click="refresh()" class="btn btn-info">Refresh</button> 
-   <button ng-disabled="state.bytes==defaults.logBytes" ng-click="less()" class="btn btn-info">Less</button> 
-   <button  ng-click="more()" class="btn btn-info">More</button> 
-   <!-- <input type="checkbox" ng-model="state.autoRefresh"/>Auto refresh -->
-   <!-- <input style="height:30px;" type="number" -->
-   <!-- ng-model="state.logRefresh"/>  -->
-   <!-- {{state.autoRefresh}} -->
+    <div class="rep-buttons span9">
+      <button class="btn btn-success" ng-click="addDatabaseDialog()">New</button>
+      <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
+      <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
+      <button class="btn btn-danger" ng-click="apply()">Apply</button>
+      <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
+              ng-click="undo()">Undo edits</button>
+
+      Search: <input ng-change="search()"  ng-model="searchText">
     </div>
-  <p></p>
-  <pre> 
-    {{state.log }}    
-  </pre> 
+
+    <div class="span3">
+
+
+      <!-- <div class="btn-group pull-right "> -->
+      <!--   <button ng-class="viewState.admins" style="width:100px" type="button" class="btn btn-inverse" ng-click="toggleAdminsDatabases('admins')">Server admins</button> -->
+      <!--   <button ng-class="viewState.databases" style="width:100px" type="button" class="btn btn-inverse" ng-click="toggleAdminsDatabases('databases')">Regular databases</button> -->
+      <!-- </div> -->
+
+
+
+
+    </div>
+
+  </div>
+  <div class="row">
+    <div ng-class="getGridWidth()" class="span10 gridStyle" ng-grid="databaseGridOptions"></div>
+
+    <div class="span2">
+      <div ng-show="securityError">
+        {{securityError}}
+      </div>
+      <div class="well" ng-show="selectedDatabase && !securityError" ng-controller="databasesCntl">
+
+        <h5>Permissions</h5>
+        Users: <br> <a href="#" id="dbMemberNames" data-type="select2"></a> <br>
+        Roles: <br> <a href="#" id="dbMemberRoles" data-type="select2"></a> <br>
+        <p></p>
+
+      </div>
+
+      <!-- <pre>{{secObj | json}}</pre> -->
+    </div>
+
+
+  </div> <!-- end row -->
+
+
+
+  <h3>all databases</h3>
+  <pre>
+    <!-- {{modifiedReps | json}}     -->
+    {{state.databases | json}}
+  </pre>
+</div>
+
+<div id="addDatabaseDialog" modal="newDatabaseShouldBeOpen" close="closeDatabase()" options="logopts">
+  <div class="modal-header">
+    <h3>Create database</h3>
+  </div>
+  <div class="modal-body">
+    <form>
+      <fieldset>
+        <input type="text" placeholder="new database name" ng-model="dbName"><br>
+      </fieldset>
+    </form>
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-warning cancel pull-left" ng-click="closeDatabase()">Cancel</button>
+    <button class="btn btn-primary" ng-click="addDatabase()">Ok</button>
+  </div>
 </div>
 </div>
   <div ng-controller="replicationsCntl" ng-show="isActive('#replications')" id="replications--"><div ng-hide="state.configAccessible">
@@ -434,42 +512,37 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
     {{state.reps | json}}    
   </pre> 
 </div>
+</div> 
+  <div ng-controller="designCntl" ng-show="state.activeScreen=='#design'" id="design--">Design html file contents
+{{state.activeScreen}}
 </div>
-  <!-- <div ng-controller="serverAdminsCntl" ng-show="isActive('#serverAdmins')" id="serverAdmins--"></div> -->
-  <!-- <div ng-controller="usersCntl" ng-show="isActive('#users')" id="users--"></div> -->
-  <div ng-controller="databasesCntl" ng-show="isActive('#databases')" id="databases--"><div class="row">
+  <div ng-controller="examineCntl" ng-show="state.activeScreen=='#examine'" id="examine--"><div class="row">
   <div class="span3">
     Search: <input style="width:140px;" ng-model="searchText">
 
-    <button class="pull-right btn btn-small btn-info"
-            ng-click="addDatabaseDialog()"><i class="icon-plus"></i></button><p></p>
+    <!-- <button class="pull-right btn btn-small btn-info" -->
+    <!--         ng-click="addDatabaseDialog()"><i class="icon-plus"></i></button><p></p> -->
 
     <div class="well well-small scrollBox" >
       <ul>
         <li ng-repeat="database in state.databases | filter:searchText">
-          <a style="color:orange; padding-right:10px;" href="" ng-click="removeDatabase(database)">x</a>
+          <!-- <a style="color:orange; padding-right:10px;" href="" ng-click="removeDatabase(database)">x</a> -->
           <a ng-style="styleSelectedDb(database)" href="" ng-click="editDatabase(database)">{{database}}</a>
         </li>
       </ul>
     </div>
 
     <!-- <button class="btn btn-small btn-primary" -->
-                 <!-- ng-click="addDatabaseDialog()">Create new
-                 database</button> -->
-		 
-		 
-		 
-		 
-		 
-		 
+    <!-- ng-click="addDatabaseDialog()">Create new
+         database</button> -->
   </div>
-  
+
   <div class="span9">
 
     <div class="pull-right" ng-show="selectedDatabase">
       <span class="title">{{selectedDatabase}}</span>
       <span ng-hide="databaseError">
-        (docs:{{dbInfo.doc_count}} update_seq:{{dbInfo.update_seq}})
+        update_seq:{{dbInfo.update_seq}})
       </span>
     </div>
 
@@ -480,7 +553,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
     </div>
 
     <div ng-hide="databaseError || !selectedDatabase" class="tabbable span9">
-      <ul id="databasesTabs" class="nav nav-tabs">
+      <ul id="examineTabs" class="nav nav-tabs">
         <li  ng-repeat="tab in tabs">
           <a ng-click="tabSelected(tab)" href="#{{tab.title}}" data-toggle="tab">{{tab.title}}</a>
         </li>
@@ -499,26 +572,27 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       </div>
     </div>
   </div>
+ </div> 
 
 
 
-  <div id="addDatabaseDialog" modal="newDatabaseShouldBeOpen" close="closeDatabase()" options="logopts">
-    <div class="modal-header">
-      <h3>Create database</h3>
-    </div>
-    <div class="modal-body">
-      <form>
-        <fieldset>
-          <input type="text" placeholder="new database name" ng-model="dbName"><br>
-        </fieldset>
-      </form>
+  <!-- <div id="addDatabaseDialog" modal="newDatabaseShouldBeOpen" close="closeDatabase()" options="logopts"> -->
+  <!--   <div class="modal-header"> -->
+  <!--     <h3>Create database</h3> -->
+  <!--   </div> -->
+  <!--   <div class="modal-body"> -->
+  <!--     <form> -->
+  <!--       <fieldset> -->
+  <!--         <input type="text" placeholder="new database name" ng-model="dbName"><br> -->
+  <!--       </fieldset> -->
+  <!--     </form> -->
 
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-warning cancel pull-left" ng-click="closeDatabase()">Cancel</button>
-      <button class="btn btn-primary" ng-click="addDatabase()">Ok</button>
-    </div>
-  </div>
+  <!--   </div> -->
+  <!--   <div class="modal-footer"> -->
+  <!--     <button class="btn btn-warning cancel pull-left" ng-click="closeDatabase()">Cancel</button> -->
+  <!--     <button class="btn btn-primary" ng-click="addDatabase()">Ok</button> -->
+  <!--   </div> -->
+  <!-- </div> -->
 
 
   <!-- <pre>{{getAdminNames() | json}}</pre> -->

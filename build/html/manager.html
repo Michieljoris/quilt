@@ -13,13 +13,12 @@
   <div ng-show="isActive('#enableCors')" id="enableCors--"></div>
   <div ng-show="isActive('#simple')" id="simple--"></div>
   <div ng-show="isActive('#info')" id="info--"></div>
-  <div ng-controller="allUsersCntl" ng-show="isActive('#allUsers')" id="allUsers--"></div>
   
-  <div ng-controller="logCntl" ng-show="isActive('#log')" id="log--"></div>
-  <div ng-controller="replicationsCntl" ng-show="isActive('#replications')" id="replications--"></div>
-  <!-- <div ng-controller="serverAdminsCntl" ng-show="isActive('#serverAdmins')" id="serverAdmins--"></div> -->
-  <!-- <div ng-controller="usersCntl" ng-show="isActive('#users')" id="users--"></div> -->
-  <div ng-controller="databasesCntl" ng-show="isActive('#databases')" id="databases--"></div>
+  <div ng-controller="allUsersCntl" ng-show="isActive('#allUsers')" id="allUsers--"></div>
+  <div ng-controller="databasesCntl" ng-show="state.activeScreen=='#databases'" id="databases--"></div>
+  <div ng-controller="replicationsCntl" ng-show="isActive('#replications')" id="replications--"></div> 
+  <div ng-controller="designCntl" ng-show="state.activeScreen=='#design'" id="design--"></div>
+  <div ng-controller="examineCntl" ng-show="state.activeScreen=='#examine'" id="examine--"></div>
 </div>
 
 

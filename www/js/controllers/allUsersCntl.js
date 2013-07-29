@@ -1,38 +1,35 @@
-/*global $:false angular:false couchapi:false */
+/*global VOW:false $:false angular:false couchapi:false */
 /*jshint strict:false unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
 /*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/
 
 
 angular.module("myApp").controller("allUsersCntl", function ($scope, $location, state, defaults, persist) {
     
-    $scope.list_of_string = ['tag1', 'tag2'];
+    
+    console.log('In allUsersCntl');
+    $scope.getGridWidth = function() {
+        if ($scope.viewState.admins) return "narrow";
+        return '';
+    };
+    
+    $scope.getRowClass = function(row) {
+        // console.log('row', row);
+        if (row.selected && row.getProperty('modified')) return 'selectedAndModified';
+        if (row.getProperty('modified')) return 'modified';
+        return '';
+    }; 
     
     $scope.gridClick = function(field, row) {
-        if (field === 'roles')
-        console.log('click', field, row);
-        // row.name = 'okthen';
          editUser(row);
-
     };
     
-    $scope.select2Options = {
-        'multiple': true,
-        'simple_tags': true,
-        'tags': ['tag1', 'tag2', 'tag3', 'tag4']  // Can be empty list.
-    };
 
-    var screenState = {
-        type: 'users'
-    };
-
-    console.log('In allUsersCntl');
-    
-    $scope.search = function (text){
+    $scope.search = function (){
         console.log($scope.searchText);
         $scope.usersGridOptions.$gridScope.filterText = "name:" + $scope.searchText;
     };
     
-    var editableCellTemplate = '<input type="text" ui-select2="select2Options" ng-model="row.entity.roles" />';
+    // var editableCellTemplate = '<input type="text" ui-select2="select2Options" ng-model="row.entity.roles" />';
     
     
   var cellTemplate =
@@ -83,11 +80,11 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
              cellTemplate : cellTemplate, width:120,
              field:'name', displayName:'name', enableCellEdit: false, visible:true}
             
-            ,{visGroup:'Essential',
+            ,{visGroup:'UserOnly',
              cellTemplate : cellTemplate,
              field:'roles', displayName:'roles', enableCellEdit: false, visible:true}
             
-            ,{visGroup:'Essential',
+            ,{visGroup:'UserOnly',
              cellTemplate : cellTemplate, width:50,
              field:'pwd', displayName:'pwd', enableCellEdit: false, visible:true}
             
@@ -108,10 +105,16 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
                                     // ,columnDefs: $scope.columnDefs
                                     ,rowHeight:25
                                     ,headerRowHeight: 30
-                                    ,rowTemplate:'<div style="height: 100%" ng-class="{gray: row.getProperty(\'modified\')==true}"><div ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell ">' +
+                                    
+                                    ,rowTemplate:'<div style="height: 100%" ng-class="getRowClass(row)"><div ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell ">' +
                                     '<div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }"> </div>' +
                                     '<div ng-cell></div>' +
                                     '</div></div>'
+                                    
+                                    // ,rowTemplate:'<div style="height: 100%" ng-class="{gray: row.getProperty(\'modified\')==true}"><div ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell ">' +
+                                    // '<div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }"> </div>' +
+                                    // '<div ng-cell></div>' +
+                                    // '</div></div>'
                                     ,enableRowSelection: true
                                     ,enableCellEditOnFocus: true
                                     ,selectWithCheckboxOnly: false
@@ -182,15 +185,13 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
                 $scope.rows.forEach(function(row) {
                     if (row._id === originalRow._id)
                         angular.copy(originalRow, row);
+                    delete $scope.originalRows[selRow._id];
+                    // $scope.modifiedCount--;
                 });
             }
         });
         $scope.selectedUser = false;
     };
-
-    // $scope.apply = function() {
-    //     console.log('apply');
-    // };
 
     $scope.newRow = function() {
         $scope.rows.push({
@@ -200,6 +201,11 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
         });
     }; 
     
+    $scope.toggleSearch = function(type) {
+        $scope.searchState = {};
+        $scope.searchState[type] = 'active';
+        localStorage.setItem('quilt_usersSearchState', type);
+    };
     
     $scope.toggleAdminsUsers = function(type) {
         $scope.viewState = {};
@@ -234,24 +240,30 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
             $scope.newUserShouldBeOpen = true;
             $scope.userName = user._id;
         }
-        else couchapi.docGet(user._id, '_users').when(
-            function(user) {
-                $('#userRoles').editable('setValue', user.roles || [], false);
+        else {
+            if (user.rolesArray) {
+                $('#userRoles').editable('setValue', user.rolesArray || [], false);
                 $('#changeUserPwd').editable('setValue', '', false);
                 $scope.selectedUser = user;
-                selectedRow.roles = user.roles.toString();
-                selectedRow.rolesArray = user.roles;
-                $scope.edited = false;
-    
-                newRoles = null, newPwd = null;
-                $scope.$apply();
-                
-            },
-            function(err) {
-                console.log(err);
-                
+                return;
             }
-        );
+            couchapi.docGet(user._id, '_users').when(
+                function(user) {
+                    $('#userRoles').editable('setValue', user.roles || [], false);
+                    $('#changeUserPwd').editable('setValue', '', false);
+                    $scope.selectedUser = user;
+                    selectedRow.roles = user.roles.toString();
+                    selectedRow.rolesArray = user.roles;
+                    $scope.edited = false;
+                    $scope.$apply();
+                
+                },
+                function(err) {
+                    console.log(err);
+                
+                }
+                );
+        } 
         
     };
     
@@ -261,10 +273,12 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
         couchapi.config('admins', userName, password).when(
             function(data) {
                 console.log(data);
+                $scope.password = null;
                 state.initialize($scope);
             },
             function(data) {
                 console.log("error",data);
+                $scope.password = null;
                 alert('The admin user already exists probably. Anyway the admin user has not been added.', data);
             }
         );
@@ -277,11 +291,13 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
         else couchapi.userAdd($scope.userName, $scope.password, []).when(
             function(data) {
                 console.log(data);
+                $scope.password = null;
                 //TODO bit overkill, only need to fetch updated user database, or just add to state.users..
                 state.initialize($scope);
             },
             function(data) {
                 console.log("error",data);
+                $scope.password = null;
                 alert('The user already exists probably. Anyway the user has not been added.', data);
             }
         );
@@ -297,47 +313,58 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
         $scope.newUserShouldBeOpen = false;
     };
     
-    $scope.removeUser = function(id) {
-        console.log(id);
-        if (confirm('Are you sure?'))
-            couchapi.userRemove(id).when(
-                function(data) {
-                    console.log(data);
-                    //TODO bit overkill, only need to fetch updated user database, or just remove from state.users..
-                    state.users = state.users.filter(function(u) {
-                        if (u!==id) return true;
-                        return false;
-                    });
-                    $scope.$apply();
-                },
-                function(data) {
-                    console.log("error",data);
-                    alert('Not able to remove user..', data);
-                }
-            );
-    };
+    // $scope.removeUser = function(id) {
+    //     console.log(id);
+    //     if (confirm('Are you sure?'))
+    //         couchapi.userRemove(id).when(
+    //             function(data) {
+    //                 console.log(data);
+    //                 //TODO bit overkill, only need to fetch updated user database, or just remove from state.users..
+    //                 state.users = state.users.filter(function(u) {
+    //                     if (u!==id) return true;
+    //                     return false;
+    //                 });
+    //                 $scope.$apply();
+    //             },
+    //             function(data) {
+    //                 console.log("error",data);
+    //                 alert('Not able to remove user..', data);
+    //             }
+    //         );
+    // };
+    
     
     $scope.apply = function ( ){
         var vows = [];
         if ($scope.viewState.admins) removeAdminUsers();
         else {
-            if (!confirm('Are you sure?')) return;
+            // if (!confirm('Are you sure?')) return;
             $scope.rows.forEach(function(row) {
+                if (!row.modified) return;
                 if (row.delete === true)
                     vows.push(couchapi.userRemove(row._id));
+                else {
+                    var props = {};
+                    if (row.rolesArray) props.roles = row.rolesArray;
+                    if (row.newPwd) props.password = row.newPwd;
+                    vows.push(couchapi.userUpdate(row._id.slice(17), props));
+                } 
 	    });
         
-            VOW.every(vows).when(
-                function(data) {
-                    console.log(data);
-                    state.initialize($scope);
-                },
-                function(err) {
-                    alert('Error removing at least some of the user..');
-                    console.log(err);
-                    state.initialize($scope);
-                }
-            );
+            if (vows.length > 0)
+                VOW.every(vows).when(
+                    function(data) {
+                        console.log(data);
+                        state.initialize($scope);
+                        $scope.modifiedCount = 0;
+                    },
+                    function(err) {
+                        alert('Error removing or updating at least one of the users..');
+                        console.log(err);
+                        $scope.modifiedCount = 0;
+                        state.initialize($scope);
+                    }
+                    );
         }
     };
         
@@ -361,10 +388,6 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
         
     };
     
-    $scope.edited = false;
-    
-    var newRoles, newPwd;
-    
     $('#changeUserPwd').editable({
         type: 'password',
         value: 'whatever',
@@ -374,9 +397,8 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
         success: function(response, newValue) {
             // config.set({ couchDbUrl: newValue });
             console.log(newValue);
-            selectedRow.applyPwd = newValue;
-            endEdit(selectedRow, 'applyPwd', '');
-            newPwd = newValue;
+            selectedRow.newPwd = newValue;
+            endEdit(selectedRow, 'pwd', '');
             $scope.$apply();
         }
     });
@@ -384,42 +406,20 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
     $('#userRoles').editable({
         value: [2, 3],    
         unsavedclass: null,
-        source: [
-            {value: 'read-user', text: 'read-user'},
-            {value: 'write-users', text: 'write-users'},
-            {value: 'read-persons', text: 'read-persons'},
-            {value: 'write-persons', text: 'write-persons'}
-        ]
-        ,success: function(response, newValue) {
-            newRoles = newValue;
+        select2: {
+            tags: ['read-_users', 'write-_users']
+        }
+        ,success: function(response, newRoles) {
             console.log($scope.selectedUser,newRoles);
-            if ($scope.selectedUser.roles.toString() !== newValue.toString()) {
+            if ($scope.selectedUser.roles.toString() !== newRoles.toString()) {
                 selectedRow.roles = newRoles.toString();
                 endEdit(selectedRow, 'roles', selectedRow.rolesArray.toString());
                 selectedRow.rolesArray = newRoles;
             }
             $scope.$apply();
-            // $scope.$apply();
         }
     });   
     
-    $scope.applySingle = function() {
-        
-        console.log(newRoles);
-        var props = {};
-        if (newRoles) props.roles = newRoles;
-        if (newPwd) props.password = newPwd;
-        couchapi.userUpdate($scope.selectedUser._id.slice(17), props ).when(
-            function(data) { console.log(data);
-                             $scope.edited = false;    
-                             newRoles = null; newPwd = null;
-                             $scope.$apply();
-                           }
-            ,function(data) {
-                alert('Unable to update the user\'s details. ' + data);
-                console.log('error ', data); }
-        );
-    };
     
     $scope.viewState = 'admins';
     if (!state.usersDone) {
@@ -442,6 +442,7 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
                        // console.log($scope.columnDefs);
                    });
     }
+    
 });
 
 

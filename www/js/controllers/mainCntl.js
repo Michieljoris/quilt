@@ -75,10 +75,12 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
             function(data) {
                 console.log(data);
                 state.user = data;
+                $scope.passwordText = null;
                 state.initialize($scope);
                 // $scope.$apply();
             },
             function(data) {
+                $scope.passwordText = null;
                 console.log('error', data);
             }  
         );
@@ -119,8 +121,11 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
         // ,{ name: 'users', menu: 'Users'}
         ,{ name: 'databases', menu: 'Databases'}
         // ,{ name: 'scripts', menu: 'Scripts'}
+        ,{ name: 'design', menu: 'Design'}
         ,{ name: 'replications', menu: 'Replications'}
-        ,{ name: 'log', menu: 'Log'}
+        ,{ name: 'examine', menu: 'Examine'}
+        // ,{ name: 'log', menu: 'Log'}
+        // ,{ name: 'test', menu: 'Test'}
         ,{ name: 'futon', menu: 'Futon'}
         // ,{ name: 'simple', menu: 'Simple setup'}
         ];

@@ -128,24 +128,26 @@ var exports = {
                     ,'directives/xeditable'
                     ,'directives/yaTree'
                     ,'directives/objectEditor'
+                    // ,'directives/compile'
                     
                     ,'controllers/mainCntl'
                     ,'controllers/managerCntl'
                     ,'controllers/helpCntl'
-                    ,'controllers/allUsersCntl'
-                    ,'controllers/serverAdminsCntl'
-                    ,'controllers/userCntl'
-                    ,'controllers/databasesCntl'
-                    , 'controllers/designCntl'
-                    , 'controllers/conflictsCntl'
-                    , 'controllers/changesCntl'
-                    , 'controllers/queryCntl'
-                    , 'controllers/testCntl'
-                    ,'controllers/replicationsCntl'
-                    ,'controllers/logCntl'
-                    // ,'controllers/treeCntl'
-                    // ,'directives/compile'
                     
+                    // ,'controllers/serverAdminsCntl'
+                    // ,'controllers/userCntl'
+                    ,'controllers/allUsersCntl'
+                    ,'controllers/databasesCntl'
+                    ,'controllers/replicationsCntl'
+                    ,'controllers/designCntl'
+                    ,'controllers/examineCntl'
+                    ,   'controllers/queryCntl'
+                    ,   'controllers/conflictsCntl'
+                    ,   'controllers/changesCntl'
+                    ,   'controllers/logCntl'
+                    ,   'controllers/testCntl'
+                    
+                    // ,'controllers/treeCntl'
                 ],
                 path: 'js/'
             }
@@ -173,11 +175,14 @@ var exports = {
                   ,simple: 'markdown/simple.md'
                   ,info: 'markdown/info.md'
                   ,'allUsers': 'html/allUsers.html'
-                  // ,'serverAdmins': 'markdown/serverAdmins.md'
-                  // ,'users': 'html/users.html'
                   ,'databases': 'html/databases.html'
                   ,'replications': 'html/replications.html'
-                  ,'log': 'html/log.html'
+                  ,'design': 'html/design.html'
+                  ,'examine': 'html/examine.html'
+                  // ,'log': 'html/log.html'
+                  
+                  // ,'serverAdmins': 'markdown/serverAdmins.md'
+                  // ,'users': 'html/users.html'
               }
             },
             { src: 'views/help.html' 
@@ -204,39 +209,46 @@ var exports = {
              }
             
             
-            ,{ src: 'html/db_security.html' 
+            // ,{ src: 'html/db_security.html' 
+            //    ,tagIdPostfix: '--' //can be overridden per template
+            //    ,out: 'db_security.html'
+            //    ,mapping: {
+            //    }
+            //  }
+            
+            // ,{ src: 'html/db_design.html' 
+            //    ,tagIdPostfix: '--' //can be overridden per template
+            //    ,out: 'db_design.html'
+            //    ,mapping: {
+            //    }
+            //  } 
+            ,{ src: 'html/ex_query.html' 
                ,tagIdPostfix: '--' //can be overridden per template
-               ,out: 'db_security.html'
+               ,out: 'ex_query.html'
                ,mapping: {
                }
              }
-            ,{ src: 'html/db_design.html' 
+            ,{ src: 'html/ex_conflicts.html' 
                ,tagIdPostfix: '--' //can be overridden per template
-               ,out: 'db_design.html'
-               ,mapping: {
-               }
-             } 
-            ,{ src: 'html/db_conflicts.html' 
-               ,tagIdPostfix: '--' //can be overridden per template
-               ,out: 'db_conflicts.html'
+               ,out: 'ex_conflicts.html'
                ,mapping: {
                }
               } 
-            ,{ src: 'html/db_changes.html' 
+            ,{ src: 'html/ex_changes.html' 
                ,tagIdPostfix: '--' //can be overridden per template
-               ,out: 'db_changes.html'
+               ,out: 'ex_changes.html'
                ,mapping: {
                }
              }
-            ,{ src: 'html/db_query.html' 
+            ,{ src: 'html/ex_log.html' 
                ,tagIdPostfix: '--' //can be overridden per template
-               ,out: 'db_query.html'
+               ,out: 'ex_log.html'
                ,mapping: {
                }
              }
-            ,{ src: 'html/db_test.html' 
+            ,{ src: 'html/ex_test.html' 
                ,tagIdPostfix: '--' //can be overridden per template
-               ,out: 'db_test.html'
+               ,out: 'ex_test.html'
                ,mapping: {
                }
              }
@@ -266,30 +278,7 @@ var exports = {
             }
             ,{// id: 'page' 
                 pathOut: 'www/'
-                ,out: 'objecteditor.html' //optional, relative to root
-                ,src: 'html/basicPage.html'
-                //Maps tag ids to partial ids. Tag ids have to be
-                //postfixed with two dashes in the template. Partials
-                //with an extension will be loaded from the partials
-                //folder for this template. Markdown files will be
-                //converted to html. Partials in an array will be
-                //concatenated before inserted at the tag id element
-                ,mapping: {
-                    head: ['title', 'meta', 'html/ieshim',  'skewer'
-                           ,'headJsBlock', 'myLinkBlock'
-                           // ,'_linkBlock'
-                          ],
-                    wrapper: [
-                        'html/objecteditor'
-                        ,'thirdpartyjs'
-                        ,'myJsBlock'
-                        // ,'_scriptBlock'
-                    ]
-                }
-            }
-            ,{// id: 'page' 
-                pathOut: 'www/'
-                ,out: 'oe_directive.html' //optional, relative to root
+                ,out: 'oe_directive_test.html' //optional, relative to root
                 ,src: 'html/basicPage.html'
                 //Maps tag ids to partial ids. Tag ids have to be
                 //postfixed with two dashes in the template. Partials

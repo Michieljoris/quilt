@@ -136,7 +136,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         );
     };
     
-    var init = function($scope) {
+    function init() {
         var vow = VOW.make();
         var timer = setTimeout(function() {
             console.log('timedout');
@@ -145,7 +145,6 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         }, defaults.timeout);
          
         couchapi.withCredentials(true);
-        // console.log('$.couch.withcred', $.couch.withCredentials());
         VOW.first([tryUrl(config.couchDbUrl), tryUrl(config.corsProxy)]).when(
             function(url) {
                 $.couch.urlPrefix = url;
@@ -216,6 +215,8 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         
         return vow.promise;
     }; 
+    //end of init
+    
     var initScreen = {};
     
     initScreen['#allUsers']  = function() {
@@ -248,6 +249,9 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 // users.forEach()
                 state.allUsers = users;
                 return VOW.keep();
+                
+                //are we fetching the user docs here?
+                //could be troublesome with 1000 users or more..
             }).when(
                 function(users) {
                     state.allUsers = users;
@@ -266,41 +270,6 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         return vow.promise;
     };
     
-    initScreen['#users'] = function() {
-        console.log('initing #users');
-        var vow = VOW.make();
-        couchapi.docAll('_users').when(
-            function(users) {
-                var admins = Object.keys(
-                    state.configAccessible ?
-                        (state.configAccessible.admins ?
-                         state.configAccessible.admins : {}) : {});
-                console.log('in initsrfeen', users , admins);
-                state.users = users.rows.filter(function(doc) {
-                    if (doc.id.startsWith('org.couchdb.user:') &&
-                       admins.indexOf(doc.id.slice(17)) === -1) return true;
-                    return false;
-                }).map(function(user) {
-                    return user.id;
-                });
-                console.log('USERS:', state.users);               
-                
-                $rootScope.$broadcast('initUsers');
-                vow.keep();
-                
-            },
-            function(err) {
-                state.users = null;
-                
-                $rootScope.$broadcast('initUsers');
-                vow.keep();
-                
-            }
-        );
-        return vow.promise;
-    };
-    
-    
     initScreen['#databases'] = function() {
         console.log('initing #databases');
         var vow = VOW.make();
@@ -310,25 +279,25 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 state.databases = databases.filter(function(str) {
                     if (str.startsWith('_')) return false;
                     return true;
-                // }).map(function(user) {
-                //     return user.id;
+                }).map(function(db) {
+                    return {
+                        name: db, names: '?', roles: '?', count: '?', update_seq: '?'
+                    };
                 });
                 
-                console.log($rootScope);
-                $rootScope.selectedDatabase = localStorage.getItem('quilt_selectedDatabase');
-                $rootScope.selectedDatabaseTab = localStorage.getItem('quilt_selectedDatabaseTab');
+                // $rootScope.selectedDatabase = localStorage.getItem('quilt_selectedDatabase');
                 console.log('broadcasting');
                 $rootScope.$broadcast('initDatabases');
-                $rootScope.$broadcast('initDesign');
+                // $rootScope.$broadcast('initDesign');
                 
                 vow.keep();
                 
             },
             function(err) {
                 console.log('ERROR: Couldn\'t get list of databases!!!', err);
-                state.database = [];
+                state.databases = [];
                 $rootScope.$broadcast('initDatabases');
-                $rootScope.$broadcast('initDesign');
+                // $rootScope.$broadcast('initDesign');
                 // state.users = null;
                 // vow['break']();
                 vow.keep();
