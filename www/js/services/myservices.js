@@ -270,6 +270,10 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         return vow.promise;
     };
     
+    initScreen['#design'] = function() {
+        return initScreen['#databases']();
+       };
+    
     initScreen['#databases'] = function() {
         console.log('initing #databases');
         var vow = VOW.make();
@@ -285,9 +289,10 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                     };
                 });
                 
-                // $rootScope.selectedDatabase = localStorage.getItem('quilt_selectedDatabase');
+                // $rootScope.selectedDatabase = localStorage.getItem('quilt_selectedDatabase')
                 console.log('broadcasting');
                 $rootScope.$broadcast('initDatabases');
+                $rootScope.$broadcast('initDesign');
                 // $rootScope.$broadcast('initDesign');
                 
                 vow.keep();
@@ -306,6 +311,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         );
         return vow.promise;
     };
+    
     
     initScreen['#replications'] = function() {
         console.log('initing #reps');
@@ -367,6 +373,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         // var timer;
         state.activeScreen = screen;
         console.log('screen =', screen);
+        
         if (initScreen[screen]) {
             // if (screen === '#log' && !timer) {
             //     state.logRefresh = state.logRefresh || defaults.logRefresh;
@@ -403,7 +410,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 }
             );
              
-        // }  
+            // }  
         }
     };
     return state;   
