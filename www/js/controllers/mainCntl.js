@@ -126,6 +126,7 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
         ,{ name: 'examine', menu: 'Examine'}
         // ,{ name: 'log', menu: 'Log'}
         // ,{ name: 'test', menu: 'Test'}
+        ,{ name: 'quilt', menu: 'Quilt'}
         ,{ name: 'futon', menu: 'Futon'}
         // ,{ name: 'simple', menu: 'Simple setup'}
         ];

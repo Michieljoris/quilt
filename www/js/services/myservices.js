@@ -289,7 +289,6 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                     };
                 });
                 
-                // $rootScope.selectedDatabase = localStorage.getItem('quilt_selectedDatabase')
                 console.log('broadcasting');
                 $rootScope.$broadcast('initDatabases');
                 $rootScope.$broadcast('initDesign');
@@ -342,32 +341,15 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         return vow.promise;
     };
     
-    
-    initScreen['#log'] = function() {
-        
-        // state.logRefresh = state.logRefresh || defaults.logRefresh;
-        console.log('initing #log');
+    initScreen['#examine'] = function() {
         var vow = VOW.make();
-        state.bytes = state.bytes || defaults.logBytes;
-        couchapi.log(state.bytes, 0).when(
-            function(data) {
-                data = data.split('\n');
-                data.reverse();
-                data = data.filter(function(r) {
-                    return r.indexOf('_log') === -1; 
-                });
-                data.slice(0, data.length-1);
-                state.log = data.join('\n');
-                vow.keep();
-            },
-            function(err) {
-                console.log('Error getting couchDB log. ', err);
-                vow.keep();
-            }
-        );
+        $rootScope.selectedExamineTab = localStorage.getItem('quilt_selectedExamineTab') ||
+            'Query';
+        
+        $rootScope.$broadcast('initExamine');
+        vow.keep();
         return vow.promise;
     };
-    
     
     state.setActiveScreen = function($scope, screen) {
         // var timer;

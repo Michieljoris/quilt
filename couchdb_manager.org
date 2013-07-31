@@ -24,13 +24,10 @@ credentials:true
 enable_cors:true
 origins:*
 
+* Array of objects
+** rewrites _rewrite
 
-
-
-Array of objects
-* rewrites _rewrite
-
-Object of functions:
+* Object of functions:
 
 | Design doc entry        | /_design/ddName/X/fnName  | signature                         | returns to server             | fn should return                 |   |
 |-------------------------+---------------------------+-----------------------------------+-------------------------------+----------------------------------+---|

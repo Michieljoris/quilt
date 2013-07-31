@@ -13,21 +13,68 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
         { title:"Query", content:"", url: "built/ex_query.html" }
         ,{ title:"Conflicts", content:"", url: "built/ex_conflicts.html" }
         ,{ title:"Changes", content:"", url: "built/ex_changes.html" }
-        ,{ title:"Log", content:"", url: "built/ex_conflicts.html" }
+        ,{ title:"Log", content:"", url: "built/ex_log.html" }
         ,{ title:"Test", content:"", url: "built/ex_test.html" }
     ];
+    
+    var tabsObj = (function() {
+        var obj = {};
+        $scope.tabs.forEach(function(t) {
+            obj[t.title] = t;
+        });
+        return obj;
+    })(); 
 
-    // $scope.tabSelected = function(tab) {
-    //     console.log(tab.title);
-    //     $scope.selectedExamineTab = tab.title;
-    //     // persist.put('databasesSubTab', tab.title);
-    //     console.log(tab);
-    //     localStorage.setItem('quilt_selectedExamineTab', tab.title);
-    //     if (initTab[tab.title])
-    //         initTab[tab.title]();
-    // };
+    $scope.tabSelected = function(tab) {
+        if (typeof tab === 'string') {
+            tab = tabsObj[tab];
+        }
+        console.log('tabSelected', tab.title);
+        $scope.selectedExamineTab = tab.title;
+        // persist.put('databasesSubTab', tab.title);
+        console.log(tab);
+        localStorage.setItem('quilt_selectedExamineTab', tab.title);
+        if (initTab[tab.title])
+            initTab[tab.title]();
+    };
+    
+    $scope.isActiveTab = function(tabTitle) {
+        // console.log(tabTitle, $scope.selectedExamineTab);
+        if (tabTitle===$scope.selectedExamineTab)
+            return 'active';
+        else return '';
+    };
 
-    // var initTab = {};
+    var initTab = {};
+    
+    
+    initTab.Log = function() {
+        
+        // state.logRefresh = state.logRefresh || defaults.logRefresh;
+        console.log('initing tab Log');
+        // var vow = VOW.make();
+        state.bytes = state.bytes || defaults.logBytes;
+        couchapi.log(state.bytes, 0).when(
+            function(data) {
+                data = data.split('\n');
+                data.reverse();
+                data = data.filter(function(r) {
+                    return r.indexOf('_log') === -1; 
+                });
+                data.slice(0, data.length-1);
+                state.log = data.join('\n');
+                $scope.$apply();
+                // vow.keep();
+            },
+            function(err) {
+                console.log('Error getting couchDB log. ', err);
+                state.log = "";
+                $scope.$apply();
+                // vow.keep();
+            }
+        );
+        // return vow.promise;
+    };
     // // initTab.Security = function() {
     // //     if (!$scope.selectedExamine) return;
     // //     couchapi.dbSecurity($scope.selectedExamine)
@@ -111,13 +158,7 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
 
     // // }
 
-    // $scope.isActiveTab = function(tabTitle) {
-    //     // console.log(tabTitle, $scope.selectedExamineTab);
-    //     if (tabTitle===$scope.selectedExamineTab)
-    //         return 'active';
-    //     else return '';
-    // };
-    
+
     // // $scope.isActiveTabAndSelected = function(tabTitle) {
     // //     console.log(tabTitle, $scope.selectedExamineTab);
     // //     if (tabTitle===$scope.selectedExamineTab)
@@ -149,7 +190,7 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
     //             else {
     //                 $scope.databaseError = "Unable to retrieve database info" + err;
     //             }
-                
+
     //             console.log('database info error', err, $scope.databaseError);
     //             $scope.$apply();
     //             // localStorage.removeItem('quilt_selectedExamine');
@@ -332,18 +373,19 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
     //     state.examineDone = true;
 
     //     // var dereg =
-    //     $scope.$on('initExamine',
-    //                function() {
-    //                    // dereg();
-    //                    console.log("HELLO", $scope.selectedExamine, $scope.selectedExamineTab);
-    //                    $scope.editDatabase($scope.selectedExamine);
+    $scope.$on('initExamine',
+               function() {
+                   // dereg();
+                   console.log("HELLO", $scope.selectedExamine, $scope.selectedExamineTab);
+                   // $scope.editDatabase($scope.selectedExamine);
 
-    //                    // if (initTab[$scope.selectedExamineTab]) initTab[$scope.selectedExamineTab]();
-    //                    $('#examineTabs a[href=#' + $scope.selectedExamineTab + ']').tab('show');
-    //                });
+                   // if (initTab[$scope.selectedExamineTab]) initTab[$scope.selectedExamineTab]();
+                   $('#examineTabs a[href=#' + $scope.selectedExamineTab + ']').tab('show');
+                   $scope.tabSelected($scope.selectedExamineTab);
+               });
 
     // }
-    
+
 
 
 

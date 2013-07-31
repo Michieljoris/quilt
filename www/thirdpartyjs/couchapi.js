@@ -443,6 +443,18 @@ define(
             return vow.promise;
         };
         
+        api.docAllDesignInclude = function(aDbName) {
+            if (aDbName) dbName = aDbName;
+            var vow = VOW.make(); 
+            $.couch.db(dbName).allDesignDocs({
+                "include_docs": true,
+                success: vow.keep,
+                error: vow.break
+            });
+            return vow.promise;
+        };
+        
+        
         api.docAllDesign= function(aDbName) {
             if (aDbName) dbName = aDbName;
             var vow = VOW.make(); 

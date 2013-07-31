@@ -1,82 +1,80 @@
 <div class="row">
-  <div class="span3">
-    Search: <input style="width:140px;" ng-model="searchText">
+  <!-- <div class="span3"> -->
+  <!--   Search: <input style="width:140px;" ng-model="searchText"> -->
 
-    <!-- <button class="pull-right btn btn-small btn-info" -->
-    <!--         ng-click="addDatabaseDialog()"><i class="icon-plus"></i></button><p></p> -->
+  <!-- <button class="pull-right btn btn-small btn-info" -->
+  <!--         ng-click="addDatabaseDialog()"><i class="icon-plus"></i></button><p></p> -->
 
-    <div class="well well-small scrollBox" >
-      <ul>
-        <li ng-repeat="database in state.databases | filter:searchText">
-          <!-- <a style="color:orange; padding-right:10px;" href="" ng-click="removeDatabase(database)">x</a> -->
-          <a ng-style="styleSelectedDb(database)" href="" ng-click="editDatabase(database)">{{database}}</a>
-        </li>
-      </ul>
-    </div>
+  <!-- <div class="well well-small scrollBox" > -->
+  <!--   <ul> -->
+  <!--     <li ng-repeat="database in state.databases | filter:searchText"> -->
+  <!--       <\!-- <a style="color:orange; padding-right:10px;" href="" ng-click="removeDatabase(database)">x</a> -\-> -->
+  <!--       <a ng-style="styleSelectedDb(database)" href="" ng-click="editDatabase(database)">{{database}}</a> -->
+  <!--     </li> -->
+  <!--   </ul> -->
+  <!-- </div> -->
 
-    <!-- <button class="btn btn-small btn-primary" -->
-    <!-- ng-click="addDatabaseDialog()">Create new
-         database</button> -->
-  </div>
-
-  <div class="span9">
-
-    <div class="pull-right" ng-show="selectedDatabase">
-      <span class="title">{{selectedDatabase}}</span>
-      <span ng-hide="databaseError">
-        update_seq:{{dbInfo.update_seq}})
-      </span>
-    </div>
-
-    <span class="pull-right" ng-hide="selectedDatabase">Select a database</span>
-
-    <div ng-show="databaseError" class="span9">
-      {{databaseError}}
-    </div>
-
-    <div ng-hide="databaseError || !selectedDatabase" class="tabbable span9">
-      <ul id="examineTabs" class="nav nav-tabs">
-        <li  ng-repeat="tab in tabs">
-          <a ng-click="tabSelected(tab)" href="#{{tab.title}}" data-toggle="tab">{{tab.title}}</a>
-        </li>
-      </ul>
-      <div class="tab-content" >
-        <div class="tab-pane" ng-repeat="tab in tabs"
-             id="{{tab.title}}">
-
-          <span ng-switch on="isActiveTab(tab.title)">
-            <div ng-switch-when="active" ng-include src="tab.url"></div>
-          </span>
-
-
-          <!-- <div ng-include src="tab.url"></div> -->
-        </div>
-      </div>
-    </div>
-  </div>
- </div> 
-
-
-
-  <!-- <div id="addDatabaseDialog" modal="newDatabaseShouldBeOpen" close="closeDatabase()" options="logopts"> -->
-  <!--   <div class="modal-header"> -->
-  <!--     <h3>Create database</h3> -->
-  <!--   </div> -->
-  <!--   <div class="modal-body"> -->
-  <!--     <form> -->
-  <!--       <fieldset> -->
-  <!--         <input type="text" placeholder="new database name" ng-model="dbName"><br> -->
-  <!--       </fieldset> -->
-  <!--     </form> -->
-
-  <!--   </div> -->
-  <!--   <div class="modal-footer"> -->
-  <!--     <button class="btn btn-warning cancel pull-left" ng-click="closeDatabase()">Cancel</button> -->
-  <!--     <button class="btn btn-primary" ng-click="addDatabase()">Ok</button> -->
-  <!--   </div> -->
+  <!-- <button class="btn btn-small btn-primary" -->
+  <!-- ng-click="addDatabaseDialog()">Create new
+       database</button> -->
   <!-- </div> -->
 
 
-  <!-- <pre>{{getAdminNames() | json}}</pre> -->
+  <!-- <div class="pull-right" ng-show="selectedDatabase"> -->
+  <!--   <span class="title">{{selectedDatabase}}</span> -->
+  <!--   <span ng-hide="databaseError"> -->
+  <!--     update_seq:{{dbInfo.update_seq}}) -->
+  <!--   </span> -->
+  <!-- </div> -->
 
-  <!-- <pre>{{state.configAccessible | json}}</pre> -->
+  <!-- <span class="pull-right" ng-hide="selectedDatabase">Select a database</span> -->
+
+  <!-- <div ng-show="databaseError" class="span9"> -->
+  <!--   {{databaseError}} -->
+  <!-- </div> -->
+
+  <div class="tabbable span9">
+    <ul id="examineTabs" class="nav nav-tabs">
+      <li  ng-repeat="tab in tabs">
+        <a ng-click="tabSelected(tab)" href="#{{tab.title}}" data-toggle="tab">{{tab.title}}</a>
+      </li>
+    </ul>
+    <div class="tab-content" >
+      <div class="tab-pane" ng-repeat="tab in tabs"
+           id="{{tab.title}}">
+
+        <span ng-switch on="isActiveTab(tab.title)">
+          <div ng-switch-when="active" ng-include src="tab.url"></div>
+        </span>
+
+
+        <!-- <div ng-include src="tab.url"></div> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- <div id="addDatabaseDialog" modal="newDatabaseShouldBeOpen" close="closeDatabase()" options="logopts"> -->
+<!--   <div class="modal-header"> -->
+<!--     <h3>Create database</h3> -->
+<!--   </div> -->
+<!--   <div class="modal-body"> -->
+<!--     <form> -->
+<!--       <fieldset> -->
+<!--         <input type="text" placeholder="new database name" ng-model="dbName"><br> -->
+<!--       </fieldset> -->
+<!--     </form> -->
+
+<!--   </div> -->
+<!--   <div class="modal-footer"> -->
+<!--     <button class="btn btn-warning cancel pull-left" ng-click="closeDatabase()">Cancel</button> -->
+<!--     <button class="btn btn-primary" ng-click="addDatabase()">Ok</button> -->
+<!--   </div> -->
+<!-- </div> -->
+
+
+<!-- <pre>{{getAdminNames() | json}}</pre> -->
+
+<!-- <pre>{{state.configAccessible | json}}</pre> -->

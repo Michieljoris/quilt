@@ -10,15 +10,14 @@ angular.module("myApp").controller("logCntl", function ($scope, state, defaults,
     
     
     $scope.refresh = function() {
-        state.setActiveScreen($scope, '#log');
-        
+        $scope.tabSelected('Log');
     };
     
     $scope.more = function() {
         mult *= 2;
         state.bytes = mult * defaults.logBytes;
         console.log(state.bytes);
-        state.setActiveScreen($scope, '#log');
+        $scope.tabSelected('Log');
     };
     
     $scope.less = function() {
@@ -26,7 +25,7 @@ angular.module("myApp").controller("logCntl", function ($scope, state, defaults,
         if (mult<1) mult = 1;
         state.bytes = mult * defaults.logBytes;
         console.log(state.bytes);
-        state.setActiveScreen($scope, '#log');
+        $scope.tabSelected('Log');
         
     };
     

@@ -179,6 +179,7 @@ var exports = {
                   ,'replications': 'html/replications.html'
                   ,'design': 'html/design.html'
                   ,'examine': 'html/examine.html'
+                  ,'quilt': 'html/quilt.html'
                   // ,'log': 'html/log.html'
                   
                   // ,'serverAdmins': 'markdown/serverAdmins.md'

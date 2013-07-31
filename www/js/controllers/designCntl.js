@@ -1,4 +1,4 @@
-/*global VOW:false angular:false couchapi:false */
+/*global ace:false VOW:false angular:false couchapi:false */
 /*jshint strict:false unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
 /*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/ 
 
@@ -8,44 +8,135 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
     console.log('In designCntl');
     
     
-    function getDesignDocs(db) {
-        console.log('initscreen #design');
-        
-        $scope.designDocs = {};
-        couchapi.docAllDesign(db).when(
-                function(data) {
-                    console.log(data);
-                    var ddocPromises = [];
-                    $scope.ddocs = data.rows.map(function(d) {
-                            ddocPromises.push(couchapi.docGet(d.id));
-                        return d.id;
-                    });
-                    return VOW.every(ddocPromises);
-                }).when(
-                    function(ddocs) {
-                        // designDocs = aggregrateDesignDocs(ddocs);
-                        $scope.designError = false;
-                        $scope.designDocs = ddocs;
-                        window.ddocs = ddocs;
-                        console.log('got all ddocs:', ddocs);
-                        $scope.$apply();
+    $scope.search = function (){
+        console.log($scope.searchText);
+        $scope.dbGridOptions.$gridScope.filterText = "name:" + $scope.searchText;
+    };
+    
+    var cellTemplate =
+        '<div ng-click="designGridClick(col.field, row.entity)" class="ngCellText" ng-class="col.colIndex()"><span ng-cell-text>{{COL_FIELD}}</span></div>';
+    
+    $scope.designGridClick = function(field, row) {
+        editor.session.setValue(row.value);
+        console.log(field, row);
+    };
 
-                    },
-                    function(data) {
-                        if (data.length === 0) console.log('No design docs');
-                        else console.log('error', data);
-                        if (data === 401) {
-                            $scope.designError = "Unable to retrieve database design docs. Unauthorized";
-                        }
-                        else {
-                            $scope.designError = "Unable to retrieve database design docs" + data;
-                        }
-                        $scope.designDocs = [];
-                        $scope.$apply();
-                    }
-                );
+    $scope.funcTypes = [
+        'validate', 'views', 'shows', 'lists', 'updates', 'filters'
+    ];
+    
+    var funcType;
+    $scope.toggleViewStateGroup = function(someFuncType) {
+        funcType = someFuncType;
+        $scope.viewStateGroup = {};
+        $scope.viewStateGroup[someFuncType] = 'active';
+        if ($scope.viewState1.values)   
+            $scope.designGridOptions.$gridScope.filterText =
+            'type:value;funcType:' + funcType + ';';
+    };
+    
+    function addRowsByFuncType(d, funcType, row) {
+        if (funcType === 'validate' && d.validate_doc_update) {
+            $scope.designRows.push(
+                angular.extend({
+                    type:'value'
+                    ,name: 'validate'
+                    ,funcType: 'validate'
+                    ,value:  d.validate_doc_update
+                }, row));
+        }
+        else if (d[funcType] && angular.isArray(d[funcType])) {
+            Object.keys(d[funcType]).forEach(function(n) {
+                $scope.designRows.push(
+                    angular.extend({
+                        type: 'value'
+                        ,name: n
+                        ,funcType: funcType
+                        ,value: d[funcType][n]
+                    }, row));
+            });
+        }
+    } 
+    
+    
+    function addToDesignRows(dbName) {
+        if (!dbName) return;
+        var docs = $scope.designDocs[dbName];
+        console.log(docs);
+        var row = { database: dbName };
+        docs.forEach(function(d) {
+            row.design = d._id.slice(8);
+            $scope.designRows.push(
+                angular.extend({ type:'doc' }, row));
+            $scope.funcTypes.forEach(function(funcType) {
+                addRowsByFuncType(d, funcType, row);   
+            });
+        });
+    }
+    
+    
+    function dbSelectionChanged() {
+        var designDocs = $scope.designDocs;
+        var selRows = $scope.dbGridOptions.
+            $gridScope.selectedItems;
+        var selDatabases = [];
+        selRows.forEach(function(r) {
+            selDatabases.push(r.name);
+        });
+        console.log(selDatabases);
         
-       }
+        //add rows for every newly selected database
+        var vows = [];
+        angular.forEach(selDatabases, function(dbName) {
+            if (!designDocs[dbName]) {
+                vows.push( getDesignDocs(dbName) );
+            }});
+        VOW.any(vows).when(
+            function(array){
+                console.log('adding design rows', array);
+                array.forEach(addToDesignRows);
+                $scope.$apply();
+            });
+        
+        //Remove database from designDocs and take out the rows of non
+        //selected databases
+        Object.keys($scope.designDocs).forEach(function(dbName) {
+            if (selDatabases.indexOf(dbName) === -1)
+                delete designDocs[dbName];
+        });
+        
+        $scope.designRows = $scope.designRows.filter(function(row) {
+            return selDatabases.indexOf(row.database) !== -1;
+        });
+        
+    } 
+    
+    function getDesignDocs(dbName) {
+        var vow = VOW.make();
+        if (!dbName) return vow.break('Error: no db passed in');
+        console.log('getting design docs for ' , dbName);
+        couchapi.docAllDesignInclude(dbName).when(
+            function(data) {
+                var designDocs = data.rows.map(function(r) {
+                    return r.doc;
+                });
+                $scope.designDocs[dbName] = designDocs;
+                vow.keep(dbName);
+            }
+            ,function(err) {
+                console.log('error', err);
+                if (err === 401) {
+                    $scope.designError = "Unable to retrieve database design docs. Unauthorized";
+                }
+                else {
+                    $scope.designError = "Unable to retrieve database design docs" + err;
+                }
+                vow.break('$scope.designError');
+            }
+        );
+        
+        return vow.promise;
+    }
     
     var checkBoxTemplate = '<input style="margin-left:5px;margin-top:5px" class="ngSelectionCheckbox" ng-click="checkBoxClicked(row, col)" ' +
         'type="checkbox" ng-checked="row.getProperty(col.field)"></input>';
@@ -81,41 +172,45 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         console.log('making dblist grid');
         $scope.dbColumnDefs =
             [
-                {visGroup:'value', field:'name', displayName:'Select database(s)', enableCellEdit: false, visible:true, width:130}
+                {visGroup:'value', field:'name',
+                 displayName:'Select database(s)', enableCellEdit: false,
+                 // cellTemplate : cellTemplate,
+                 visible:true, width:130}
             ];
             
         $scope.dbGridOptions = { data: 'state.databases'
-                                     ,columnDefs: "dbColumnDefs"
-                                     // ,columnDefs: $scope.columnDefs
-                                     ,rowHeight:25 
-                                     ,headerRowHeight: 30
-                                     ,rowTemplate:'<div style="height: 100%" ng-class="{gray: row.getProperty(\'modified\')==true}"><div ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell ">' +
-                                     '<div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }"> </div>' +
-                                     '<div ng-cell></div>' +
-                                     '</div></div>'
-                                     ,enableRowSelection: true
-                                     ,enableCellEditOnFocus: false
-                                     ,selectWithCheckboxOnly: false
-                                     ,enableCellEdit: false
-                                     ,showSelectionCheckbox: true
-                                     ,enableColumnResize: false
-                                     ,enableColumnReordering: true
-                                     ,enableRowReordering: true
-                                     ,showColumnMenu: false
-                                     ,showFilter: false
-                                     ,showGroupPanel: false
-                                     ,multiSelect: true
-                                     ,keepLastSelected: false
-                                     // ,init:function(grid, scope) {
-                                     //     console.log(grid, scope);
-                                     //     // $scope.$gridScope = scope;
-                                     //     window.grid = grid;
-                                     //     window.gridScope = scope;
-                                     //     window.appScope = $scope;
-                                     //     // $scope.pickFields(screenState.fieldGroup);
-                                     //     // $scope.viewState(screenState.filterState);
-                                     // }
-                                   };
+                                 ,columnDefs: "dbColumnDefs"
+                                 // ,columnDefs: $scope.columnDefs
+                                 ,rowHeight:25 
+                                 ,headerRowHeight: 30
+                                 ,rowTemplate:'<div style="height: 100%" ng-class="{gray: row.getProperty(\'modified\')==true}"><div ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell ">' +
+                                 '<div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }"> </div>' +
+                                 '<div ng-cell></div>' +
+                                 '</div></div>'
+                                 ,enableRowSelection: true
+                                 ,enableCellEditOnFocus: false
+                                 ,selectWithCheckboxOnly: false
+                                 ,enableCellEdit: false
+                                 ,showSelectionCheckbox: true
+                                 ,enableColumnResize: false
+                                 ,enableColumnReordering: true
+                                 ,enableRowReordering: true
+                                 ,showColumnMenu: false
+                                 ,showFilter: false
+                                 ,showGroupPanel: false
+                                 ,multiSelect: true
+                                 ,keepLastSelected: false
+                                 ,afterSelectionChange: dbSelectionChanged
+                                 // ,init:function(grid, scope) {
+                                 //     console.log(grid, scope);
+                                 //     // $scope.$gridScope = scope;
+                                 //     window.grid = grid;
+                                 //     window.gridScope = scope;
+                                 //     window.appScope = $scope;
+                                 //     // $scope.pickFields(screenState.fieldGroup);
+                                 //     // $scope.viewState(screenState.filterState);
+                                 // }
+                               };
         console.log('Done making dblist grid');
        
     }
@@ -124,29 +219,26 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         console.log('making grid');
         $scope.columnDefs =
             [
-                // {visGroup:'value', field:'type', displayName:'type', enableCellEdit: true, visible:true, width:40}
-                {visGroup:'value', field:'database', displayName:'database', enableCellEdit: false, visible:true, width:60}
-                ,{visGroup:'value', field:'design', displayName:'design', enableCellEdit: true, visible:true, width:70}
-                ,{visGroup:'key', field:'designPath', displayName:'designPath', enableCellEdit: true, visible:false, width:130}
-                ,{visGroup:'key', field:'groupPath', displayName:'groupPath', enableCellEdit: true, visible:false, width:130}
-                ,{visGroup:'value', field:'group', displayName:'group', enableCellEdit: true, visible:true, width:60}
-                ,{visGroup:'value', field:'name', displayName:'name', enableCellEdit: true, visible:true, width:70} //toggle
-                // ,{visGroup:'value', field:'commit', displayName:'commit',
-                //   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:50, visible:true }
-                ,{visGroup:'value', field:'copy', displayName:'copy',
-                  cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true }
-                ,{visGroup:'key', field:'paste', displayName:'paste',
-                  cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:false } //toggle
-                ,{visGroup:'value', field:'delete', displayName:'delete',
-                  cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true}
+                {visGroup:'hidden', field:'type', displayName:'type', enableCellEdit: true, visible:true, width:40}
+                ,{visGroup:'hidden', field:'funcType', displayName:'funcType', enableCellEdit: true, visible:true, width:70} //toggle
+                
+                ,{visGroup:'both', field:'database', displayName:'database', enableCellEdit: true, visible:true, cellTemplate: cellTemplate}
+                ,{visGroup:'both', field:'design', displayName:'design', enableCellEdit: true, visible:true, cellTemplate: cellTemplate}
+                ,{visGroup:'value', field:'name', displayName:'name', enableCellEdit: true, visible:true, cellTemplate: cellTemplate } //toggle
+                ,{visGroup:'both', field:'copy', displayName:'copy',
+                  cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true, cellTemplate: cellTemplate }
+                ,{visGroup:'doc', field:'paste', displayName:'paste',
+                  cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true, cellTemplate: cellTemplate } 
+                ,{visGroup:'both', field:'delete', displayName:'delete',
+                  cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true, cellTemplate: cellTemplate}
             ];
     
     
-        $scope.designRows =  [
-            { type:'value', database: 'db1', design: 'ddoc', group: 'views', name: 'myview', value: 'this is the value'}
-            ,{ type:'key',  designPath: 'db2/ddoc2' , value: 'some ddoc' }
-            ,{ type:'key',  groupPath:'db2/ddoc2/views', value: 'some view' }
-        ];
+        // $scope.designRows =  [
+        //     { type:'value', database: 'db1', design: 'ddoc', group: 'views', name: 'myview', value: 'this is the value'}
+        //     ,{ type:'key',  designPath: 'db2/ddoc2' , value: 'some ddoc' }
+        //     ,{ type:'key',  groupPath:'db2/ddoc2/views', value: 'some view' }
+        // ];
             
         $scope.designGridOptions = { data: 'designRows'
                                      ,columnDefs: "columnDefs"
@@ -158,7 +250,7 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
                                      '<div ng-cell></div>' +
                                      '</div></div>'
                                      ,enableRowSelection: true
-                                     ,enableCellEditOnFocus: true
+                                     ,enableCellEditOnFocus: false
                                      ,selectWithCheckboxOnly: false
                                      ,enableCellEdit: true
                                      ,showSelectionCheckbox: true
@@ -274,21 +366,20 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
     };
     
     
-    $scope.viewState1 = { values: 'active' };
-    $scope.viewState2 = { table: 'active' };
     
-    function setValueKeyAllState() {
+    function setValueDocState() {
         var filter = '';
         if (!$scope.viewState1.all) filter = 'type:' +
-            ($scope.viewState1.keys ? 'key' : 'value');
+            ($scope.viewState1.docs ? 'doc' : 'value');
         $scope.designGridOptions.$gridScope.filterText = filter;
         console.log('applying filter:', filter);
+        $scope.toggleViewStateGroup(funcType);
         
         $scope.columnDefs.forEach(function(c){
-            c.visible = $scope.viewState1.all ||
-                ($scope.viewState1.keys && c.visGroup === 'key') ||
+            //hidden, both, doc or  value
+            c.visible = $scope.viewState1.all || c.visGroup === 'both' ||
+                ($scope.viewState1.docs && c.visGroup === 'doc') ||
                 ($scope.viewState1.values && c.visGroup === 'value') ? true : false;
-            // console.log(c);
         }); 
         
     }
@@ -296,7 +387,7 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
     $scope.toggleValueKeyAll = function(toggle) {
         $scope.viewState1 = {};
         $scope.viewState1[toggle] = 'active';
-        setValueKeyAllState();
+        setValueDocState();
     };
     
     $scope.toggleViewState2 = function(toggle) {
@@ -304,22 +395,32 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         $scope.viewState2[toggle] = 'active';
     }; 
     
-    $scope.toggleMultipleSingle = function(toggle) {
-        $scope.multipleSingle = {};
-        $scope.multipleSingle[toggle] = 'active';
-    }; 
+    // $scope.toggleMultipleSingle = function(toggle) {
+    //     $scope.multipleSingle = {};
+    //     $scope.multipleSingle[toggle] = 'active';
+    // }; 
 
     console.log('end of design cntl', $scope.designGridOptions);
     if (!state.designDone) {
         state.designDone = true;
         defineGrid();
         defineDbGrid();
+        $scope.designDocs = {};
+        $scope.designRows = [];
+        
+        $scope.viewStateGroup = {}       ;
+        $scope.viewState1 = { values: 'active' };
+        funcType = 'validate';
+        // $scope.viewState2 = { table: 'active' };
+        // $scope.viewStateGroup.validate = 'active';
         
         console.log('in design done', $scope.designGridOptions);
         
         $scope.$on('initDesign',
                    function() {
-                       setValueKeyAllState();
+                       // setValueDocState();
+                       $scope.toggleValueKeyAll('values');
+                       // $scope.toggleViewStateGroup('validate');
                        console.log('in initDesign');
                        // console.log("REPS", state.reps);
                        // makeGrid();

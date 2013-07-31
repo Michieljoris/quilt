@@ -169,9 +169,9 @@ var VOW = (function () {
                         return vow.promise;
                     }
                 }
-            };
+           };
         },
-        every: function every(array) {
+       every: function every(array) {
 
 // The every function takes an array of promises and returns a promise that
 // will deliver an array of results only if every promise is kept.
