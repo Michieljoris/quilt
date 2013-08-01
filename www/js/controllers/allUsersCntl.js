@@ -1,25 +1,16 @@
-/*global VOW:false $:false angular:false couchapi:false */
-/*jshint strict:false unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
-/*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/
+/*global console:false VOW:false $:false angular:false couchapi:false */
 
 
 angular.module("myApp").controller("allUsersCntl", function ($scope, $location, state, defaults, persist) {
     
-    
+    "use strict";
     console.log('In allUsersCntl');
     $scope.getGridWidth = function() {
         if ($scope.viewState.admins) return "narrow";
         return '';
     };
     
-    $scope.getRowClass = function(row) {
-        // console.log('row', row);
-        if (row.selected && row.getProperty('modified')) return 'selectedAndModified';
-        if (row.getProperty('modified')) return 'modified';
-        return '';
-    }; 
-    
-    $scope.gridClick = function(field, row) {
+   $scope.gridClick = function(field, row) {
          editUser(row);
     };
     

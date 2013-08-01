@@ -1,13 +1,21 @@
-/*global angular:false couchapi:false */
-/*jshint strict:false unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
-/*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/ 
+/*global cookie:false angular:false couchapi:false */
 
 
 angular.module("myApp").controller("mainCntl", function ($scope, $location, state, defaults) {
     // window.mainCntl = function ($location, $scope, $http) {
+    "use strict";
+    
     console.log('in main');
     $scope.connected = false;
     $scope.state = state;
+     
+    $scope.getRowClass = function(row) {
+        // console.log('row', row);
+        if (row.selected && row.getProperty('modified')) return 'selectedAndModified';
+        if (row.getProperty('modified')) return 'modified';
+        return '';
+    }; 
+    
     
     $scope.changeCouchDbUrl = function(url) {
       console.log("Switching to different couchDB url", url)  ;
@@ -126,7 +134,7 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
         ,{ name: 'examine', menu: 'Examine'}
         // ,{ name: 'log', menu: 'Log'}
         // ,{ name: 'test', menu: 'Test'}
-        ,{ name: 'quilt', menu: 'Quilt'}
+        // ,{ name: 'quilt', menu: 'Quilt'}
         ,{ name: 'futon', menu: 'Futon'}
         // ,{ name: 'simple', menu: 'Simple setup'}
         ];

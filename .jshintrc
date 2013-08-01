@@ -1,0 +1,15 @@
+{
+    "laxcomma":true,
+    "camelcase":true,
+    "eqeqeq":true,
+    "immed":true,
+    "newcap":false,
+    "noempty":true,
+    "undef":true,
+    "unused":true,
+    "strict":true,
+    "devel":true,
+    "jquery":true,
+    "browser":true
+
+}

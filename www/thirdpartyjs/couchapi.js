@@ -146,9 +146,9 @@ define(
         };
         
         //call returned object.stop to finish receiving changes
-        api.dbChanges = function(cb, aDbName) {
+        api.dbChanges = function(cb, aDbName, options) {
             if (aDbName) dbName = aDbName;
-            var changes = $.couch.db(dbName).changes();
+            var changes = $.couch.db(dbName).changes(null, options);
             changes.onChange(
                 cb 
             );

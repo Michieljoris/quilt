@@ -149,7 +149,8 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
             function(url) {
                 $.couch.urlPrefix = url;
                 state.dbUrl = state.connected = url;
-                return persist.init(url, 'create', state);
+                // return persist.init(url, 'create', state);
+                return persist.init(url, false, state);
             }
         ).when(
             function() {
@@ -214,7 +215,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
             );
         
         return vow.promise;
-    }; 
+    } 
     //end of init
     
     var initScreen = {};
@@ -271,13 +272,24 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
     };
     
     initScreen['#design'] = function() {
-        return initScreen['#databases']();
+       var vow = VOW.make(); 
+        initScreen['#databases']().when(
+            function() {
+                $rootScope.$broadcast('initDesign');
+                vow.keep();
+            },
+            function() {
+                $rootScope.$broadcast('initDesign');
+                vow.keep();
+            });
+        return vow.promise;
        };
     
     initScreen['#databases'] = function() {
         console.log('initing #databases');
         var vow = VOW.make();
-        couchapi.dbAll().when(
+        if (state.databases) vow.keep();
+        else couchapi.dbAll().when(
             function(databases) {
                 console.log(databases);
                 state.databases = databases.filter(function(str) {
@@ -291,8 +303,8 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 
                 console.log('broadcasting');
                 $rootScope.$broadcast('initDatabases');
-                $rootScope.$broadcast('initDesign');
                 // $rootScope.$broadcast('initDesign');
+                // $rootScope.$broadcast('initExamine');
                 
                 vow.keep();
                 
@@ -346,8 +358,15 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         $rootScope.selectedExamineTab = localStorage.getItem('quilt_selectedExamineTab') ||
             'Query';
         
-        $rootScope.$broadcast('initExamine');
-        vow.keep();
+        initScreen['#databases']().when(
+            function() {
+                $rootScope.$broadcast('initExamine');
+                vow.keep();
+            },
+            function() {
+                $rootScope.$broadcast('initExamine');
+                vow.keep();
+            });
         return vow.promise;
     };
     
@@ -384,7 +403,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
             // timer = false;
             initScreen[screen]().when(
                 function(data){
-                    console.log( 'in setActiveScreen');
+                    console.log( 'done with setActiveScreen, $applying');
                     $scope.$apply();
                 }
                 ,function(err){

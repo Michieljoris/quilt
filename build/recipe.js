@@ -146,6 +146,7 @@ var exports = {
                     ,   'controllers/changesCntl'
                     ,   'controllers/logCntl'
                     ,   'controllers/testCntl'
+                    ,'controllers/quiltCntl'
                     
                     // ,'controllers/treeCntl'
                 ],

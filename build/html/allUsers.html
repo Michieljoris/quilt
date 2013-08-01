@@ -18,14 +18,14 @@
       Search: <input ng-change="search()"  ng-model="searchText">
       <!-- <span class="btn-group"> -->
       <!--   <button ng-class="searchState.names" style="width:100px" -->
-		     <!--           type="button" class="btn btn-small btn-inverse" ng-click="toggleSearch('names')">names</button> -->
-		     <!--   <button ng-class="searchState.roles" style="width:100px" -->
-				    <!--           type="button" class="btn btn-small btn-inverse" -->
-				    <!--           ng-click="toggleSearch('roles')">roles</button> -->
-				    <!-- </span> -->
-				    <!-- <div style="padding-bottom:10px;" > -->
-				    <!--      Search: <input ng-change="search()"  ng-model="searchText"> -->
-				    <!-- </div> -->
+      <!--           type="button" class="btn btn-small btn-inverse" ng-click="toggleSearch('names')">names</button> -->
+      <!--   <button ng-class="searchState.roles" style="width:100px" -->
+      <!--           type="button" class="btn btn-small btn-inverse" -->
+      <!--           ng-click="toggleSearch('roles')">roles</button> -->
+      <!-- </span> -->
+      <!-- <div style="padding-bottom:10px;" > -->
+      <!--      Search: <input ng-change="search()"  ng-model="searchText"> -->
+      <!-- </div> -->
     </div>
 
     <div class="span3">
@@ -60,29 +60,31 @@
   <div class="row">
     <div ng-class="getGridWidth()" class="span10 gridStyle" ng-grid="usersGridOptions"></div>
 
-    <div  ng-show="viewState.admins" class="well span2">
-   Click on a row to set the server admin's password, or tick the
-   delete boxes for the server admins you want to delete and click Apply.
-    </div>
-    <div  ng-hide="viewState.admins" class="well span2">
-      <div ng-hide="selectedUser">Click on a row to load and edit a user's
-	password and roles</div>
-      <div ng-show="selectedUser">
-        <h3>{{selectedUser._id.slice(17)}}</h3>
-        Password: <a href="#" id="changeUserPwd" data-type="password"></a><br>
-
-        <div ng-hide="viewState.admins">
-          <!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -->
-          Roles: <br> <a href="#" id="userRoles" class="userRoles"
-                         data-type="select2"></a> <br>
-        </div>
-        <p></p>
-
-        <!-- <button ng-show="edited" class="btn btn-small btn-primary" ng-click="applySingle()">Apply</button> -->
+    <div class="span2" style="margin-left:10px;">
+      <div  ng-show="viewState.admins" class="well">
+        Click on a row to set the server admin's password, or tick the
+        delete boxes for the server admins you want to delete and click Apply.
       </div>
-      <!-- <pre>{{selectedUser | json}}</pre> -->
-    </div>
+      <div  ng-hide="viewState.admins" class="well">
+        <div ng-hide="selectedUser">Click on a row to load and edit a user's
+          password and roles</div>
+        <div ng-show="selectedUser">
+          <h3>{{selectedUser._id.slice(17)}}</h3>
+          Password: <a href="#" id="changeUserPwd" data-type="password"></a><br>
 
+          <div ng-hide="viewState.admins">
+            <!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -->
+            Roles: <br> <a href="#" id="userRoles" class="userRoles"
+                           data-type="select2"></a> <br>
+          </div>
+          <p></p>
+
+          <!-- <button ng-show="edited" class="btn btn-small btn-primary" ng-click="applySingle()">Apply</button> -->
+        </div>
+        <!-- <pre>{{selectedUser | json}}</pre> -->
+      </div>
+
+    </div>
   </div>
 
 
