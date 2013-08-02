@@ -17,8 +17,8 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
         { title:"Query", content:"", url: "built/ex_query.html" }
         ,{ title:"Conflicts", content:"", url: "built/ex_conflicts.html" }
         ,{ title:"Changes", content:"", url: "built/ex_changes.html" }
-        ,{ title:"Log", content:"", url: "built/ex_log.html" }
         ,{ title:"Test", content:"", url: "built/ex_test.html" }
+        ,{ title:"Log", content:"", url: "built/ex_log.html" }
     ];
     
     var tabsObj = (function() {
@@ -93,59 +93,49 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
     var initTab = {};
     var dbSelChanged = {};
     
-    initTab.Test = function() {
-        showDbList(false);
-       }; 
-    
-    initTab.Conflicts = function() {
-        showDbList(true);
-        $scope.conflictsSelDbs = $scope.conflictsSelDbs || [];
-        var saved = dbSelChanged.Conflicts;
-        delete dbSelChanged.Conflicts;
+    function showSelectedDatabases(tab) {
+        
+        $scope.selDbs[tab] = $scope.selDbs[tab] || [];
+        var saved = dbSelChanged[tab];
+        delete dbSelChanged[tab];
         state.databases.forEach(function(db, i) {
-            $scope.dbGridOptions.selectItem(i, $scope.conflictsSelDbs.indexOf(db.name) !== -1);
+            $scope.dbGridOptions.selectItem(i, $scope.selDbs[tab].indexOf(db.name) !== -1);
         });
-        dbSelChanged.Conflicts = saved;
-    };
-    
-    dbSelChanged.Conflicts = function() {
-        console.log('setting and removing changes listeners for conflicts');
-        $scope.conflictsSelDbs = $scope.selDatabases;
-       }; 
-    
-    
-    
+        dbSelChanged[tab] = saved;
+    }
+
+    //Query
     initTab.Query = function() {
         showDbList(true);
-        $scope.querySelDbs = $scope.querySelDbs || [];
-        var saved = dbSelChanged.Query;
-        delete dbSelChanged.Query;
-        state.databases.forEach(function(db, i) {
-            $scope.dbGridOptions.selectItem(i, $scope.querySelDbs.indexOf(db.name) !== -1);
-        });
-        dbSelChanged.Query = saved;
+        showSelectedDatabases('Query');
     };
     
-    dbSelChanged.Query = function() {
+    dbSelChanged.Query = function(selDbs) {
         console.log('setting and removing changes listeners for query');
-        $scope.querySelDbs = $scope.selDatabases;
+        $scope.selDbs.Query = selDbs;
        }; 
+
+    //Conflicts
+    initTab.Conflicts = function() {
+        showDbList(true);
+        showSelectedDatabases('Conflicts');
+    };
     
+    dbSelChanged.Conflicts = function(selDbs) {
+        console.log('setting and removing changes listeners for conflicts');
+        $scope.selDbs.Conflicts = selDbs;
+       }; 
+
+    //Changes
     initTab.Changes = function() {
         showDbList(true);
-        $scope.changesSelDbs = $scope.changesSelDbs || [];
-        var saved = dbSelChanged.Changes;
-        delete dbSelChanged.Changes;
-        state.databases.forEach(function(db, i) {
-            $scope.dbGridOptions.selectItem(i, $scope.changesSelDbs.indexOf(db.name) !== -1);
-        });
-        dbSelChanged.Changes = saved;
+        showSelectedDatabases('Changes');
     };
     
-    dbSelChanged.Changes = function() {
+    dbSelChanged.Changes = function(selDbs) {
         console.log('setting and removing changes listeners for changes');
-        $scope.changesSelDbs = $scope.selDatabases;
-        $scope.selDatabases.forEach(function(db) {
+        $scope.selDbs.Changes = selDbs;
+        selDbs.forEach(function(db) {
             if (!$scope.changes[db]) {
                 $scope.changes[db] = {};
                 $scope.listeners[db] =
@@ -153,7 +143,7 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
             }
         });
         Object.keys($scope.listeners).forEach(function(l) {
-            if ($scope.selDatabases.indexOf(l) === -1) {
+            if (selDbs.indexOf(l) === -1) {
                 $scope.listeners[l].stop();
                 delete $scope.changes[l];
             }
@@ -168,11 +158,21 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
                 });
                 $scope.$apply();
             };
-            
         }
     };
     
+    //Test
+    initTab.Test = function() {
+        showDbList(false);
+        showSelectedDatabases('Test');
+       }; 
     
+    dbSelChanged.Test = function(selDbs) {
+        console.log('setting and removing changes listeners for test');
+        $scope.selDbs.Test = selDbs;
+       }; 
+    
+    //Log
     initTab.Log = function() {
         showDbList(false);
         console.log('initing tab Log');
@@ -195,7 +195,8 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
             }
         );
     };
-    
+
+    //-----------------------------
     function dbSelectionChanged() {
         var selRows = $scope.dbGridOptions.
             $gridScope.selectedItems;
@@ -203,26 +204,11 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
         selRows.forEach(function(r) {
             selDatabases.push(r.name);
         });
-        // console.log(selDatabases);
-        
-        // var added = [];
-        // var removed = [];
-        // selDatabases.forEach(function(db) {
-        //     if ($scope.selDatabases.indexOf(db) === -1) added.push(db);
-        // });
-        // $scope.selDatabases.forEach(function(db) {
-        //    if (selDatabases.indexOf(db) === -1) removed.push(db); 
-        // });
-        
-        // $scope.added = added;
-        // $scope.removed = removed;
-        $scope.selDatabases = selDatabases;
         
         var tab = $scope.selectedExamineTab;
-        // console.log(tab, dbSelChanged);
         
         if (dbSelChanged[tab])
-            dbSelChanged[tab]();
+            dbSelChanged[tab](selDatabases);
     }        
     
     $scope.tabSelected = function(tab) {
@@ -240,9 +226,11 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
     if (!state.examineDone) {
         state.examineDone = true;
         defineDbGrid();
+        
         $scope.changes = {};
-        $scope.selDatabases = [];
         $scope.listeners = {};
+        
+        $scope.selDbs = {};
         
         $scope.$on('initExamine',
                    function() {

@@ -1035,6 +1035,7 @@
                 }
             },
             complete: function(req) {
+                console.log('in query' , req);
                 try {
                     var resp = $.parseJSON(req.responseText);
                 } catch(e) {
@@ -1053,8 +1054,8 @@
                     if (options.beforeSuccess) options.beforeSuccess(req, resp);
                     if (options.success) options.success(resp);
                 } else if (options.error) {
-                    options.error(req.status, resp && resp.error ||
-                                  errorMessage, resp && resp.reason || "no response");
+                    options.error(req.status, resp && resp.reason ||
+                                  errorMessage, resp && resp.error || "no response");
                 } else {
                     throw errorMessage + ": " + resp.reason;
                 }

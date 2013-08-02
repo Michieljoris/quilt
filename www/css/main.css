@@ -1326,4 +1326,8 @@ body .modal {
     background:rgba(0, 0, 0, 0.63);
 }
 
-
+.cellSelect {
+    width:100%;
+    height:25px;
+    font-size:12px;
+}

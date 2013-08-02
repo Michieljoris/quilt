@@ -162,28 +162,28 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 return couchapi.session();
             } 
         ).when(
-           function(sessionInfo) {
-               if (sessionInfo && sessionInfo.userCtx && sessionInfo.userCtx.name) {
-                   state.user = sessionInfo.userCtx;
-                   state.userShortList = persist.get('userShortList') || [];
-                   if (state.userShortList.indexOf(state.user.name) === -1) {
-                       state.userShortList.push(state.user.name);
-                       persist.put('userShortList', state.userShortList);
-                   }
-               }
-               console.log(sessionInfo, state.user);
-               return VOW.kept();
-           } 
+            function(sessionInfo) {
+                if (sessionInfo && sessionInfo.userCtx && sessionInfo.userCtx.name) {
+                    state.user = sessionInfo.userCtx;
+                    state.userShortList = persist.get('userShortList') || [];
+                    if (state.userShortList.indexOf(state.user.name) === -1) {
+                        state.userShortList.push(state.user.name);
+                        persist.put('userShortList', state.userShortList);
+                    }
+                }
+                console.log(sessionInfo, state.user);
+                return VOW.kept();
+            } 
         ).when(
             function() {
-               return checkCors(); 
+                return checkCors(); 
             }
         ).when(
             function() {
                 console.log('cors configured?', state.corsConfigured);
                 var url = state.connected; 
                 state.advanced = cookie.get('quilt_advanced');
-                var activeScreen;
+                    var activeScreen;
                 if (url.indexOf('1234') !== -1)  {
                     state.maybeCors = true;
                     activeScreen = '#enableCors';
@@ -198,30 +198,44 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 
                 clearTimeout(timer);
                 state.activeScreen = activeScreen;
-                return initScreen[activeScreen] ? initScreen[activeScreen]() : VOW.kept();
+                
+                return initScreen['#allUsers']();
                 // couchapi.withCredentials(false);
             }).when(
-                function(data) {
-                    console.log('All good!!!' , data);
-                    clearTimeout(timer);
-                    vow.keep(data);
-                },
-                function(err) {
-                    state.connected = false;
-                    clearTimeout(timer);
-                    vow.keep(err);
-                    // couchapi.withCredentials(false);
-                }
-            );
+                function() {
+                    return initScreen['#databases']();
+                }).when(
+                    function() {
+                        if (state.activeScreen !== '#allUsers' &&
+                            state.activeScreen !== '#databases' &&
+                            initScreen[state.activeScreen])
+                            return initScreen[state.activeScreen]();
+                        else return VOW.kept();
+                    }
+                ).when(
+                    function(data) {
+                        console.log('All good!!!' , data);
+                        clearTimeout(timer);
+                        vow.keep(data);
+                    },
+                    function(err) {
+                        state.connected = false;
+                        clearTimeout(timer);
+                        vow.keep(err);
+                        // couchapi.withCredentials(false);
+                    }
+                );
         
-        return vow.promise;
+            return vow.promise;
     } 
     //end of init
     
     var initScreen = {};
     
     initScreen['#allUsers']  = function() {
+        
         console.log('initing #users');
+        if (state.allUsers) return VOW.kept();
         var vow = VOW.make();
             
         var admins = Object.keys(
@@ -242,26 +256,27 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 
                 admins.forEach(function(a) {
                     users.push( {
-                        _id: a, pwd: '', type: 'admin'
+                        _id: a, pwd: '', type: 'admin', name: a
                     });
                 });
                 console.log('USERS:', users);               
                 
                 // users.forEach()
                 state.allUsers = users;
-                return VOW.keep();
+                return VOW.kept();
                 
                 //are we fetching the user docs here?
                 //could be troublesome with 1000 users or more..
             }).when(
-                function(users) {
-                    state.allUsers = users;
+                function() {
+                    // state.allUsers = users;
                     vow.keep();
                     $rootScope.$broadcast('initAllUsers');
                     
                 }
                 ,function(err) {
-                    state.users = null;
+                    console.log('ERROR', err);
+                    state.allUsers = [];
                     
                     $rootScope.$broadcast('initAllUsers');
                     vow.keep();
@@ -357,6 +372,8 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         var vow = VOW.make();
         $rootScope.selectedExamineTab = localStorage.getItem('quilt_selectedExamineTab') ||
             'Query';
+        state.tests = persist.get("quilt_tests") || [];
+        state.testDocs = persist.get("quilt_testDocs") || [];
         
         initScreen['#databases']().when(
             function() {

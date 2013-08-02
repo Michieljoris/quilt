@@ -79,11 +79,13 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
     };
     
     $scope.login = function () {
+        state.allUsers = null;
+        state.databases = null;
         couchapi.login($scope.loginText, $scope.passwordText).when(
             function(data) {
-                console.log(data);
+                console.log('DATA from login', data);
                 state.user = data;
-                $scope.passwordText = null;
+                // $scope.passwordText = null;
                 state.initialize($scope);
                 // $scope.$apply();
             },

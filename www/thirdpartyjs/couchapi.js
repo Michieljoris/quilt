@@ -163,7 +163,15 @@ define(
                     data.uri = $.couch.db(dbName).uri;
                     vow.keep(data);
                 },
-                error: vow.break
+                error: function(status, reason) {
+                    var data = { status: status };
+                    
+                    if (typeof reason === 'string')
+                        data.reason = reason;
+                    else data.reason = reason.responseText;
+                        
+                 vow.break(data);   
+                }
             });
             
             return vow.promise;
