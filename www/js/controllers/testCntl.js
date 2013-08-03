@@ -4,6 +4,9 @@
 angular.module("myApp").controller("testCntl", function ($scope, state, defaults, persist) {
     "use strict";
     
+    $scope.parentModel =  { myobject: { one:1, b:[1,2,['a', 'b']], c:"a string"  ,d: { a:1 } }};
+    $scope.editDocs = true;
+    
     console.log('In testCntl');
 
     // $scope.search = function () {
@@ -14,10 +17,24 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
         'type="checkbox" ng-checked="row.getProperty(col.field)"></input>';
     
     var cellTemplate =
-        '<div ng-click="designGridClick(col.field, row.entity, !row.selected)" class="ngCellText" ng-class="col.colIndex()"><span ng-cell-text>{{COL_FIELD}}</span></div>';
+            '<div ng-click="designGridClick(col.field, row.entity, !row.selected)" class="ngCellText" ng-class="col.colIndex()"><span ng-cell-text>{{COL_FIELD}}</span></div>';
+    
+    var testDocCellTemplate =
+            '<div ng-click="testDocClick(col.field, row.entity, !row.selected)" class="ngCellText" ng-class="col.colIndex()"><span ng-cell-text>{{COL_FIELD}}</span></div>';
+    $scope.testDocClick = function(field, row) {
+        console.log(field, row);
+        $scope.selectedRow = row;
+    };
+    
+    
+    $scope.$watch('selectedRow.value', function() {
+        console.log('change:', $scope.selectedRow.value);
+    });
+    
+    $scope.selectedRow = { value: {} };
     
     var userCellTemplate =
-        '<div> <select class="cellSelect" ng-model="COL_FIELD"> <option ng-repeat="status in statuses">{{status}}</option> </select> </div>';
+            '<div> <select class="cellSelect" ng-model="COL_FIELD"> <option ng-repeat="status in statuses">{{status}}</option> </select> </div>';
     
     var editableCellTemplateUsers = '<select id="comboSelect" class="cellSelect" ng-index="COL_FIELD" ng-combobox ng-options="s.name as s.name for s in state.allUsers" list="items" ng-model="row.entity.user"> </select>';
     var editableCellTemplateDatabases = '<select id="comboSelect" class="cellSelect" ng-index="COL_FIELD" ng-combobox ng-options="db.name as db.name for db in state.databases" list="items" ng-model="row.entity.database"> </select>';
@@ -53,7 +70,6 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
             $scope.designGridOptions.$gridScope.filterText =
             'type:value;funcType:' + $scope.funcType + ';';
     };
-    
     function defineGrid() {
         console.log('making test grid');
         $scope.columnDefs =
@@ -61,24 +77,33 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
                 
                 {visGroup:'both', field:'database', displayName:'database', enableCellEdit: true, visible:true
                  ,editableCellTemplate: editableCellTemplateDatabases
+                 ,width:120
                  // ,cellTemplate: cellTemplate
                 }
                 ,{visGroup:'both', field:'user', displayName:'user', enableCellEdit: true, visible:true
                   // ,cellTemplate: cellTemplate,
                   // ,editableCellTemplate: userCellTemplate
+                  ,width:120
                   ,editableCellTemplate: editableCellTemplateUsers
                  }
-                ,{visGroup:'value', field:'pwd', displayName:'password', enableCellEdit: true, visible:true, cellTemplate: cellTemplate } //toggle
+                ,{visGroup:'value', field:'pwd', displayName:'password', enableCellEdit: true, visible:true,
+                  width:80,
+                  cellTemplate: cellTemplate } //toggle
                 ,{visGroup:'value', field:'doc', displayName:'doc', enableCellEdit: true, visible:true,
                   editableCellTemplate: editableCellTemplateTestDocs
+                  ,width:150
                   // cellTemplate: cellTemplate
                  } //toggle
-                ,{visGroup:'value', field:'pass', displayName:'pass', enableCellEdit: false, visible:true  } 
+                ,{visGroup:'value', field:'pass', displayName:'pass', enableCellEdit: false, visible:true
+                  ,width:50
+                 } 
                 ,{visGroup:'both', field:'expected', displayName:'expected'
                   // ,cellTemplate: checkBoxTemplate
                   ,editableCellTemplate: editableCellTemplateResult
                   ,enableCellEdit:true, width:80, visible:true}
-                ,{visGroup:'value', field:'result', displayName:'result', enableCellEdit: false, visible:true, cellTemplate: cellTemplate } //toggle
+                ,{visGroup:'value', field:'result', displayName:'result', enableCellEdit: false
+                  ,width:80
+                  ,visible:true, cellTemplate: cellTemplate } //toggle
                 ,{visGroup:'value', field:'reason', displayName:'(reason)', enableCellEdit: false, visible:true, cellTemplate: cellTemplate } //toggle
                 ,{visGroup:'both', field:'quilt', displayName:'quilt',
                   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true}
@@ -126,6 +151,64 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
                                  };
         console.log('Done making grid');
        
+    }
+    
+    function defineDocGrid() {
+        console.log('making test grid');
+        $scope.docsColumnDefs =
+            [
+                {visGroup:'value', field:'doc', displayName:'doc', enableCellEdit: false, visible:true,
+                 // editableCellTemplate: editableCellTemplateTestDocs,
+                 cellTemplate: testDocCellTemplate
+                 // ,width:150
+                 // cellTemplate: cellTemplate
+                } //toggle
+                ,{visGroup:'both', field:'quilt', displayName:'quilt',
+                  cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true}
+            ];
+    
+    
+        // $scope.designRows =  [
+        //     { type:'value', database: 'db1', design: 'ddoc', group: 'views', name: 'myview', value: 'this is the value'}
+        //     ,{ type:'key',  designPath: 'db2/ddoc2' , value: 'some ddoc' }
+        //     ,{ type:'key',  groupPath:'db2/ddoc2/views', value: 'some view' }
+        // ];
+            
+        $scope.testDocsGridOptions = { data: 'state.testDocs'
+                                       ,columnDefs: "docsColumnDefs"
+                                       // ,columnDefs: $scope.columnDefs
+                                       ,rowHeight:25 
+                                       ,headerRowHeight: 30
+                                       ,rowTemplate:'<div style="height: 100%" ng-class="getRowClass(row)"><div ng-style="{ \'cursor\': row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell ">' +
+                                       '<div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }"> </div>' +
+                                       '<div ng-cell></div>' +
+                                       '</div></div>'
+                                       ,enableRowSelection: true
+                                       ,enableCellEditOnFocus: false
+                                       ,selectWithCheckboxOnly: true
+                                       ,enableCellEdit: true
+                                       ,enableCellSelection: true
+                                       ,showSelectionCheckbox: true
+                                       ,enableColumnResize: true
+                                       ,enableColumnReordering: true
+                                       ,enableRowReordering: true
+                                       ,showColumnMenu: false
+                                       ,showFilter: false
+                                       ,showGroupPanel: false
+                                       ,multiSelect: true
+                                       ,keepLastSelected: false
+                                       // ,init:function(grid, scope) {
+                                       //     console.log(grid, scope);
+                                       //     // $scope.$gridScope = scope;
+                                       //     window.grid = grid;
+                                       //     window.gridScope = scope;
+                                       //     window.appScope = $scope;
+                                       //     // $scope.pickFields(screenState.fieldGroup);
+                                       //     // $scope.viewState(screenState.filterState);
+                                       // }
+                                     };
+        console.log('Done making testdoc grid');
+       
     } 
     
     // var screenState = {
@@ -137,39 +220,39 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
     
     $scope.modifiedCount = 0;
     // $scope.originalRows = {};
-    function endEdit(row, field, old) {
-        if (!row.original) row.original = (function() {
-            var original = angular.copy(row);  
-            original[field] = old;
-            console.log(JSON.stringify(original,null, ' '));
-            return original;
-        })();
-        console.log(row, field, old);
-        var different = Object.keys(row).some(function(e) {
-            if (e === 'modified' || e === 'original' || (!row[e] && !row.original[e]) ||
-                angular.equals(row[e], row.original[e])) return false; 
-            return true;
-        });
-        console.log(different);
+        function endEdit(row, field, old) {
+            if (!row.original) row.original = (function() {
+                var original = angular.copy(row);  
+                original[field] = old;
+                console.log(JSON.stringify(original,null, ' '));
+                return original;
+            })();
+            console.log(row, field, old);
+            var different = Object.keys(row).some(function(e) {
+                if (e === 'modified' || e === 'original' || (!row[e] && !row.original[e]) ||
+                    angular.equals(row[e], row.original[e])) return false; 
+                return true;
+            });
+            console.log(different);
         
-        if (different && !row.modified) {
-            console.log(1);
-            row.modified = true;   
-            $scope.modifiedCount++;
-        }
+            if (different && !row.modified) {
+                console.log(1);
+                row.modified = true;   
+                $scope.modifiedCount++;
+            }
         
-        if (!different && row.modified) {
+            if (!different && row.modified) {
             
-            console.log(2);
-            row.modified = false;
-            $scope.modifiedCount--;   
-        }
-    } 
+                console.log(2);
+                row.modified = false;
+                $scope.modifiedCount--;   
+            }
+        } 
     
     $scope.undo = function() {
         console.log('undo');
-        var selRows = $scope.testGridOptions.$gridScope.selectedItems;
-            if (selRows.length === 0) alert('Please select rows to undo');
+            var selRows = $scope.testGridOptions.$gridScope.selectedItems;
+        if (selRows.length === 0) alert('Please select rows to undo');
         angular.forEach(selRows, function(selRow) {
             var originalRow = selRow.original;
             if (originalRow) {
@@ -201,6 +284,18 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
     
     $scope.apply = function() {
         var array = [];
+        if ($scope.editDocs) {
+            state.testDocs.forEach(function(t) {
+                delete t.original;
+                delete t.modified;
+                if (t.quilt) {
+                    array.push(t);    
+                }
+            }); 
+            persist.put("quilt_testDocs", array);
+            
+            return;
+        }
         state.tests.forEach(function(t) {
             delete t.original;
             delete t.modified;
@@ -236,6 +331,16 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
     };
 
     $scope.newRow = function() {
+        if ($scope.editDocs) {
+            var newRow = {
+                doc: "New test doc",
+                value: { value: {} },
+                quilt: true
+            };
+            state.testDocs.push(newRow);
+                endEdit(newRow, "quilt", false);
+            
+        }
         
         console.log('adding new test', $scope.selDbs.Test);
         if (true || $scope.selDbs.Test && $scope.selDbs.Test[0]) {
@@ -386,6 +491,7 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
     // }; 
 
     defineGrid();
+    defineDocGrid();
     $scope.passed = { all: 'active' };
     if (!state.testDone) {
         state.testDone = true;

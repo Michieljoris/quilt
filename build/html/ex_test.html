@@ -2,55 +2,60 @@
   <div ng-hide="state.configAccessible">
     <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b><p>
       <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
-	in your CouchDB</button>
+        in your CouchDB</button>
   </div>
 
   <div ng-show="state.configAccessible">
 
     <div class="row">
-      <div class="rep-buttons span4">
-	<button class="btn btn-success" ng-click="newRow()">New</button>
-	<!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
-	<!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
-	<button class="btn btn-danger" ng-click="apply()">Apply</button>
-	<button ng-disabled="modifiedCount == 0" class="btn btn-warning"
-		ng-click="undo()">Undo edits</button>
-	
-	<!-- <button class="btn btn-success" ng-click="test()">try</button> -->
-	<!-- <button class="btn btn-info" ng-click="apply()">Go</button> -->
+      <div class="rep-buttons span6">
+        <button class="btn btn-success" ng-click="newRow()">New</button>
+        <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
+        <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
+        <button class="btn btn-danger" ng-click="apply()">Apply</button>
+        <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
+                ng-click="undo()">Undo edits</button>
 
-	<!-- Search: <input ng-change="search()"  ng-model="searchText"> -->
-	<!-- <span class="btn-group"> -->
-	<!--   <button ng-class="searchState.names" style="width:100px" -->
-	<!--           type="button" class="btn btn-small btn-inverse" ng-click="toggleSearch('names')">names</button> -->
-	<!--   <button ng-class="searchState.roles" style="width:100px" -->
-	<!--           type="button" class="btn btn-small btn-inverse" -->
-	<!--           ng-click="toggleSearch('roles')">roles</button> -->
-	<!-- </span> -->
-	<!-- <div style="padding-bottom:10px;" > -->
-	<!--      Search: <input ng-change="search()"  ng-model="searchText"> -->
-	<!-- </div> -->
+        <!-- <button class="btn btn-success" ng-click="test()">try</button> -->
+        <!-- <button class="btn btn-info" ng-click="apply()">Go</button> -->
+
+        <!-- Search: <input ng-change="search()"  ng-model="searchText"> -->
+        <!-- <span class="btn-group"> -->
+        <!--   <button ng-class="searchState.names" style="width:100px" -->
+		       <!--           type="button" class="btn btn-small btn-inverse" ng-click="toggleSearch('names')">names</button> -->
+		       <!--   <button ng-class="searchState.roles" style="width:100px" -->
+				      <!--           type="button" class="btn btn-small btn-inverse" -->
+				      <!--           ng-click="toggleSearch('roles')">roles</button> -->
+				      <!-- </span> -->
+				      <!-- <div style="padding-bottom:10px;" > -->
+				      <!--      Search: <input ng-change="search()"  ng-model="searchText"> -->
+				      <!-- </div> -->
       </div>
 
-      <div class="span3">
+      <div class="span6">
 
-	<div class="btn-group pull-right ">
+        <div class="btn-group pull-right" style="margin-right:0px;">
+          <button ng-class="{active:editDocs}" style="width:100px" type="button"
+                  class="btn btn-inverse"
+                  ng-click="editDocs=!editDocs">Edit docs</button>
+        </div>
+
+        <div ng-hide="editDocs" class="btn-group pull-right " style="margin-right:10px;">
           <button ng-class="passed.all" style="width:70px" type="button"
-		  class="btn btn-inverse"
-		  ng-click="togglePassed('all')">All</button>
+                  class="btn btn-inverse"
+                  ng-click="togglePassed('all')">All</button>
           <button ng-class="passed.passed" style="width:70px" type="button"
-		  class="btn btn-inverse"
-		  ng-click="togglePassed('passed')">Passed</button>
+                  class="btn btn-inverse"
+                  ng-click="togglePassed('passed')">Passed</button>
 
           <button ng-class="passed.failed" style="width:70px" type="button"
-		  class="btn btn-inverse"
-		  ng-click="togglePassed('failed')">Failed</button>
+                  class="btn btn-inverse"
+                  ng-click="togglePassed('failed')">Failed</button>
           <button ng-class="passed.indeterminate" style="width:70px" type="button"
-		  class="btn btn-inverse"
-		  ng-click="togglePassed('indeterminate')">?</button>
+                  class="btn btn-inverse"
+                  ng-click="togglePassed('indeterminate')">?</button>
 
-	</div>
-
+        </div>
       </div>
 
     </div>
@@ -69,8 +74,16 @@
     <!-- <input type="text" ui-select2="select2Options" ng-model="list_of_string" /> -->
 
     <!-- </div> -->
-    <div class="row">
-      <div ng-class="getGridWidth()" class="span7 gridStyle" ng-grid="testGridOptions"></div>
+    <div  class="row">
+      <div ng-hide="editDocs" ng-class="getGridWidth()" class="span12 gridStyle" ng-grid="testGridOptions"></div>
+
+      <div ng-show="editDocs" ng-class="getGridWidth()" class="span4 gridStyle" ng-grid="testDocsGridOptions"></div>
+      <div class="span5">
+	<div class="objectEditor" my-attr="selectedRow.value"></div><br>
+      </div>
+      <div class="span3">
+        <pre>{{selectedRow | json}}</pre>
+      </div>
 
       <!-- <div class="span2" style="margin-left:10px;"> -->
       <!--   <div  ng-show="viewState.admins" class="well"> -->
@@ -87,16 +100,16 @@
       <!--       <div ng-hide="viewState.admins"> -->
       <!--         <\!-- Roles: <a href="#" id="userRoles" data-type="select2"></a> <br> -\-> -->
       <!--         Roles: <br> <a href="#" id="userRoles" class="userRoles" -->
-      <!--                        data-type="select2"></a> <br> -->
-      <!--       </div> -->
-      <!--       <p></p> -->
+				  <!--                        data-type="select2"></a> <br> -->
+				  <!--       </div> -->
+				  <!--       <p></p> -->
 
-      <!--       <\!-- <button ng-show="edited" class="btn btn-small btn-primary" ng-click="applySingle()">Apply</button> -\-> -->
-      <!--     </div> -->
-      <!--     <\!-- <pre>{{selectedUser | json}}</pre> -\-> -->
-      <!--   </div> -->
+				  <!--       <\!-- <button ng-show="edited" class="btn btn-small btn-primary" ng-click="applySingle()">Apply</button> -\-> -->
+				  <!--     </div> -->
+				  <!--     <\!-- <pre>{{selectedUser | json}}</pre> -\-> -->
+				  <!--   </div> -->
 
-      <!-- </div> -->
+				  <!-- </div> -->
     </div>
 
 

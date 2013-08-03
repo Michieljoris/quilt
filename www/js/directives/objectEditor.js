@@ -26,12 +26,12 @@ function OuterCntl($scope) {
   // $scope.text = 'Neque porro quisquam est qui dolorem ipsum quia dolor...';
     // $scope.myobj =  [{ okthen:1, b:[1,2,['a', 'b']], c:"a string"  ,d: { a:1 } }];
     // $scope.obj =  "defined in outer controller";
-                         $scope.parentModel =  [{ one:1, b:[1,2,['a', 'b']], c:"a string"  ,d: { a:1 } }];
+        $scope.parentModel =  { myobject: { emptyobj: {}, one:1, b:[1,2,['a', 'b']], c:"a string"  ,d: { a:1 } }};
                          $scope.parentModel2 =  [{ two:1, b:[1,2,['a', 'b']], c:"a string"  ,d: { a:1 } }];
     $scope.bla = function() {
         console.log('hello');
         
-        $scope.parentModel =  [{ one:1, b:[1,2,['a', 'b']], c:"a string"  ,d: { a:1 } }];
+        $scope.parentModel =  { myobject: { one:1, b:[1,2,['a', 'b']], c:"a string"  ,d: { a:1 } }};
     };
 }
 
@@ -69,14 +69,15 @@ myAppModule.directive('objectEditor', function(){
                              var values = [];
                              var i = 0;
                              array.forEach(function(e) {
-                                 var prop = { ord: i };
+                                 var prop = { ord: '_' + i };
+                                 
                                  if (angular.isArray(e)) {
                                      prop.type = 'array';   
                                      prop.children = parseArray(e);
                                  }
                                  else if (angular.isObject(e)) {
                                      prop.type = 'object';   
-                                     prop.children = parseObject(e);
+                                     prop.children = $scope.parseObject(e);
                                  }
                                  else prop.value = e;
                                  values.push(prop);
@@ -126,6 +127,7 @@ myAppModule.directive('objectEditor', function(){
                          };
 
                          function addChild(parent, type) {
+                             console.log(parent);
                              var child;
                              if (type) child = { type: type, children: []};
                              else child = {
@@ -155,7 +157,7 @@ myAppModule.directive('objectEditor', function(){
                              if (parent.type === 'array') {
                                  var i = 0;
                                  angular.forEach(parent.children, function(c) {
-                                     c.ord = i++;
+                                     c.ord = '_' + i++;
                                  });
                              }
                              $scope.sync();
@@ -187,7 +189,7 @@ myAppModule.directive('objectEditor', function(){
                              target = (parent[0] === root) ? $scope.data : parent.scope().child,
                              child = item.scope().child,
                              index = item.index();
-                             console.log('update',child, target, index);
+                             console.log('update>',child, target, index);
 
                              if (!target.children) target.children = [];
 
@@ -230,24 +232,24 @@ myAppModule.directive('objectEditor', function(){
                              if (target.type === 'array') {
                                  var i = 0;
                                  angular.forEach(target.children, function(c) {
-                                     c.ord = i++;
+                                     c.ord = '_' + i++;
                                  });
                              }
         
                              // $scope.obj = makeArray($scope.data.children);
                              $scope.sync();
-                             console.log($scope.obj);
+                             console.log('end update', $scope.obj);
                          };
                          
                          $scope.sync = function sync() {
-                             $scope.obj = makeArray($scope.data.children);
+                             $scope.obj = makeObject($scope.data.children);
                              $scope.data.isInSync= true;
                          };
                          
                          $scope.$watch('obj', function() {
                              if (!$scope.data.isInSync) {
                                  $scope.data = {
-                                     type: 'array', children: $scope.parseObject($scope.obj)
+                                     type: 'object', children: $scope.parseObject($scope.obj)
                                  };
                              } else {
                                  $scope.data.isInSync = false;
@@ -280,7 +282,7 @@ myAppModule.directive('objectEditor', function(){
         
         link: function(scope, element, attrs) {
             scope.data = {
-                type: 'array', children: scope.parseObject(scope.obj)
+                type: 'object', children: scope.parseObject(scope.obj)
             };
             
         }
