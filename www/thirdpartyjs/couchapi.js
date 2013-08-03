@@ -495,7 +495,14 @@ define(
             var vow = VOW.make(); 
             $.couch.db(dbName).saveDoc(doc, {
                 success: vow.keep,
-                error: vow.break
+                error: function(status, error, reason) {
+                    var data = { status: status };
+                    if (typeof reason === 'string')
+                        data.reason = reason;
+                    else data.reason = error;
+                        
+                 vow.break(data);   
+                }
             });
             return vow.promise;
         };

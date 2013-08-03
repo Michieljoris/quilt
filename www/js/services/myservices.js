@@ -515,7 +515,7 @@ angular.module("myApp").factory('persist', function() {
     
     api.get = function(key) {
         if (persistDoc) {
-            return persistDoc[key];
+            return angular.copy(persistDoc[key]);
         }
         var item = localStorage.getItem(key);
         try {

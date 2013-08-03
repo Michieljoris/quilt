@@ -127,7 +127,7 @@ myAppModule.directive('objectEditor', function(){
                          };
 
                          function addChild(parent, type) {
-                             console.log(parent);
+                             console.log('add child to ' ,parent);
                              var child;
                              if (type) child = { type: type, children: []};
                              else child = {
@@ -164,6 +164,7 @@ myAppModule.directive('objectEditor', function(){
                          }
 
                          $scope.remove = function (child) {
+                             console.log('remove');
                              function walk(target) {
                                  var children = target.children,
                                  i;
@@ -179,6 +180,7 @@ myAppModule.directive('objectEditor', function(){
                                  }
                              }
                              walk($scope.data);
+                             $scope.sync();
                          };
     
     
@@ -191,6 +193,7 @@ myAppModule.directive('objectEditor', function(){
                              index = item.index();
                              console.log('update>',child, target, index);
 
+                             console.log('compare',parent[0], root, parent[0] === root);
                              if (!target.children) target.children = [];
 
                              function walk(target, child) {
@@ -218,7 +221,7 @@ myAppModule.directive('objectEditor', function(){
                                  }
                                  return true;
                              }
-        
+       console.log('target type', target,target.type);
                              if (target.type === 'object') {
                                  child.key = child.key || 'newKey';
                                  var u = 0;

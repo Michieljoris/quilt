@@ -341,6 +341,7 @@ console.log(row, field, old, row[field]);
             VOW.every(vows).when(
                 function(data) {
                     console.log(data);
+                    delete state.databases;
                     state.initialize($scope);
                     $scope.modifiedCount = 0;
                 },
@@ -348,6 +349,7 @@ console.log(row, field, old, row[field]);
                     alert('Error removing or updating at least one of the users..');
                     console.log(err);
                     $scope.modifiedCount = 0;
+                    delete state.databases;
                     state.initialize($scope);
                 }
             );

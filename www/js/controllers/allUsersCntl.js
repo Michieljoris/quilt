@@ -346,6 +346,7 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
                 VOW.every(vows).when(
                     function(data) {
                         console.log(data);
+                        delete state.allUsers;
                         state.initialize($scope);
                         $scope.modifiedCount = 0;
                     },
@@ -353,6 +354,7 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
                         alert('Error removing or updating at least one of the users..');
                         console.log(err);
                         $scope.modifiedCount = 0;
+                        delete state.allUsers;
                         state.initialize($scope);
                     }
                     );

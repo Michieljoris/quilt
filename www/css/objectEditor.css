@@ -3,16 +3,17 @@
     border: 0 none transparent;
     padding: 0;
     background:#eee;
-    margin-left:5px;
+    margin-left:0px;
     font-size:11px;
 }
 .yatree li {
-    line-height: 12px;
+    line-height: 15px;
     list-style:none;
     /* margin: 1px; */
     border: 1px solid #ddd;
     padding: 2px 5px 0px 5px;
     background: #fff;
+    padding-right:3px;
 }
 
 .yatree li a {
@@ -110,11 +111,11 @@
 
 .yatree-line {
     /* border-left:1px solid black; */
-    max-width:150px;
+    /* max-width:150px; */
     overflow-x:hidden; overflow-y:hidden;
-    height:13px;
+    height:14px;
     white-space:nowrap;
-    margin-top:-2px;
+    margin-top:0px;
 }
 
 
@@ -122,3 +123,24 @@
 /*     /\* width:400px; *\/ */
 /* } */
 
+:hover.deletebutton {
+    background: url(../img/delete-mini.png) no-repeat;
+    border: none;
+    cursor: pointer;
+    float: right;
+    padding: 0;
+    margin-left:6px;
+    width: 15px;
+    height: 15px;
+}
+
+.deletebutton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    float: right;
+    padding: 0;
+    margin-left:6px;
+    width: 15px;
+    height: 15px;
+}

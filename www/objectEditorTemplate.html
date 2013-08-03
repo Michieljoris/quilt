@@ -1,9 +1,9 @@
 
 <div class="yatree" >
   <div>
-    <button class="btn btn-small btn-primary" ng-click="addObject(data)">+ obj</button>
-    <button class="btn btn-small btn-primary" ng-click="addArray(data)">+ arr</button>
-    <button class="btn btn-small btn-primary" ng-click="addValue(data)">+ val</button>
+    <button class="btn btn-small btn-link" ng-click="addObject(data)">+ obj</button>
+    <button class="btn btn-small btn-link" ng-click="addArray(data)">+ arr</button>
+    <button class="btn btn-small btn-link" ng-click="addValue(data)">+ val</button>
   </div>
   <div class="live">
     <ol ui-nested-sortable=""
@@ -25,6 +25,7 @@
 	    <!-- 	<span ng-switch-when="true">+</span><span ng-switch-default>-</span>  -->
             <!-- </a> -->
 	    
+	    <button class="pull-right deletebutton" style="" ng-click="remove(child)"></button>
 	    <!-- <img src="img/remove.png" class="pull-right" ng-click="remove(child)"/> -->
 	    <!-- <button class="btn btn-small btn-danger" ng-click="remove(child)">x</button> -->
 	    <span ng-show="child.ord!=undefined"  ng-click="click(child)">{{child.ord}}</span>
@@ -54,7 +55,8 @@
 	    
 	    <!-- <img src="img/add.png" class="pull-right" ng-show="child.type=='object'||child.type=='array'" ng-click="addChild(child)"/> -->
 	    <!-- <button ng-show="child.type=='object'||child.type=='array'" class="btn btn-small btn-info" ng-click="addChild(child)">+</button> -->
-	    <i>{{child.type || ""}}</i>
+	    <sup ng-show="child.type=='object'">{}</sup>
+	    <sup ng-show="child.type=='array'">[]</sup>
             <!-- <input ng-hide="child.type=='object' ||
 		 child.type=='array'" ng-model="child.value" /> -->
           </div>

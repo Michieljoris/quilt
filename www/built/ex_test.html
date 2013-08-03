@@ -77,12 +77,20 @@
     <div  class="row">
       <div ng-hide="editDocs" ng-class="getGridWidth()" class="span12 gridStyle" ng-grid="testGridOptions"></div>
 
-      <div ng-show="editDocs" ng-class="getGridWidth()" class="span4 gridStyle" ng-grid="testDocsGridOptions"></div>
-      <div class="span5">
-	<div class="objectEditor" my-attr="selectedRow.value"></div><br>
-      </div>
-      <div class="span3">
-        <pre>{{selectedRow | json}}</pre>
+      <div ng-show="editDocs">
+
+        <div ng-class="getGridWidth()" class="span4 gridStyle"
+             ng-grid="testDocsGridOptions"></div>
+
+        <div class="span5">
+
+	  <a href="#" id="testDocName" data-type="text"></a>
+	  
+          <div class="objectEditor" my-attr="selectedRow.value"></div><br>
+        </div>
+        <div class="span3">
+          <pre>{{selectedRow | json}}</pre>
+        </div>
       </div>
 
       <!-- <div class="span2" style="margin-left:10px;"> -->
