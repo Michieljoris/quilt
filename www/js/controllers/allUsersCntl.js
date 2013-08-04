@@ -5,6 +5,18 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
     
     "use strict";
     console.log('In allUsersCntl');
+    
+    $scope.fetchAllInfo = function() {
+        var vows = [];
+        $scope.rows.forEach(function(r) {
+            vows.push(editUser(r, 'fetch'));
+        });
+        VOW.any(vows).when(function() {
+            $scope.$apply();
+        });
+    };
+    
+    
     $scope.getGridWidth = function() {
         if ($scope.viewState.admins) return "narrow";
         return '';
@@ -222,40 +234,39 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
     
     
     var selectedRow;
-    var editUser = function(user) {
-        
-        selectedRow = user;
-        // console.log(userId);
-        if (user.type === 'admin')  {
+    var editUser = function(row, fetch) {
+        var vow = VOW.make();
+        if (!fetch) selectedRow = row;
+        if (row.type === 'admin')  {
+            vow.keep(row);
+            if (fetch) return vow.promise;
             $scope.justPwd = true;
             $scope.newUserShouldBeOpen = true;
-            $scope.userName = user._id;
+            $scope.userName = row._id;
         }
         else {
-            if (user.rolesArray) {
-                $('#userRoles').editable('setValue', user.rolesArray || [], false);
-                $('#changeUserPwd').editable('setValue', '', false);
-                $scope.selectedUser = user;
-                return;
-            }
-            couchapi.docGet(user._id, '_users').when(
+            couchapi.docGet(row._id, '_users').when(
                 function(user) {
-                    $('#userRoles').editable('setValue', user.roles || [], false);
-                    $('#changeUserPwd').editable('setValue', '', false);
-                    $scope.selectedUser = user;
-                    selectedRow.roles = user.roles.toString();
-                    selectedRow.rolesArray = user.roles;
+                    row.roles = user.roles.toString();
+                    row.rolesArray = user.roles;
+                    vow.keep(row);
+                    if (fetch) return;
+                    
                     $scope.edited = false;
+                    $('#userRoles').editable('setValue', user.roles || [], false);
+                    console.log('userroles ', user.roles);
+                    $('#changeUserPwd').editable('setValue', '', false);
+                    $scope.selectedUser = row;
                     $scope.$apply();
                 
                 },
                 function(err) {
                     console.log(err);
-                
+                        vow.break(row);
                 }
                 );
         } 
-        
+        return vow.promise;
     };
     
     

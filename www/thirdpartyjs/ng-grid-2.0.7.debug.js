@@ -2668,6 +2668,7 @@ var ngSearchProvider = function ($scope, grid, $filter) {
 var ngSelectionProvider = function (grid, $scope, $parse) {
     var self = this;
     self.multi = grid.config.multiSelect;
+    self.noCtrlMulti = grid.config.noCtrlMulti;
     self.selectedItems = grid.config.selectedItems;
     self.selectedIndex = grid.config.selectedIndex;
     self.lastClickedRow = undefined;
@@ -2753,15 +2754,16 @@ var ngSelectionProvider = function (grid, $scope, $parse) {
         }
         else if (!evt.keyCode || isUpDownKeyPress && !grid.config.selectWithCheckboxOnly) {
             var wasSelected = rowItem.selected;
-            if (!evt.ctrlKey) {
+            console.log('self', self);
+            if (evt.ctrlKey || self.noCtrlMulti ) {
+                self.setSelection(rowItem, !rowItem.selected);
+            }
+            else  {
                 self.toggleSelectAll(false, true);
                 if (self.lastClickedRow === rowItem) {
                     self.setSelection(rowItem, !wasSelected);
                 }
                 else self.setSelection(rowItem, true);
-            }
-            else  {
-                self.setSelection(rowItem, !rowItem.selected);
             }
         }
         self.lastClickedRow = rowItem;

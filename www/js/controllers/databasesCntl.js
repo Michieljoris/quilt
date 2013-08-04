@@ -6,6 +6,17 @@
 angular.module("myApp").controller("databasesCntl", function ($scope, $location, state, defaults, persist) {
 
     console.log('In databasesCntl');
+    
+    
+    $scope.fetchAllInfo = function() {
+        var vows = [];
+        $scope.rows.forEach(function(r) {
+            vows.push(editRow(r, 'fetch'));
+        });
+        VOW.any(vows).when(function() {
+            $scope.$apply();
+        });
+    };
 
     $scope.getGridWidth = function() {
         // if ($scope.viewState.admins) return "narrow";
@@ -208,11 +219,12 @@ console.log(row, field, old, row[field]);
 
     
     var selectedRow;
-    var editRow = function(row) {
-        $scope.selectedDatabase = row;
+    var editRow = function(row, fetch) {
+        var vow = VOW.make(); 
+        if (!fetch) $scope.selectedDatabase = row;
         console.log(row);
-        selectedRow = row;
-        
+        if (!fetch) selectedRow = row;
+        var done = 0;
         $scope.databaseError = false;
         couchapi.dbInfo(row.name).when(
             function(data) {
@@ -229,12 +241,22 @@ console.log(row, field, old, row[field]);
                     }
                 }
                 row.size = row.size + suffix;
-                $scope.$apply();
-                $scope.dbInfo = data;
-                console.log(data);
-
+                if (!fetch) {
+                    $scope.$apply();
+                    $scope.dbInfo = data;
+                    console.log(data);
+                }
+                else {
+                    done++;
+                    if (done === 2) vow.keep();
+                }
             }
             ,function(err) {
+                if (fetch) {
+                    done++;
+                    if (done === 2) vow.break();
+                    return;
+                }
                 $scope.dbInfo = null;
                 if (err === 401) {
                     $scope.databaseError = "Unable to retrieve database info docs. Unauthorized";
@@ -251,31 +273,44 @@ console.log(row, field, old, row[field]);
         
         
         
-        if (row.rolesArray) {
-            $('#dbMemberNames').editable('setValue', row.namesArray || [], false);
-            $('#dbMemberRoles').editable('setValue', row.rolesArray || [], false);
-            return;
-        }
+        // if (row.rolesArray) {
+        //     $('#dbMemberNames').editable('setValue', row.namesArray || [], false);
+        //     $('#dbMemberRoles').editable('setValue', row.rolesArray || [], false);
+        //     return;
+        // }
         
-        couchapi.dbSecurity($scope.selectedDatabase.name)
+        couchapi.dbSecurity(row.name)
             .when(
                 function(secObj) {
-                    console.log(secObj);
+                    console.log('secObj for ' , row.name, secObj);
                     // $scope.secObj = secObj = secObj || {};
 
                     $scope.securityError = false;
                     row.namesArray = secObj.members ? secObj.members.names: [];
                     row.rolesArray = secObj.members ? secObj.members.roles: [];
                     $('#dbMemberNames').editable('setValue', row.namesArray, false);
+                    $('#dbMemberNames').editable('option', 'select2',
+                                                 { tags: state.allUsersArray});
                     $('#dbMemberRoles').editable('setValue', row.rolesArray, false);
-                    $('#dbMemberRoles').editable('option', 'select2', { tags: ['opt1', 'opt2']});
-                    row.names = row.namesArray.toString();
-                    row.roles = row.rolesArray.toString();
+                    $('#dbMemberRoles').editable('option', 'select2',
+                                                 { tags: ['read-' + row.name, 'write-' + row.name]});
+                    row.names = row.namesArray ? row.namesArray.toString() : 'error';
+                    row.roles = row.rolesArray ? row.rolesArray.toString() : 'error';
 
+                    if (fetch) {
+                        done++;
+                        if (done === 2) vow.keep();
+                        return;
+                    }
                     $scope.$apply();
 
                 },
                 function(err) {
+                    if (fetch) {
+                        done++;
+                        if (done === 2) vow.break();
+                        return;
+                    }
                     if (err === 401) {
                         $scope.securityError = "Unable to retrieve database info. Unauthorized";
                     }
@@ -286,6 +321,7 @@ console.log(row, field, old, row[field]);
                     $scope.$apply();
                 }
             );
+        return vow.promise;
     };
     
     
@@ -324,8 +360,8 @@ console.log(row, field, old, row[field]);
                 vows.push(couchapi.dbRemove(row.name));
             else {
                 var secObj = { members: {} };
-                if (row.rolesArray) secObj.roles = row.rolesArray;
-                if (row.namesArray) secObj.names = row.namesArray;
+                if (row.rolesArray) secObj.members.roles = row.rolesArray;
+                if (row.namesArray) secObj.members.names = row.namesArray;
                 vows.push(couchapi.dbSecurity(secObj, row.name).when(
                     function(data) { console.log(data);
                                      $scope.$apply();

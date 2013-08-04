@@ -246,11 +246,13 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         couchapi.docAll('_users').when(
             function(users) {
                 // console.log('in initsrfeen', users , admins);
+                state.allUsersArray = [];
                 users = users.rows.filter(function(doc) {
                     if (doc.id.startsWith('org.couchdb.user:') &&
                         admins.indexOf(doc.id.slice(17)) === -1) return true;
                     return false;
                 }).map(function(user) {
+                    state.allUsersArray.push(user.id.slice(17));
                     return { _id: user.id, pwd: '***', type:'user', roles:"?" };
                 });
                 

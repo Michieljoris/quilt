@@ -49,7 +49,7 @@
             </div>
 	    
 	    
-            <div class="btn-group pull-right" style="margin-right:10px">
+            <div ng-hide="viewState1.docs" class="btn-group pull-right" style="margin-right:10px">
 
               <button ng-repeat="funcType in funcTypes" ng-class="viewStateGroup[funcType]"
                       type="button" class="btn btn-inverse"
@@ -87,7 +87,7 @@
       <div class="row">
         <div class="gridStyle span4" ng-grid="designGridOptions"></div>
 
-        <div style="margin-left:10px;" class="span6">
+        <div ng-hide="viewState1.docs" style="margin-left:10px;" class="span6">
           <pre id="editor">
 
             </pre>
