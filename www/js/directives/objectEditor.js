@@ -221,7 +221,6 @@ myAppModule.directive('objectEditor', function(){
                                  }
                                  return true;
                              }
-       console.log('target type', target,target.type);
                              if (target.type === 'object') {
                                  child.key = child.key || 'newKey';
                                  var u = 0;

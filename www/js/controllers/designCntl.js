@@ -19,7 +19,7 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         'ng-options="s.name as s.name for s in designDocs[row.entity.database]" list="items" ng-model="row.entity.design"> </select>';
     
     var checkBoxTemplate = '<input style="margin-left:5px;margin-top:5px" class="ngSelectionCheckbox" ng-click="checkBoxClicked(row, col)" ' +
-        'type="checkbox" ng-checked="row.getProperty(col.field)"></input>';
+        'type="checkbox" ng-model="row.entity[col.field]"></input>';
     
     var cellTemplate =
         '<div ng-click="designGridClick(col.field, row.entity, !row.selected)" class="ngCellText" ng-class="col.colIndex()"><span ng-cell-text>{{COL_FIELD}}</span></div>';
@@ -130,7 +130,7 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         // else
         docs.forEach(function(d) {
             row.design = d._id.slice(8);
-            row.couch = d._rev;
+            row.couch = true;
             var newRow = angular.extend({ type:'doc'}, row);
             newRow.original = angular.copy(newRow);
             $scope.designRows.push(newRow);
@@ -179,8 +179,10 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         // Remove database from designDocs and take out the rows of non
         // selected databases
         Object.keys($scope.designDocs).forEach(function(dbName) {
-            if (selDatabases.indexOf(dbName) === -1)
+            if (selDatabases.indexOf(dbName) === -1) {
+                delete $scope.designDocsObj[dbName];
                 delete designDocs[dbName];
+            }
         });
         
         $scope.designRows = $scope.designRows.filter(function(row) {
@@ -196,20 +198,20 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         couchapi.docAllDesignInclude(dbName).when(
             function(data) {
                 var designDocs = data.rows.map(function(r) {
-                    // r.doc.name = r._id.slice(7);
-                    r.doc.name = r.doc._id.slice(8);
+                    // r.doc.name = r.doc._id.slice(8);
                     console.log('r.doc =', r.doc);
                     return r.doc;
                 });
+                // if (designDocs.length > 0) {
                 $scope.designDocs[dbName] = designDocs;
-                
                 $scope.designDocsObj[dbName] = (function() {
                     var obj = {};
-                     $scope.designDocs[dbName].forEach(function(d) {
-                        obj[d.name] = d;
+                    $scope.designDocs[dbName].forEach(function(d) {
+                        obj[d._id.slice(8)] = d;
                     });
                     return obj;
                 })();
+                // }
                 vow.keep(dbName);
             }
             ,function(err) {
@@ -291,9 +293,9 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
                   // ,editableCellTemplate: editableCellTemplateDesignDoc
                  }
                 ,$scope.nameField
-                ,{visGroup:'both', field:'copy', displayName:'copy',
+                ,{visGroup:'value', field:'copy', displayName:'copy',
                   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true}
-                ,{visGroup:'both', field:'paste', displayName:'paste',
+                ,{visGroup:'doc', field:'paste', displayName:'paste',
                   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true} 
                 ,{visGroup:'both', field:'couch', displayName:'couch',
                   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true}
@@ -390,19 +392,59 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
     });
     
     $scope.checkBoxClicked = function ( row, col) {
-        // console.log($scope, row, col.field);
-        row.entity[col.field] = !row.entity[col.field];
         
-        endEdit( row.entity, col.field, !row.entity[col.field]);
+        if ( col.field === 'paste'  && row.entity.paste && row.entity.copy) {
+            delete row.entity.paste;
+            return;
+        }
+        if ( col.field === 'copy'  && row.entity.paste && row.entity.copy) {
+            delete row.entity.copy;
+            return;
+        }
+        
+        if ( col.field === 'paste'  && row.entity.paste && !row.entity.couch) {
+            row.entity.couch = true;
+        }
+        
+        if ( col.field === 'couch'  && !row.entity.couch) {
+            if (row.entity.type === 'doc') {
+                
+                var notEmpty = $scope.designRows.some(function(r) {
+                    return r.database === row.entity.database &&
+                        r.design === row.entity.design && r.type === 'value' && r.couch;
+                }); 
+                console.log('notEmpty', notEmpty);
+                if (notEmpty) row.entity.couch = true;
+            }
+            
+            if (!row.entity.couch) delete row.entity.paste;
+        }
+        
+        if ( col.field === 'copy'  && row.entity.copy && row.entity.funcType === 'validate') {
+            $scope.designRows.forEach(function(d) {
+                if (d.funcType === 'validate') {
+                    delete d.copy;   
+                    endEdit(d);
+                }
+            });
+            row.entity.copy = true;
+        }
+        
+        if ( col.field === 'couch'  &&  row.entity.couch && row.entity.type === 'value') {
+            $scope.designRows.some(function(r) {
+                if (r.database === row.entity.database &&
+                    r.design === row.entity.design && r.type === 'doc') {
+                    r.couch = true;   
+                    endEdit(r);
+                    return true;
+                }
+                return false;
+            }); 
+            
+        } 
+        
+        endEdit( row.entity);
     };
-    
-    // var grouped;
-    // $scope.groupByState = function() {
-    //     console.log('groupbystate');
-        
-    //     $scope.gridOptions.groupBy(grouped ? '' : '_replication_state');
-    // }; 
-    
     
     $scope.refresh = function() {
         console.log('refresh', state.reps);
@@ -410,51 +452,174 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         state.setActiveScreen($scope, '#databases');
     }; 
     
-    
-    function execute(actions) {
-        var designDocsToSave = {};
-        var dd = $scope.designDocsObj;
-        console.log(JSON.stringify(actions, null, ' '));
-        
-        
-    }
-    
     $scope.apply = function() {
         var selRows = $scope.designGridOptions.$gridScope.selectedItems;
         // console.log('selrows',selRows);
-        console.log($scope.designRows, $scope.designDocs);
+        
+        console.log('ddocs', JSON.stringify($scope.designDocsObj, null, ' '));
+        
+        var actions = {};
+        var docsToWrite = {};
+        var docsToRemove = {};
+        var ddocs = angular.copy($scope.designDocsObj);
+        
+        function getDoc(database, design) {
+            if (ddocs[database][design]) {
+                docsToWrite[database] = docsToWrite[database] || {};
+                docsToWrite[database][design] = ddocs[database][design];
+                delete ddocs[database][design];
+            } 
+            if (!docsToWrite[database][design]) {
+                console.error("ERROR, my design doc does not exist!!!");
+            }
+            return docsToWrite[database][design];
+        }
+    
+        function process(actions) {
+            actions.create = actions.create || {};
+            actions.create.doc = actions.create.doc || [];
+            actions.remove = actions.remove || {};
+            actions.remove.doc = actions.remove.doc || [];
+            actions.create = actions.create || {};
+            actions.create.func = actions.create.func || [];
+            actions.remove = actions.remove || {};
+            actions.remove.func = actions.remove.func || [];
+            actions.copy = actions.copy || {};
+            actions.copy.func = actions.copy.func || [];
+            actions.paste = actions.paste || {};
+            actions.paste.doc = actions.paste.doc || [];
+        
+            console.log(actions.create.doc);
+            actions.create.doc.forEach(function(r) {
+                docsToWrite[r.database] = docsToWrite[r.database] || {};
+                docsToWrite[r.database][r.design] = {
+                    _id : '_design/' + r.design
+                };
+            });
+            console.log('TO WRITE',JSON.stringify(docsToWrite, null, ' '));
+            
+            actions.remove.doc.forEach(function(r) {
+                docsToRemove[r.database] = docsToRemove[r.database] || [];
+                docsToRemove[r.database].push('_design/' + r.design);
+            });
+            console.log('TO REMOVE', JSON.stringify(docsToRemove, null, ' '));
+        
+            actions.create.func.forEach(function(r) {
+                var doc = getDoc(r.database, r.design);
+                if (r.funcType === 'validate') {
+                    doc.validate_doc_update = r.value || "";
+                } 
+                else {
+                    doc[r.funcType] = doc[r.funcType] || {};
+                    doc[r.funcType][r.name] = r.value;
+                }
+            });
+            actions.remove.func.forEach(function(r) {
+                if (docsToRemove[r.database] &&
+                    docsToRemove[r.database].indexOf("_design/" + r.design) !== -1) return;
+                var doc = getDoc(r.database, r.design);
+                if (r.funcType === 'validate') {
+                    delete doc.validate_doc_update;
+                } 
+                else {
+                    if (doc[r.funcType]) delete doc[r.funcType][r.name];
+                }
+            });
+        
+            actions.copy.func.forEach(function(rc) {
+                if (rc.funcType === 'validate') {
+                    actions.paste.doc.forEach(function(rp) {
+                        var doc = getDoc(rp.database, rp.design);
+                        doc.validate_doc_update = rc.value;
+                    });
+                } 
+                else {
+                    actions.paste.doc.forEach(function(rp) {
+                        var doc = getDoc(rp.database, rp.design);
+                        doc[rc.funcType] = doc[rc.funcType] || {};
+                        doc[rc.funcType][rc.name] = rc.value;
+                    });
+                }
+            });
+        
+        }
+    
+        function execute(actions) {
+        //don't write empty docs, but remove them.
+            
+        }
+    
         
         function isPathModified(row) {
             return row.database + row.design + row.name !==
-             row.original.database + row.original.design + row.original.name;
+                row.original.database + row.original.design + row.original.name;
         }
         
-        var actions = {};
+        function isNew(row) {
+            var ddocs = $scope.designDocsObj;
+            var design = ddocs[row.database][row.design];
+            if (!design) return true;
+            if (row.type === 'doc') return false;
+            if (row.funcType === 'validate') {
+                if ( design.validate_doc_update) return false;
+                else return true;
+            } 
+            if (design[row.funcType] && design[row.funcType][row.name]) return false;
+            return true;
+        }
         
-        function makeAction(a,t) {
+        
+        function makeAction(a,t,r) {
+            console.log('making action');
             actions[a] = actions[a] || {};
+            if (t === 'value') t = 'func';
             actions[a][t] = actions[a][t] || [];
-            return actions[a][t];
+            
+            var action  = {
+                database: r.database,
+                design: r.design
+            };
+            if (t === 'func') {
+                action.name = r.name,
+                action.funcType = r.funcType;
+                if (a !== 'remove' && a !== 'paste')
+                    action.value = r.value;
+            }
+            actions[a][t].push(action);
+            console.log('actions', actions);
         }
         
         $scope.designRows.filter(function(r) {
-              return r.modified;
+            return r.modified;
         }).forEach(function(r) {
-            if (r.couch) makeAction('couch', r.type).push(r);
-            else makeAction('remove', r.type).push(r);
+            console.log('modified row', r, isNew(r.original));
+            if (!r.couch && !isNew(r.original)) {
+                makeAction('remove', r.type, r.original);
+            } 
             
-            if (r.copy) makeAction('copy', r.type).push(r);
+            if (r.copy && !r.paste) makeAction('copy', r.type, r);
             
-            if (r.paste) makeAction('paste', r.type).push(r);
-            
-            if (isPathModified(r) && r.couch) {
-                makeAction('remove', r.type).push(r.original);   
-                makeAction('couch', r.type).push(r);
-            }
-            if (r.value !== r.original.value && r.couch) {
-                makeAction('update', r);
+            if (r.paste && !r.copy) makeAction('paste', r.type, r);
+            console.log(r, isPathModified(r), isNew(r.original));
+            if (r.couch) {
+                if (!isNew(r.original)) {
+                    if (isPathModified(r)) {   
+                        makeAction('remove', r.type, r.original);   
+                        makeAction('create', r.type, r);
+                    }
+                    else if (r.value !== r.original.value) {
+                        makeAction('create', r.type, r);
+                    }
                 }
+                else makeAction('create', r.type, r);
+            }
         });
+        
+        console.log('ACTIONS', JSON.stringify(actions, null, ' '));
+        process(actions);
+        
+        console.log('TO WRITE',JSON.stringify(docsToWrite, null, ' '));
+        console.log('TO REMOVE', JSON.stringify(docsToRemove, null, ' '));
         execute(actions);
         
         console.log();
@@ -472,11 +637,23 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         var newRow = angular.copy(selRows[0]);
         delete newRow.original;
         delete newRow.modified;
+        delete newRow.couch;
+        delete newRow.paste;
+        delete newRow.copy;
+        var notUnique;
         if ($scope.viewState1.docs) {
             angular.extend(newRow, {
                 design: prompt("New design document name ?")
             });
             if (!newRow.design) return;
+            notUnique = $scope.designRows.some(function(d) {
+                return d.database === newRow.database && d.design === newRow.design && d.type === 'doc';
+            });
+            
+            if (notUnique) {
+                alert('Cancelled. Not unique!!!');
+                return;
+            }
             
             $scope.funcTypes.forEach(function(funcType) {
                 if (funcType === 'docs') return;
@@ -486,16 +663,25 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         }
         else {
             angular.extend(newRow, {
-                name: prompt("New " + newRow.functType + "name ?")
+                name: prompt("New " + newRow.funcType.slice(0, newRow.funcType.length -1 ) + " name ?")
             });
             if (!newRow.name) return;
+            notUnique = $scope.designRows.some(function(d) {
+                return d.database === newRow.database && d.design === newRow.design &&
+                    d.type === 'value' && newRow.name === d.name && newRow.funcType === d.funcType;
+            });
             
+            if (notUnique) {
+                alert('Cancelled. Not unique!!!');
+                return;
+            }
         }
+        
         newRow.original = angular.copy(newRow);
         newRow.couch = true;
         $scope.designRows.push(newRow);
         
-        endEdit(newRow, "couch", false);
+        endEdit(newRow);
         
         $scope.designGridOptions.selectVisible(false);
         setTimeout(function() {
@@ -514,7 +700,7 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         if (!$scope.viewState1.all) filter = 'type:' +
             ($scope.viewState1.docs ? 'doc' : 'value');
         $scope.designGridOptions.$gridScope.filterText = filter;
-        console.log('applying filter:', filter);
+        // console.log('applying filter:', filter);
         
         // $scope.toggleViewStateGroup($scope.funcType);
         

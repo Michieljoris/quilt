@@ -2754,7 +2754,6 @@ var ngSelectionProvider = function (grid, $scope, $parse) {
         }
         else if (!evt.keyCode || isUpDownKeyPress && !grid.config.selectWithCheckboxOnly) {
             var wasSelected = rowItem.selected;
-            console.log('self', self);
             if (evt.ctrlKey || self.noCtrlMulti ) {
                 self.setSelection(rowItem, !rowItem.selected);
             }
