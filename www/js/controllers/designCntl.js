@@ -76,7 +76,7 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
             
             if (d.validate_doc_update) {
                 newValue.value = d.validate_doc_update;
-                // newValue.couch = true;
+                newValue.couch = true;
                 newValue.original = angular.copy(newValue);
                 $scope.designRows.push(newValue);
             } 
@@ -92,7 +92,7 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
             if (d[funcType] && angular.isObject(d[funcType])) {
                 Object.keys(d[funcType]).forEach(function(n) {
                     newValue.name = n;
-                    // newValue.couch = true;
+                    newValue.couch = true;
                     newValue.value = d[funcType][n];
                     newValue.original = angular.copy(newValue);
                     $scope.designRows.push(newValue);
@@ -116,12 +116,17 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         }
         var docs = $scope.designDocs[dbName];
         var row = { database: dbName };
-        // if (docs.length === 0) {
-        //     row.design = 'design',
-        //     row.type = 'doc';
-        //     row.original = angular.copy(row);
-        //     $scope.designRows.push(row);
-        // }
+        if (docs.length === 0) {
+            row.design = 'design',
+            row.type = 'doc';
+            row.couch = false;
+            row.original = angular.copy(row);
+            $scope.designRows.push(row);
+            $scope.funcTypes.forEach(function(funcType) {
+                if (funcType === 'docs') return;
+                addRowsByFuncType({}, funcType, row);   
+            });
+        }
         // else
         docs.forEach(function(d) {
             row.design = d._id.slice(8);
@@ -196,13 +201,15 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
                     console.log('r.doc =', r.doc);
                     return r.doc;
                 });
-                if (designDocs.length === 0) {
-                    designDocs.push({
-                        _id: '_design/design'
-                        ,name: 'design'
-                    });
-                }
                 $scope.designDocs[dbName] = designDocs;
+                
+                $scope.designDocsObj[dbName] = (function() {
+                    var obj = {};
+                     $scope.designDocs[dbName].forEach(function(d) {
+                        obj[d.name] = d;
+                    });
+                    return obj;
+                })();
                 vow.keep(dbName);
             }
             ,function(err) {
@@ -364,13 +371,11 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
     
     $scope.undo = function() {
         var selRows = $scope.designGridOptions.$gridScope.selectedItems;
-        console.log('undo', selRows);
         angular.forEach(selRows, function(selRow) {
-            var modified = selRow.modified;
-            if (modified) {
-                delete selRow.modified;
-                angular.copy(modified, selRow);
+            if (selRow.modified) {
+                angular.copy(selRow.original, selRow);
                 selRow.original = angular.copy(selRow);
+                console.log(selRow);
             }
         });
         
@@ -406,34 +411,27 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
     }; 
     
     
+    function execute(actions) {
+        var designDocsToSave = {};
+        var dd = $scope.designDocsObj;
+        console.log(JSON.stringify(actions, null, ' '));
+        
+        
+    }
     
     $scope.apply = function() {
-        
         var selRows = $scope.designGridOptions.$gridScope.selectedItems;
         // console.log('selrows',selRows);
         console.log($scope.designRows, $scope.designDocs);
         
-        var docsByDatabase = {};
-        
-        var docsToDelete = [];
-        var docsToCopy = [];
-        var docsToCopyTo = [];
-        var docsToUpdate = [];
-        var docsToCreate = [];
-        
-        function isNew(r) {
-            var r = r.original || r;
-            
-            
-        }
-        
-        function isModified(r) {
-            
+        function isPathModified(row) {
+            return row.database + row.design + row.name !==
+             row.original.database + row.original.design + row.original.name;
         }
         
         var actions = {};
         
-        function getAction(a,t) {
+        function makeAction(a,t) {
             actions[a] = actions[a] || {};
             actions[a][t] = actions[a][t] || [];
             return actions[a][t];
@@ -442,12 +440,22 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         $scope.designRows.filter(function(r) {
               return r.modified;
         }).forEach(function(r) {
-            if (r['delete']) getAction('delete', r.type).push(r);
-            if (r.copy) getAction('copy', r.type).push(r);
-            if (r.paste) getAction('paste', r.type).push(r);
-            if (isNew(r) && !r['delete']) getAction('create', r.type).push(r);
-            if (isModified(r) && !r['delete']) getAction('update', r.type).push(r);
+            if (r.couch) makeAction('couch', r.type).push(r);
+            else makeAction('remove', r.type).push(r);
+            
+            if (r.copy) makeAction('copy', r.type).push(r);
+            
+            if (r.paste) makeAction('paste', r.type).push(r);
+            
+            if (isPathModified(r) && r.couch) {
+                makeAction('remove', r.type).push(r.original);   
+                makeAction('couch', r.type).push(r);
+            }
+            if (r.value !== r.original.value && r.couch) {
+                makeAction('update', r);
+                }
         });
+        execute(actions);
         
         console.log();
         $scope.designGridOptions.selectVisible(false);
@@ -458,10 +466,12 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
          
         var selRows = $scope.designGridOptions.$gridScope.selectedItems;
         if (selRows.length !== 1) {
-            alert('Please select one and only one row to copy from for the new row.');
+            alert('Please select one and only one row to copy database/_design from for the new row.');
             return;
         }
         var newRow = angular.copy(selRows[0]);
+        delete newRow.original;
+        delete newRow.modified;
         if ($scope.viewState1.docs) {
             angular.extend(newRow, {
                 design: prompt("New design document name ?")
@@ -588,7 +598,9 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         state.designDone = true;
         defineGrid();
         defineDbGrid();
-        window.ddocs = $scope.designDocs = {};
+        window.ddocs = $scope.designDocs ={};
+        window.ddocsObj = $scope.designDocsObj = {};
+        
         $scope.designRows = [];
         
         $scope.viewStateGroup = {}       ;
