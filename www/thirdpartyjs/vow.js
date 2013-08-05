@@ -3,7 +3,7 @@
 // 2012-10-29
 // Public Domain
 
-/*global setTimeout, setImmediate */
+/*global console, setTimeout, setImmediate */
 
 
 // If this system does not have setImmediate, then simulate it with setTimeout.
@@ -65,6 +65,8 @@ var VOW = (function () {
 
                 } catch (e) {
                     breaker(e);
+                    console.error(e.stack);
+                    // throw(e);
                 }
             };
     }
