@@ -295,6 +295,7 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
                 console.log(data);
                 $scope.password = null;
                 //TODO bit overkill, only need to fetch updated user database, or just add to state.users..
+                delete state.allUsers;
                 state.initialize($scope);
             },
             function(data) {

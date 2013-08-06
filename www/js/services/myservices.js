@@ -375,6 +375,11 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         $rootScope.selectedExamineTab = localStorage.getItem('quilt_selectedExamineTab') ||
             'Query';
         state.tests = persist.get("quilt_tests") || [];
+        
+        state.tests.forEach(function(t) {
+            t.original = angular.copy(t);
+        }); 
+        
         state.testDocs = persist.get("quilt_testDocs") || [];
         
         initScreen['#databases']().when(

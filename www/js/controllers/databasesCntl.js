@@ -332,6 +332,7 @@ console.log(row, field, old, row[field]);
                 console.log(data);
                 $scope.newDatabaseShouldBeOpen = false;
                 //TODO bit overkill, only need to fetch updated database list, or just add to state.databases..
+                delete state.databases;
                 state.initialize($scope);
             },
             function(data) {

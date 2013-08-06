@@ -15,16 +15,19 @@
       <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
               ng-click="undo()">Undo edits</button>
 
-      Search: <input ng-change="search()"  ng-model="searchText">
+      <div class="input-prepend " style="">
+	<span style="height:20px;" class="add-on"><i class="icon-search"></i></span>
+	<input id="inputIcon" type="text" ng-change="search()"  ng-model="searchText">
+      </div>
     </div>
 
     <div class="span3">
 
 
-      <div class="btn-group pull-right "> 
+      <div class="btn-group pull-right ">
         <button style="width:100px" type="button" class="btn
-        btn-inverse" ng-click="fetchAllInfo()">All info</button> 
-      </div> 
+							 btn-inverse" ng-click="fetchAllInfo()">All info</button>
+      </div>
 
 
 

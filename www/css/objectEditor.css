@@ -1,8 +1,9 @@
 .yatree ol {
     margin:4px 0;
     border: 0 none transparent;
+    border-radius:10px;
     padding: 0;
-    background:#eee;
+    /* background:#eee; */
     margin-left:0px;
     font-size:11px;
 }
@@ -10,7 +11,8 @@
     line-height: 15px;
     list-style:none;
     /* margin: 1px; */
-    border: 1px solid #ddd;
+    /* border: 1px solid #ddd; */
+    /* border-radius:8px; */
     padding: 2px 5px 0px 5px;
     background: #fff;
     padding-right:3px;
@@ -30,7 +32,7 @@
     font-family:monospace;
     /* font-weight: bold; */
     height:20px;
-    /* width:100px; */
+    /* width:100px; *e
     /* font-size:14px; */
 }
 
@@ -40,7 +42,7 @@
     background: #ffe;
 }
 .yatree .live, .shadow {
-    /* float: left; */
+    float: left;
     /* width: 45%; */
     /* margin-right: 5%; */
 }
@@ -59,25 +61,32 @@
     outline: none;
 }
 .yatree .pregnant {
-    border: 1px solid #ddd;
+    /* border: 1px solid #ddd; */
+    border-radius:10px;
 }
 .yatree .bg0 {
-    background:#fcc;
+    background:#FFFFFF;
+    /* background:#fcc; */
 }
 .yatree .bg1 {
-    background:#ffc;
+    background:#F6F6F6;
+    /* background:#ffc; */
 }
 .yatree .bg2 {
-    background:#cfc;
+    background:#F1F1F1;
+    /* background:#cfc; */
 }
 .yatree .bg3 {
-    background:#cff;
+    background:#E6E6E6;
+    /* background:#cff; */
 }
 .yatree .bg4 {
-    background:#ccf;
+    background:#E1E1E1;
+    /* background:#ccf; */
 }
 .yatree .bg5 {
-    background:#fcf;
+    background:#D6D6D6;
+    /* background:#fcf; */
 }
 .yatree .minimized > ol > li {
     display:none;
@@ -143,4 +152,8 @@
     margin-left:6px;
     width: 15px;
     height: 15px;
+}
+
+.yatree .buttonBlock {
+    border-bottom: 1px lightgray solid;
 }

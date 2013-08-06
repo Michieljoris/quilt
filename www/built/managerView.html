@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;a&#x69;&#108;&#116;&#x6F;:&#109;&#105;&#99;&#x68;&#105;&#x65;&#x6C;&#x6A;&#111;&#114;&#105;&#x73;&#x40;&#x67;&#x6D;&#97;&#x69;&#x6C;&#x2E;&#x63;&#x6F;&#x6D;">&#109;&#105;&#99;&#x68;&#105;&#x65;&#x6C;&#x6A;&#111;&#114;&#105;&#x73;&#x40;&#x67;&#x6D;&#97;&#x69;&#x6C;&#x2E;&#x63;&#x6F;&#x6D;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#105;&#x6C;&#x74;&#111;:&#x6D;i&#x63;h&#105;&#x65;&#108;&#106;&#111;&#x72;is&#64;&#103;&#109;&#x61;&#105;&#108;.&#x63;&#111;m">&#x6D;i&#x63;h&#105;&#x65;&#108;&#106;&#111;&#x72;is&#64;&#103;&#109;&#x61;&#105;&#108;.&#x63;&#111;m</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -268,7 +268,10 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
               ng-click="undo()">Undo edits</button>
 
-      Search: <input ng-change="search()"  ng-model="searchText">
+      <div class="input-prepend " style="">
+	<span style="height:20px;" class="add-on"><i class="icon-search"></i></span>
+	<input id="inputIcon" type="text" ng-change="search()"  ng-model="searchText">
+      </div>
       <!-- <span class="btn-group"> -->
       <!--   <button ng-class="searchState.names" style="width:100px" -->
       <!--           type="button" class="btn btn-small btn-inverse" ng-click="toggleSearch('names')">names</button> -->
@@ -283,10 +286,10 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
 
     <div  class="span4">
 
-      <div style="margin-left:10px" class="btn-group pull-right "> 
+      <div style="margin-left:10px" class="btn-group pull-right ">
         <button style="width:100px" type="button" class="btn
-        btn-inverse" ng-click="fetchAllInfo()">All info</button> 
-      </div> 
+							 btn-inverse" ng-click="fetchAllInfo()">All info</button>
+      </div>
 
       <div class="btn-group pull-right ">
         <button ng-class="viewState.admins" style="width:100px" type="button" class="btn btn-inverse" ng-click="toggleAdminsUsers('admins')">Server admins</button>
@@ -396,16 +399,19 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
               ng-click="undo()">Undo edits</button>
 
-      Search: <input ng-change="search()"  ng-model="searchText">
+      <div class="input-prepend " style="">
+	<span style="height:20px;" class="add-on"><i class="icon-search"></i></span>
+	<input id="inputIcon" type="text" ng-change="search()"  ng-model="searchText">
+      </div>
     </div>
 
     <div class="span3">
 
 
-      <div class="btn-group pull-right "> 
+      <div class="btn-group pull-right ">
         <button style="width:100px" type="button" class="btn
-        btn-inverse" ng-click="fetchAllInfo()">All info</button> 
-      </div> 
+							 btn-inverse" ng-click="fetchAllInfo()">All info</button>
+      </div>
 
 
 
@@ -526,7 +532,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
     <div class="span2">
       <div class="row">
         <div class="controls">
-          <div class="input-prepend span2" style="">
+          <div class="input-prepend span2" style="margin-bottom:10px">
             <span style="height:20px;" class="add-on"><i class="icon-search"></i></span>
             <input  style="height:20px;width:130px;" id="inputIcon" type="text" ng-change="search()"
                     ng-model="searchText">
@@ -626,6 +632,20 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
 </div>
   <div ng-controller="examineCntl" ng-show="state.activeScreen=='#examine'" id="examine--"><div class="row">
 
+  <div ng-show="showDbList" class="span2">
+    <div class="row">
+      <div class="controls">
+        <div class="input-prepend span2" style="margin-bottom:10px">
+          <span style="height:25px;" class="add-on"><i class="icon-search"></i></span>
+          <input  style="height:25px;width:130px;" id="inputIcon" type="text" ng-change="search()"
+                  ng-model="searchText">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="gridStyle span2" ng-grid="dbGridOptions"></div>
+    </div>
+  </div>
 
 
   <div ng-class="span" class="tabbable">
@@ -647,20 +667,6 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
 
   </div>
   
-  <div ng-show="showDbList" class="span2">
-    <div class="row">
-      <div class="controls">
-        <div class="input-prepend span2" style="">
-          <span style="height:25px;" class="add-on"><i class="icon-search"></i></span>
-          <input  style="height:25px;width:130px;" id="inputIcon" type="text" ng-change="search()"
-                  ng-model="searchText">
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="gridStyle span2" ng-grid="dbGridOptions"></div>
-    </div>
-  </div>
   
 </div>
 </div>

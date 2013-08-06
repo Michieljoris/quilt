@@ -90,12 +90,13 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         else  {
             newValue.funcType = funcType;
             if (d[funcType] && angular.isObject(d[funcType])) {
+                newValue.couch = true;
                 Object.keys(d[funcType]).forEach(function(n) {
-                    newValue.name = n;
-                    newValue.couch = true;
-                    newValue.value = d[funcType][n];
-                    newValue.original = angular.copy(newValue);
-                    $scope.designRows.push(newValue);
+                    var newRow = angular.copy(newValue);
+                    newRow.name = n;
+                    newRow.value = d[funcType][n];
+                    newRow.original = angular.copy(newRow);
+                    $scope.designRows.push(newRow);
                 });
             }
             else {
@@ -141,12 +142,14 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         });
     }
     
-    
     function dbSelectionChanged(selRow) {
         console.log(arguments);
         $scope.selectedDatabase = selRow.selected ?
             selRow.entity.name : undefined;
-        // $scope.selectedDatabase = 
+        loadDesignsForDatabases();
+    }
+    
+    function loadDesignsForDatabases() {
         var designDocs = $scope.designDocs;
         var selRows = $scope.dbGridOptions.
             $gridScope.selectedItems;
@@ -499,8 +502,10 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
             console.log('TO WRITE',JSON.stringify(docsToWrite, null, ' '));
             
             actions.remove.doc.forEach(function(r) {
-                docsToRemove[r.database] = docsToRemove[r.database] || [];
-                docsToRemove[r.database].push('_design/' + r.design);
+                var doc = getDoc(r.database, r.design);
+                doc._deleted = true;
+                // docsToRemove[r.database] = docsToRemove[r.database] || [];
+                // docsToRemove[r.database].push(doc);
             });
             console.log('TO REMOVE', JSON.stringify(docsToRemove, null, ' '));
         
@@ -544,11 +549,6 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         
         }
     
-        function execute(actions) {
-        //don't write empty docs, but remove them.
-            
-        }
-    
         
         function isPathModified(row) {
             return row.database + row.design + row.name !==
@@ -561,10 +561,10 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
             if (!design) return true;
             if (row.type === 'doc') return false;
             if (row.funcType === 'validate') {
-                if ( design.validate_doc_update) return false;
+                if ( typeof design.validate_doc_update !== undefined) return false;
                 else return true;
             } 
-            if (design[row.funcType] && design[row.funcType][row.name]) return false;
+            if (design[row.funcType] && typeof design[row.funcType][row.name] !== undefined) return false;
             return true;
         }
         
@@ -589,6 +589,17 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
             console.log('actions', actions);
         }
         
+        function removeEmptyObjects(d) {
+            console.log('removing empty obj for ' , d);
+            $scope.funcTypes.forEach(function(t) {
+                console.log(t, d[t]);
+                if (d[t] && Object.keys(d[t]).length === 0) {
+                    console.log('deleting', t, d[t]);
+                    delete d[t];
+                }
+            });
+        }
+        
         $scope.designRows.filter(function(r) {
             return r.modified;
         }).forEach(function(r) {
@@ -607,7 +618,7 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
                         makeAction('remove', r.type, r.original);   
                         makeAction('create', r.type, r);
                     }
-                    else if (r.value !== r.original.value) {
+                    else if (r.value !== r.original.value || !r.original.couch) {
                         makeAction('create', r.type, r);
                     }
                 }
@@ -620,10 +631,47 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         
         console.log('TO WRITE',JSON.stringify(docsToWrite, null, ' '));
         console.log('TO REMOVE', JSON.stringify(docsToRemove, null, ' '));
-        execute(actions);
+        var vows = [];
+        Object.keys(docsToWrite).forEach(function(db) {
+            var objects = docsToWrite[db];
+            var docs = Object.keys(objects).map(function(d) {
+                removeEmptyObjects(objects[d]);
+                return objects[d];
+            });
+            vows.push(couchapi.docBulkSave(docs, db));
+            console.log(docs, db);
+        });
+        VOW.every(vows).when(
+            function(data) {
+                console.log('bulksave done', data); 
+                var error = data.some(function(db) {
+                    return db.some(function(d) {
+                        if (d.error) {
+                            alert('Not saving ' +
+                                  d.id + '\nError:' + d.error + '\nReason:' + d.reason);
+                            console.log(d.id, d.error, d.reason);
+                            return true;
+                        }
+                        return false;
+                    }); 
+                });
+                if (error) {
+                    console.log(JSON.stringify(data, null, ' '));
+                    return;
+                }
+                // $scope.designGridOptions.selectVisible(false);
+                $scope.designDocs = {};
+                $scope.designRows = [];
+                loadDesignsForDatabases();
+                $scope.$apply();
+            },
+            function(err) {
+                console.log('err', err);
+                alert('error bulk saving design documents');
+                console.log(JSON.stringify(err, null, ' '));
+            }
+        );
         
-        console.log();
-        $scope.designGridOptions.selectVisible(false);
     };
 
     $scope.newRow = function() {
@@ -720,6 +768,23 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         setDocsFunctionsState();
     };
     
+    function validateFunc(s) {
+        var old = window.test;
+        var result;
+        s = 'test=' + s;
+        try {
+            result = eval(s);
+        } catch (e) {
+            console.log(e.name, e.message);
+            window.test = old;
+            return false;
+        }
+        window.test = old;
+        if ( typeof result === 'function') return true;
+        console.log('Error: not a function');
+        return false;
+    }
+    
     // $scope.toggleViewState2 = function(toggle) {
     //     $scope.viewState2 = {};
     //     $scope.viewState2[toggle] = 'active';
@@ -746,6 +811,10 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
                 console.log('saving data into row', $scope, $scope.rowInAce2);
                 var value = editor.session.getValue();
                 var oldValue = $scope.rowInAce2.value;
+                if (!validateFunc(value)) {
+                    alert('Error in validating function');
+                    return;
+                }
                 $scope.rowInAce2.value = value;
                 endEdit($scope.rowInAce2, 'value', oldValue);
                 // console.log('change', rowInAce2.value);

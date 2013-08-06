@@ -1333,3 +1333,11 @@ body .modal {
     height:25px;
     font-size:12px;
 }
+
+.highlight {
+    background:lightpink;
+}
+
+.input-prepend {
+    margin-bottom:0px;
+}

@@ -1035,7 +1035,7 @@
                 }
             },
             complete: function(req) {
-                console.log('in query' , req);
+                // console.log('in query' , req);
                 try {
                     var resp = $.parseJSON(req.responseText);
                 } catch(e) {

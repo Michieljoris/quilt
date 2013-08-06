@@ -17,6 +17,10 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
     
     var cellTemplate =
         '<div ng-click="designGridClick(col.field, row.entity, !row.selected)" class="ngCellText" ng-class="col.colIndex()"><span ng-cell-text>{{COL_FIELD}}</span></div>';
+   
+    var passCellTemplate =
+        '<div ng-class="{highlight:row.entity.pass==\'No\'}" class="ngCellText" ng-class="col.colIndex()"><span ng-cell-text>{{COL_FIELD}}</span></div>';
+    
     
     var testDocCellTemplate =
         '<div ng-click="testDocClick(col.field, row.entity, !row.selected)" class="ngCellText" ng-class="col.colIndex()"><span ng-cell-text>{{COL_FIELD}}</span></div>';
@@ -77,12 +81,15 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
         // console.log('making test grid');
         $scope.columnDefs =
             [
-                
-                {visGroup:'both', field:'database', displayName:'database', enableCellEdit: true, visible:true
-                 ,editableCellTemplate: editableCellTemplateDatabases
-                 ,width:120
-                 // ,cellTemplate: cellTemplate
-                }
+                {visGroup:'value', field:'pass', displayName:'pass', enableCellEdit: false, visible:true
+                 ,width:50
+                  ,cellTemplate: passCellTemplate
+                } 
+                ,{visGroup:'both', field:'database', displayName:'database', enableCellEdit: true, visible:true
+                  ,editableCellTemplate: editableCellTemplateDatabases
+                  ,width:120
+                  // ,cellTemplate: cellTemplate
+                 }
                 ,{visGroup:'both', field:'user', displayName:'user', enableCellEdit: true, visible:true
                   // ,cellTemplate: cellTemplate,
                   // ,editableCellTemplate: userCellTemplate
@@ -98,9 +105,6 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
                   ,width:150
                   // cellTemplate: cellTemplate
                  } //toggle
-                ,{visGroup:'value', field:'pass', displayName:'pass', enableCellEdit: false, visible:true
-                  ,width:50
-                 } 
                 ,{visGroup:'both', field:'expected', displayName:'expected'
                   // ,cellTemplate: checkBoxTemplate
                   ,editableCellTemplate: editableCellTemplateResult
@@ -225,8 +229,11 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
     $scope.modifiedCount = 0;
     // $scope.originalRows = {};
     function endEdit(row, field, old) {
+        console.log(row, field, old);
         if ($scope.editDocs && field === 'doc') {
-            row.doc = getUniqueTestDocName(row.doc);
+            var newName = row.doc;
+            row.doc = old;
+            row.doc = getUniqueTestDocName(newName);
         }
         if (!row.original) row.original = (function() {
             var original = angular.copy(row);  
@@ -346,6 +353,16 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
                             couchapi.login(state.user.name, state.user.pwd);
                         }  
                     );
+                    
+                    state.tests.forEach(function(t) {
+                        delete t.reason;
+                        delete t.result;
+                        delete t.modified;
+                        delete t.original;
+                        delete t.pass;
+                        t.original = angular.copy(t);
+                    }); 
+                    
                     console.log('all tests done:', tests);
                 },
                 function(error) {
@@ -395,10 +412,11 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
         // console.log('adding new test', $scope.selDbs.Test);
         if (true || $scope.selDbs.Test && $scope.selDbs.Test[0]) {
             newRow = {
-                database: $scope.selDbs.Test[0] || '',
-                quilt: true
+                database: $scope.selDbs.Test[0] || ''
             };
             state.tests.push(newRow);
+            newRow.original = angular.copy(newRow);
+            newRow.quilt = true;
             endEdit(newRow, "quilt", false);
         }
     };
@@ -444,11 +462,13 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
                 
             }
             console.log('about to do action');
-            var docToSave = angular.copy(state.testDocsMap[test.doc]);
-            docToSave._id = 'quilt_' + test.doc;
-            var action = test.doc ?
-                couchapi.docSave(docToSave, test.database) :
-                couchapi.dbInfo(test.database);
+            var action;
+            if (test.doc) {
+                var docToSave = angular.copy(state.testDocsMap[test.doc]);
+                docToSave._id = 'quilt_' + test.doc;
+                action = couchapi.docSave(docToSave, test.database);
+            }
+            else action = couchapi.dbInfo(test.database);
             action.when(
                 function(data) {
                     console.log('successfully done action', data);
@@ -511,6 +531,7 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
     }
     
     function wipeAllTestDocs(tests) {
+        console.log('wiping all test docs', tests);
         var vow = VOW.make();
         var vows = [];
         tests.forEach(function(t) {
@@ -518,6 +539,7 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
         }); 
         VOW.any(vows).when(
             function(arr) {
+                console.log('done wiping', arr);
                 vow.keep(tests);
                 arr.forEach(function(e, i) {
                     if (!e) console.log('Couldn\'t wipe ' + tests[i].doc);

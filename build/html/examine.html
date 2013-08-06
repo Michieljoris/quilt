@@ -1,5 +1,19 @@
 <div class="row">
 
+  <div ng-show="showDbList" class="span2">
+    <div class="row">
+      <div class="controls">
+        <div class="input-prepend span2" style="margin-bottom:10px">
+          <span style="height:25px;" class="add-on"><i class="icon-search"></i></span>
+          <input  style="height:25px;width:130px;" id="inputIcon" type="text" ng-change="search()"
+                  ng-model="searchText">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="gridStyle span2" ng-grid="dbGridOptions"></div>
+    </div>
+  </div>
 
 
   <div ng-class="span" class="tabbable">
@@ -21,19 +35,5 @@
 
   </div>
   
-  <div ng-show="showDbList" class="span2">
-    <div class="row">
-      <div class="controls">
-        <div class="input-prepend span2" style="">
-          <span style="height:25px;" class="add-on"><i class="icon-search"></i></span>
-          <input  style="height:25px;width:130px;" id="inputIcon" type="text" ng-change="search()"
-                  ng-model="searchText">
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="gridStyle span2" ng-grid="dbGridOptions"></div>
-    </div>
-  </div>
   
 </div>

@@ -39,7 +39,7 @@
     background: #ffe;
 }
 .yatree .live, .shadow {
-    /* float: left; */
+    float: left;
     /* width: 45%; */
     /* margin-right: 5%; */
 }
@@ -110,7 +110,7 @@
 
 .yatree-line {
     /* border-left:1px solid black; */
-    max-width:150px;
+    /* max-width:150px; */
     overflow-x:hidden; overflow-y:hidden;
     height:13px;
     white-space:nowrap;

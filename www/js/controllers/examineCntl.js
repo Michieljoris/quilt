@@ -111,7 +111,7 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
     };
     
     dbSelChanged.Query = function(selDbs) {
-        console.log('setting and removing changes listeners for query');
+        // console.log('setting and removing changes listeners for query');
         $scope.selDbs.Query = selDbs;
        }; 
 
@@ -122,7 +122,7 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
     };
     
     dbSelChanged.Conflicts = function(selDbs) {
-        console.log('setting and removing changes listeners for conflicts');
+        // console.log('setting and removing changes listeners for conflicts');
         $scope.selDbs.Conflicts = selDbs;
        }; 
 
@@ -133,7 +133,7 @@ angular.module("myApp").controller("examineCntl", function ($scope, $location, s
     };
     
     dbSelChanged.Changes = function(selDbs) {
-        console.log('setting and removing changes listeners for changes');
+        // console.log('setting and removing changes listeners for changes');
         $scope.selDbs.Changes = selDbs;
         selDbs.forEach(function(db) {
             if (!$scope.changes[db]) {
