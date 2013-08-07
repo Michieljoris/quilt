@@ -1341,3 +1341,36 @@ body .modal {
 .input-prepend {
     margin-bottom:0px;
 }
+
+:hover.editRemoveButton {
+    background: url(../img/remove.png) no-repeat;
+    border: none;
+    cursor: pointer;
+    float: right;
+    padding: 0;
+    margin-left:6px;
+    width: 15px;
+    height: 15px;
+}
+
+:hover.editAddButton {
+    background: url(../img/add.png) no-repeat;
+    border: none;
+    cursor: pointer;
+    float: right;
+    padding: 0;
+    margin-left:6px;
+    width: 15px;
+    height: 15px;
+}
+
+.editAddButton, .editRemoveButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    float: right;
+    padding: 0;
+    margin-left:6px;
+    width: 15px;
+    height: 15px;
+}

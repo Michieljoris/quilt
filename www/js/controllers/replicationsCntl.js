@@ -323,19 +323,34 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         }
     });
     
+    function initXEditable(id, list, value) {
+        var i = 0;
+        var sel = 0;
+        list = list.map(function(l) {
+            if (value === l) sel = i;
+            return { id: i++, text: l };
+        });
+        console.log('XEDITABLE', list);
+         
+        $('#' + id).editable('destroy');
+        $('#' + id).editable({
+            value: sel,
+            unsavedclass: null,
+            // mode:'inline',
+            placement:'right',
+            source: list,
+            select2: {
+            }
+            ,success: function(response, data) {
+                
+                console.log(data);
+            }
+        });   
+        
+    }
     
-    $('#rep_source').editable({
-        value: [2, 3],    
-        unsavedclass: null,
-        mode:'inline',
-        placement:'right',
-        select2: {
-            tags: ['read-_users', 'write-_users']
-        }
-        ,success: function(response, data) {
-            console.log(data);
-        }
-    });   
+    initXEditable('rep_source', ['s1']);
+    initXEditable('rep_destination', ['d1', 'd2'], 'd2');
     
     
     if (!state.repsDone) {

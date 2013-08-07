@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#x61;&#105;l&#116;&#111;:&#109;&#x69;c&#104;&#105;&#x65;&#x6C;&#x6A;&#111;r&#105;&#115;&#x40;&#103;&#109;&#x61;&#x69;&#108;&#46;&#x63;o&#109;">&#109;&#x69;c&#104;&#105;&#x65;&#x6C;&#x6A;&#111;r&#105;&#115;&#x40;&#103;&#109;&#x61;&#x69;&#108;&#46;&#x63;o&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#105;&#108;&#116;&#111;:m&#105;&#x63;&#104;&#x69;&#x65;&#108;&#x6A;&#x6F;&#x72;&#105;&#115;&#64;&#103;&#109;&#x61;&#105;&#108;.&#99;&#x6F;&#109;">m&#105;&#x63;&#104;&#x69;&#x65;&#108;&#x6A;&#x6F;&#x72;&#105;&#115;&#64;&#103;&#109;&#x61;&#105;&#108;.&#99;&#x6F;&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -500,18 +500,18 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       </div>
 
       <!-- <button type="button" class="btn btn-inverse pull-right" -->
-      <!--            style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button> -->
+                   <!--            style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button> -->
 
-      <span class="dropdown pull-right" >
-        <button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle">
-          Fields
-        </button>
-        <ul class="dropdown-menu">
-          <li ng-repeat="choice in pickFieldsMenu">
-            <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a>
-          </li>
-        </ul>
-      </span>
+                   <span class="dropdown pull-right" >
+                     <button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle">
+                       Fields
+                     </button>
+                     <ul class="dropdown-menu">
+                       <li ng-repeat="choice in pickFieldsMenu">
+                         <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a>
+                       </li>
+                     </ul>
+                   </span>
     </div>
 
   </div>
@@ -535,7 +535,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
       <!-- <button class="btn btn-danger" ng-click="apply()">Apply</button> -->
       <!-- <button ng-disabled="modifiedCount == 0" class="btn btn-warning" -->
-      <!-- ng-click="undo()">Undo edits</button> -->
+                   <!-- ng-click="undo()">Undo edits</button> -->
     </div>
 
     <div class="span6">
@@ -551,35 +551,43 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <!-- </div> -->
 
       <!-- <\!-- <button type="button" class="btn btn-inverse pull-right" -\-> -->
-      <!-- <\!--              style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button> -\-> -->
+                 <!-- <\!--              style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button> -\-> -->
 
-      <!-- <span class="dropdown pull-right" > -->
-      <!--      <button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle"> -->
-      <!--        Fields -->
-      <!--      </button> -->
-      <!--      <ul class="dropdown-menu"> -->
-      <!--        <li ng-repeat="choice in pickFieldsMenu"> -->
-      <!--          <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a> -->
-      <!--        </li> -->
-      <!--      </ul> -->
-      <!-- </span> -->
+                 <!-- <span class="dropdown pull-right" > -->
+                 <!--      <button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle"> -->
+                 <!--        Fields -->
+                 <!--      </button> -->
+                 <!--      <ul class="dropdown-menu"> -->
+                 <!--        <li ng-repeat="choice in pickFieldsMenu"> -->
+                 <!--          <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a> -->
+                 <!--        </li> -->
+                 <!--      </ul> -->
+                 <!-- </span> -->
     </div>
 
   </div>
 
 
   <div class="row">
-  <div class="span3">
-    
-    id:<a xeditable ng-model="rep._id" data-unsavedclass="" data-mode="inline">{{rep._id}}</a><br>
+    <div class="span3">
 
-    source: <br> <a href="#" id="rep_source" class="" data-type="select2"></a> <br>
-    
-    destination: <br> <a href="#" id="rep_destination" class="" data-type="select2"></a> <br>
-  </div>
-  <div class="span8">
-    <pre>{{rep|json}}</pre>
-  </div>
+      id:<a xeditable ng-model="rep._id" data-unsavedclass="" data-mode="inline">{{rep._id}}</a><br>
+
+      source: <a  id="rep_source" data-type="select2" class=""/></input>
+      <button class="editAddButton" style="" ng-click="removeSource()"></button>
+      <button class="editRemoveButton" style="" ng-click="addSource()"></button>
+      <br>
+
+      destination: <a  id="rep_destination" data-type="select2" class=""/></input>
+      <button class="editAddButton" style="" ng-click="removeDestination()"></button>
+      <button class="editRemoveButton" style="" ng-click="addDestination()"></button>
+      <br>
+
+    </div>
+
+    <div class="span8">
+      <pre>{{rep|json}}</pre>
+    </div>
   </div>
 </div>
 </div> 
