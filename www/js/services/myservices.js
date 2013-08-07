@@ -340,9 +340,9 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         return vow.promise;
     };
     
-    
     initScreen['#replications'] = function() {
         console.log('initing #reps');
+        state.quilt_reps = persist.get('reps') || {};
         var vow = VOW.make();
         couchapi.docAllInclude('_replicator', { }).when(
             function(reps) {
@@ -352,10 +352,23 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                     // return true;
                     return !(row.id.startsWith('_design'));
                 }).map(function(row) {
+                    row.doc.couch = true;
+                    if (state.quilt_reps[row.doc._id]) {
+                     row.doc.quilt = true;   
+                       state.quilt_reps[row.doc._id].live = true;
+                    }
+                    row.doc.original = angular.copy(row.doc);
                     return row.doc;
                 });
                 // console.log(state.users);               
-                
+                Object.keys ( state.quilt_reps ).forEach(function(k) {
+                    var rep = state.quilt_reps[k];
+                    if (rep.live) delete rep.live;
+                    else {
+                        rep.original = angular.copy(rep);
+                        state.reps.push(rep);   
+                    }
+                });
                 $rootScope.$broadcast('initReps');
                 vow.keep();
             },
@@ -508,7 +521,6 @@ angular.module("myApp").factory('persist', function() {
                 function(doc) {
                     state.persisting = true;
                     console.log('Read persistDoc from database quilt. Using CouchDB as backend.');
-                    console.log('00000000000000000000',doc);
                     persistDoc = doc;
                     vow.keep(doc);
                 }

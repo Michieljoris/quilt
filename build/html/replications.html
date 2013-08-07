@@ -3,54 +3,112 @@
     <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
       in your CouchDB</button>
 </div>
-<div ng-show="state.configAccessible">
-  
-  
+<div ng-show="state.configAccessible && !editMode">
+
+
   <div class="row">
     <div class="rep-buttons span6">
-      <!-- <button class="btn btn-info" ng-click="refresh()">Refresh</button> -->
-      <button class="btn btn-success" ng-click="new()">New</button>
+      <button class="btn btn-info" ng-click="refresh()">Refresh</button>
+      <button class="btn btn-success" ng-click="newRep()">New</button>
       <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
       <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
       <button class="btn btn-danger" ng-click="apply()">Apply</button>
       <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
-      ng-click="undo()">Undo edits</button>
+              ng-click="undo()">Undo edits</button>
     </div>
-    
+
     <div class="span6">
-      
-      
+
+
       <div class="btn-group pull-right " data-toggle="buttons-radio">
-	<button type="button" class="btn btn-inverse" ng-click="viewState('all')">All</button>
-	<button type="button" class="btn btn-inverse" ng-click="viewState('triggered')">Triggered</button>
-	<button type="button" class="btn btn-inverse" ng-click="viewState('error')">Error</button>
-	<button type="button" class="btn btn-inverse" ng-click="viewState('completed')">Completed</button>
-	<button type="button" class="btn btn-inverse" ng-click="viewState('_rep')">_rep</button>
-	<button type="button" class="btn btn-inverse" ng-click="viewState('quilt')">quilt</button>
+        <button ng-class="viewState.all" type="button" class="btn btn-inverse" ng-click="viewStateSet('all')">All</button>
+        <button ng-class="viewState.triggered" type="button" class="btn btn-inverse" ng-click="viewStateSet('triggered')">Triggered</button>
+        <button ng-class="viewState.error" type="button" class="btn btn-inverse" ng-click="viewStateSet('error')">Error</button>
+        <button ng-class="viewState.completed" ng-class="viewState.all" type="button" class="btn btn-inverse" ng-click="viewStateSet('completed')">Completed</button>
+        <button ng-class="viewState.couch" type="button" class="btn btn-inverse" ng-click="viewStateSet('couch')">couch</button>
+        <button ng-class="viewState.quilt" type="button" class="btn btn-inverse" ng-click="viewStateSet('quilt')">quilt</button>
       </div>
-      
+
       <!-- <button type="button" class="btn btn-inverse pull-right" -->
-      <!-- 	      style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button> -->
-      
+      <!--            style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button> -->
+
       <span class="dropdown pull-right" >
-	<button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle">
-	  Fields
-	</button>
-	<ul class="dropdown-menu">
-	  <li ng-repeat="choice in pickFieldsMenu">
-	    <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a>
-	  </li>
-	</ul>
+        <button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle">
+          Fields
+        </button>
+        <ul class="dropdown-menu">
+          <li ng-repeat="choice in pickFieldsMenu">
+            <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a>
+          </li>
+        </ul>
       </span>
     </div>
-    
+
   </div>
-  
+
   <div class="gridStyle" ng-grid="gridOptions"></div>
 
   <h3>reps</h3>
-  <pre> 
+  <pre>
     <!-- {{modifiedReps | json}}     -->
-    {{state.reps | json}}    
-  </pre> 
+    {{state.reps | json}}
+  </pre>
+</div>
+
+<div ng-show="state.configAccessible && editMode">
+
+  <div class="row">
+    <div class="rep-buttons span6">
+      <button class="btn btn-info" ng-click="done()">Done</button>
+      <!-- <button class="btn btn-success" ng-click="newRep()">New</button> -->
+      <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
+      <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
+      <!-- <button class="btn btn-danger" ng-click="apply()">Apply</button> -->
+      <!-- <button ng-disabled="modifiedCount == 0" class="btn btn-warning" -->
+      <!-- ng-click="undo()">Undo edits</button> -->
+    </div>
+
+    <div class="span6">
+
+
+      <!-- <div class="btn-group pull-right " data-toggle="buttons-radio"> -->
+      <!--      <button ng-class="viewState.all" type="button" class="btn btn-inverse" ng-click="viewStateSet('all')">All</button> -->
+      <!--      <button ng-class="viewState.triggered" type="button" class="btn btn-inverse" ng-click="viewStateSet('triggered')">Triggered</button> -->
+      <!--      <button ng-class="viewState.error" type="button" class="btn btn-inverse" ng-click="viewStateSet('error')">Error</button> -->
+      <!--      <button ng-class="viewState.completed" ng-class="viewState.all" type="button" class="btn btn-inverse" ng-click="viewStateSet('completed')">Completed</button> -->
+      <!--      <button ng-class="viewState.couch" type="button" class="btn btn-inverse" ng-click="viewStateSet('couch')">couch</button> -->
+      <!--      <button ng-class="viewState.quilt" type="button" class="btn btn-inverse" ng-click="viewStateSet('quilt')">quilt</button> -->
+      <!-- </div> -->
+
+      <!-- <\!-- <button type="button" class="btn btn-inverse pull-right" -\-> -->
+      <!-- <\!--              style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button> -\-> -->
+
+      <!-- <span class="dropdown pull-right" > -->
+      <!--      <button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle"> -->
+      <!--        Fields -->
+      <!--      </button> -->
+      <!--      <ul class="dropdown-menu"> -->
+      <!--        <li ng-repeat="choice in pickFieldsMenu"> -->
+      <!--          <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a> -->
+      <!--        </li> -->
+      <!--      </ul> -->
+      <!-- </span> -->
+    </div>
+
+  </div>
+
+
+  <div class="row">
+  <div class="span3">
+    
+    id:<a xeditable ng-model="rep._id" data-unsavedclass="" data-mode="inline">{{rep._id}}</a><br>
+
+    source: <br> <a href="#" id="rep_source" class="" data-type="select2"></a> <br>
+    
+    destination: <br> <a href="#" id="rep_destination" class="" data-type="select2"></a> <br>
+  </div>
+  <div class="span8">
+    <pre>{{rep|json}}</pre>
+  </div>
+  </div>
 </div>

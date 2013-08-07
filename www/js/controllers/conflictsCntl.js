@@ -20,13 +20,16 @@ angular.module("myApp").controller("conflictsCntl", function ($scope, $location,
         $scope.columnDefs =
             [
                 {visGroup:'value', field:'id', displayName:'id', enableCellEdit: false, visible:true, width:105} //toggle
+                ,{visGroup:'value', field:'path', displayName:'path', enableCellEdit: false, visible:true, width:105} //toggle
+                ,{visGroup:'value', field:'rev', displayName:'rev', enableCellEdit: false, visible:true, width:40} //toggle
+                ,{visGroup:'value', field:'value', displayName:'value', enableCellEdit: false, visible:true } //toggle
                 // ,{visGroup:'value', field:'commit', displayName:'commit',
                 //   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:50, visible:true }
                 // ,{visGroup:'value', field:'copy', displayName:'copy',
                 //   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true }
                 // ,{visGroup:'key', field:'paste', displayName:'paste',
                 //   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:false } //toggle
-                ,{visGroup:'value', field:'delete', displayName:'delete',
+                ,{visGroup:'value', field:'pick', displayName:'pick',
                   cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true}
             ];
     
