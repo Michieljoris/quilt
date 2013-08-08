@@ -251,7 +251,7 @@ myAppModule.directive('objectEditor', function(){
                          $scope.$watch('obj', function() {
                              if (!$scope.data.isInSync) {
                                  $scope.data = {
-                                     type: 'object', children: $scope.parseObject($scope.obj)
+                                     type: 'object', children: $scope.parseObject($scope.obj || {})
                                  };
                              } else {
                                  $scope.data.isInSync = false;
@@ -284,7 +284,7 @@ myAppModule.directive('objectEditor', function(){
         
         link: function(scope, element, attrs) {
             scope.data = {
-                type: 'object', children: scope.parseObject(scope.obj)
+                type: 'object', children: scope.parseObject(scope.obj || {})
             };
             
         }

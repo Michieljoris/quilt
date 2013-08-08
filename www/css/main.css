@@ -1342,7 +1342,7 @@ body .modal {
     margin-bottom:0px;
 }
 
-:hover.editRemoveButton {
+.hover .editRemoveButton {
     background: url(../img/remove.png) no-repeat;
     border: none;
     cursor: pointer;
@@ -1353,7 +1353,7 @@ body .modal {
     height: 15px;
 }
 
-:hover.editAddButton {
+.hover .editAddButton {
     background: url(../img/add.png) no-repeat;
     border: none;
     cursor: pointer;
@@ -1364,8 +1364,21 @@ body .modal {
     height: 15px;
 }
 
-.editAddButton, .editRemoveButton {
-    background: none;
+.editRemoveButton {
+    background: url(../img/remove.png) no-repeat;
+    /* background: none; */
+    border: none;
+    cursor: pointer;
+    float: right;
+    padding: 0;
+    margin-left:6px;
+    width: 15px;
+    height: 15px;
+}
+
+.editAddButton {
+    background: url(../img/add.png) no-repeat;
+    /* background: none; */
     border: none;
     cursor: pointer;
     float: right;

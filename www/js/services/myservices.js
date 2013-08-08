@@ -327,7 +327,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 
             },
             function(err) {
-                console.log('ERROR: Couldn\'t get list of databases!!!', err);
+                console.error('ERROR: Couldn\'t get list of databases!!!', err);
                 state.databases = [];
                 $rootScope.$broadcast('initDatabases');
                 // $rootScope.$broadcast('initDesign');
@@ -344,42 +344,45 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         console.log('initing #reps');
         state.quilt_reps = persist.get('reps') || {};
         var vow = VOW.make();
-        couchapi.docAllInclude('_replicator', { }).when(
-            function(reps) {
-                console.log('received reps', reps);
-                state.reps = reps.rows.filter(function(row) {
-                    // console.log(row.id);
-                    // return true;
-                    return !(row.id.startsWith('_design'));
-                }).map(function(row) {
-                    row.doc.couch = true;
-                    if (state.quilt_reps[row.doc._id]) {
-                     row.doc.quilt = true;   
-                       state.quilt_reps[row.doc._id].live = true;
-                    }
-                    row.doc.original = angular.copy(row.doc);
-                    return row.doc;
-                });
-                // console.log(state.users);               
-                Object.keys ( state.quilt_reps ).forEach(function(k) {
-                    var rep = state.quilt_reps[k];
-                    if (rep.live) delete rep.live;
-                    else {
-                        rep.original = angular.copy(rep);
-                        state.reps.push(rep);   
-                    }
-                });
-                $rootScope.$broadcast('initReps');
-                vow.keep();
-            },
-            function(err) {
-                state.reps = null;
+        initScreen['#databases']().when(
+            function() {
+                return couchapi.docAllInclude('_replicator', { });
+            }).when(
+                function(reps) {
+                    console.log('received reps', reps);
+                    state.reps = reps.rows.filter(function(row) {
+                        // console.log(row.id);
+                        // return true;
+                        return !(row.id.startsWith('_design'));
+                    }).map(function(row) {
+                        row.doc.couch = true;
+                        if (state.quilt_reps[row.doc._id]) {
+                            row.doc.quilt = true;   
+                            state.quilt_reps[row.doc._id].live = true;
+                        }
+                        row.doc.original = angular.copy(row.doc);
+                        return row.doc;
+                    });
+                    // console.log(state.users);               
+                    Object.keys ( state.quilt_reps ).forEach(function(k) {
+                        var rep = state.quilt_reps[k];
+                        if (rep.live) delete rep.live;
+                        else {
+                            rep.original = angular.copy(rep);
+                            state.reps.push(rep);   
+                        }
+                    });
+                    $rootScope.$broadcast('initReps');
+                    vow.keep();
+                },
+                function(err) {
+                    state.reps = null;
                 
-                $rootScope.$broadcast('initReps');
-                // vow['break']();
-                vow.keep();
-            }
-        );
+                    $rootScope.$broadcast('initReps');
+                    // vow['break']();
+                    vow.keep();
+                }
+            );
         return vow.promise;
     };
     

@@ -641,6 +641,10 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
             vows.push(couchapi.docBulkSave(docs, db));
             console.log(docs, db);
         });
+        if (vows.length === 0) {
+            alert('Nothing to do!!!');
+            return;
+        }
         VOW.every(vows).when(
             function(data) {
                 console.log('bulksave done', data); 

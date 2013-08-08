@@ -31,7 +31,6 @@ myAppModule.directive('uiNestedSortable', ['$parse', 'uiNestedSortableOptions', 
 
             });
             
-            options.isAllowed = 
             element.nestedSortable(options);
 
         }
