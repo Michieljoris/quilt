@@ -70,6 +70,7 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
     
     function addRowsByFuncType(d, funcType, row) {
         var newValue = angular.copy(row);
+        delete newValue.original;
         newValue.type = 'value';
         if (funcType === 'validate') {
             newValue.funcType = 'validate';
