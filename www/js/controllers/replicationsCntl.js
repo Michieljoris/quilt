@@ -1,4 +1,4 @@
-/*global angular:false couchpi:false */
+/*global VOW:false couchapi:false $:false angular:false couchpi:false */
 /*jshint strict:false unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
 /*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/ 
 
@@ -315,6 +315,19 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     
     //----------------------------edit rep------------------------------------------
     
+    $scope.change = function(data) {
+        if (data === 'sourceType') {
+            
+            
+        }
+        console.log('change:', data, $scope.rep);
+        $scope.rep.doc_ids = $scope.filter = "";
+        $scope.fetchedFilters = $scope.fetchedDocIds = false;
+        $('#repIds').editable('option', 'disabled', true);
+        
+        
+    };
+    
     $('#repRoles').editable({
         // value: [2, 3],    
         unsavedclass: null,
@@ -403,8 +416,12 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         return vow.promise;
     }
     
-    $scope.fetchFilters = function() {
-        console.log('in fetchFilters');
+    $scope.fetchDocIds = function() {
+        console.log('in fetchDocsIds');
+        
+        $scope.fetchedDocIds = true;
+        $('#repIds').editable('option', 'disabled', false);
+        
         
         var url, urlPrefix, oldUrlPrefix, db;
         if ($scope.sourceType === 'remote') {
@@ -414,22 +431,74 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
             db = url.slice(url.lastIndexOf('/')+1);
             $.couch.urlPrefix = urlPrefix;
         }
-        else db = $scope.rep.source;
-        if (!db || db.length === 0) return;
+        else db = $scope.rep.sourceLocal;
+        if (!db || db.length === 0) {
+            $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
+            console.log('no valid db');
+            return;
+        }
+        
+        couchapi.docAll(db).when(
+            function(data) {
+                console.log('docIds:', data);
+                $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
+                // var docs = [];
+                var rows = data.rows; 
+                // var docs = rows.reduce(function(prev, row) {
+                //     if (angular.isArray(row)) return row.concat(prev);
+                //     else return prev;
+                // }, []);
+                var docs = rows.map(function(r) {
+                    return r.id;
+                }, []);
+                console.log('rows' ,docs);
+                $('#repIds').editable('option', 'select2',
+                                      { tags: docs});
+                
+                $scope.$apply();
+            },
+            function(err) {
+                console.log(err);  
+                $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
+            }
+        );
+    };
+    
+    
+    $scope.fetchFilters = function(urlPrefix, db) {
+        var vow = VOW.make();
+        console.log('in fetchFilters');
+        
+        // var urlPrefix, oldUrlPrefix, db;
+        // if ($scope.sourceType === 'remote') {
+        //     url = makeUrl($scope.rep.sourceUser, $scope.rep.sourcePwd, $scope.rep.sourceUrl);
+        //     oldUrlPrefix = $.couch.urlPrefix;
+        //     urlPrefix = url.slice(0, url.lastIndexOf('/'));
+        //     db = url.slice(url.lastIndexOf('/')+1);
+        //     $.couch.urlPrefix = urlPrefix;
+        // }
+        // else db = $scope.rep.sourceLocal;
+        // if (!db || db.length === 0) {
+        //     $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
+        //     console.log('no valid db', db);
+        //     return;   
+        // }
+        var  oldUrlPrefix = $.couch.urlPrefix;
+       $.couch.urlPrefix = urlPrefix;
         
         $scope.fetchedFilters = true;
         
         getDesignDocs(db).when(
             function(ddocs) {
                 console.log('designdocs:', ddocs);
-                $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
+                $.couch.urlPrefix = oldUrlPrefix;
                 var allFilters = [];
                 ddocs.forEach(function(dd) {
                     if (dd.filters) {
                         var filterNames = Object.keys(dd.filters).map(function(f) {
                             return dd._id.slice(8) + '/' + f;
                         }); 
-                     allFilters = allFilters.concat(filterNames);
+                        allFilters = allFilters.concat(filterNames);
                     }
                     
                 }); 
@@ -438,23 +507,13 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                 $scope.$apply();
             },
             function(err) {
-                console.log(err);  
-                $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
+                console.log('Error', err);  
                 $.couch.urlPrefix = oldUrlPrefix;
             }
         );
-        console.log('heelo');
+        return vow.promise;
     };
     
-    
-    $scope.fetchDocIds = function() {
-        $scope.fetchedDocIds = true;
-        $('#repIds').editable('option', 'disabled', false);
-        
-        $('#repIds').editable('option', 'select2',
-                              { tags: ['a',  'b']});
-        console.log('heelo');
-    };
     
     // $('#rep_id').editable({
     //     unsavedclass: null,
@@ -528,7 +587,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                        $scope.viewStateSet(viewState);
                        $scope.pickFields(fieldGroup || 'Essential') ;
                        
-                       $scope.sources  = state.databases.map(function(db) {
+                       $scope.localDatabases  = state.databases.map(function(db) {
                            return db.name;
                        });
                        
@@ -556,7 +615,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                                                { tags: ['read-',  'write-']});
                        $('#repIds').editable('setValue', $scope.rep.doc_ids, false);
                        $('#repIds').editable('option', 'select2',
-                                               { tags: ['read-',  'write-']});
+                                             { tags: ['read-',  'write-']});
                        $scope.filters = [ $scope.rep.filter ];
                        $scope.rep.query_params  = $scope.rep.query_params || { p1: 'v1', p2: 'v2'};
                    });

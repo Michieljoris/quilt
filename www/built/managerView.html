@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#97;&#105;&#108;&#116;&#x6F;:m&#105;&#x63;&#x68;&#105;&#101;&#x6C;&#106;&#x6F;&#x72;&#105;&#115;&#x40;&#x67;&#x6D;&#97;&#x69;&#108;&#46;&#99;&#x6F;&#109;">m&#105;&#x63;&#x68;&#105;&#101;&#x6C;&#106;&#x6F;&#x72;&#105;&#115;&#x40;&#x67;&#x6D;&#97;&#x69;&#108;&#46;&#99;&#x6F;&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#97;&#x69;&#x6C;&#116;&#111;:&#x6D;&#105;&#99;&#x68;&#105;&#101;&#x6C;&#106;&#x6F;r&#105;&#x73;&#x40;&#x67;&#x6D;&#97;&#x69;&#x6C;.&#x63;&#x6F;&#109;">&#x6D;&#105;&#99;&#x68;&#105;&#101;&#x6C;&#106;&#x6F;r&#105;&#x73;&#x40;&#x67;&#x6D;&#97;&#x69;&#x6C;.&#x63;&#x6F;&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -578,30 +578,32 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <div>
         <h4>source</h4>
         <div style="padding-bottom:5px;">
-          <input type="radio" ng-model="sourceType"  value="local">  Local
-          <input type="radio" ng-model="sourceType"  value="remote">
+          <input type="radio" ng-model="sourceType"  value="local"
+          ng-change="change('sourceType')">  Local
+          <input type="radio" ng-model="sourceType"  
+		 value="remote" ng-change="change('sourceType')">
           Remote <br>
         </div>
 
-        <div ng-show="sourceType=='local'">
-          <select  ui-select2="sourceSelect2Options"
-                   ng-model="rep.source" data-placeholder="Pick a database"
+        <div >
+          <select  ui-select2="sourceSelect2Options" ng-change="change('sourceLocal')"
+                   ng-model="rep.sourceLocal" data-placeholder="Pick a database"
                    style="width:100%"
                    >
             <option value=""></option>
-            <option ng-repeat="s in sources" value="{{s}}">{{s}}</option>
+            <option ng-repeat="s in sourceDatabases" value="{{s}}">{{s}}</option>
           </select>
         </div>
 
         <div ng-hide="sourceType=='local'">
           url: <a xeditable ng-model="rep.sourceUrl" data-unsavedclass=""
-                  data-placement="right"
+                  data-placement="right" ng-change="change('sourceUrl')"
                   data-mode="popup">{{rep.sourceUrl}}</a><br>
           user: <a xeditable ng-model="rep.sourceUser" data-unsavedclass=""
-                   data-placement="right"
+                   data-placement="right" ng-change="change('sourceUser')"
                    data-mode="popup">{{rep.sourceUser}}</a><br>
           pwd: <a xeditable ng-model="rep.sourcePwd" data-unsavedclass=""
-                  data-placement="right"
+                  data-placement="right" ng-change="change('sourcePwd')"
                   data-mode="popup">{{rep.sourcePwd}}</a><br>
         </div>
       </div>
@@ -615,13 +617,13 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
           Remote <br>
         </div>
 
-        <div ng-show="targetType=='local'">
+        <div >
           <select  ui-select2="targetSelect2Options"
-                   ng-model="rep.target" data-placeholder="Pick a database"
+                   ng-model="rep.targetLocal" data-placeholder="Pick a database"
                    style="width:100%"
                    >
             <option value=""></option>
-            <option ng-repeat="s in sources" value="{{s}}">{{s}}</option>
+            <option ng-repeat="s in targetDatabases" value="{{s}}">{{s}}</option>
           </select>
         </div>
 
@@ -665,6 +667,25 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
 
     <div class="span4">
       <div>
+        <h4>filter</h4>
+
+        <div ng-hide="fetchedFilters">
+	  {{rep.filter}}
+          <a  href="" ng-click="fetchFilters()">edit</a>
+        </div>
+        <div ng-show="fetchedFilters">
+          <select   ui-select2="filterSelect2Options"
+                    ng-model="rep.filter" data-placeholder="Pick a filter"
+                    style="width:100%"
+                    >
+            <option value=""></option>
+            <option ng-repeat="s in filters" value="{{s}}">{{s}}</option>
+          </select>
+        </div>
+
+      </div>
+      <hr>
+      <div>
         <h4>doc_ids</h4>
 	
         <div ng-hide="fetchedDocIds">
@@ -683,25 +704,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
                       <!-- </select> -->
 
       </div>
-      <hr>
-      <div>
-        <h4>filter</h4>
-
-        <div ng-hide="fetchedFilters">
-	  {{rep.filter}}
-          <a  href="" ng-click="fetchFilters()">edit</a>
-        </div>
-        <div ng-show="fetchedFilters">
-          <select   ui-select2="filterSelect2Options"
-                    ng-model="rep.filter" data-placeholder="Pick a filter"
-                    style="width:100%"
-                    >
-            <option value=""></option>
-            <option ng-repeat="s in filters" value="{{s}}">{{s}}</option>
-          </select>
-        </div>
-
-      </div>
+      
       <hr>
       <h4>query_params</h4>
 
