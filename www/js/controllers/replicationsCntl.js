@@ -316,10 +316,6 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     //----------------------------edit rep------------------------------------------
     
     $scope.change = function(data) {
-        if (data === 'sourceType') {
-            
-            
-        }
         console.log('change:', data, $scope.rep);
         $scope.rep.doc_ids = $scope.filter = "";
         $scope.fetchedFilters = $scope.fetchedDocIds = false;

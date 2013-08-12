@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#97;&#x69;&#x6C;&#116;&#111;:&#x6D;&#105;&#99;&#x68;&#105;&#101;&#x6C;&#106;&#x6F;r&#105;&#x73;&#x40;&#x67;&#x6D;&#97;&#x69;&#x6C;.&#x63;&#x6F;&#109;">&#x6D;&#105;&#99;&#x68;&#105;&#101;&#x6C;&#106;&#x6F;r&#105;&#x73;&#x40;&#x67;&#x6D;&#97;&#x69;&#x6C;.&#x63;&#x6F;&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#x69;&#108;&#116;&#x6F;:&#x6D;&#105;&#99;&#104;&#x69;&#x65;&#x6C;&#x6A;&#x6F;&#114;&#105;&#115;&#x40;&#103;&#109;&#97;&#x69;&#x6C;&#46;&#99;&#x6F;&#109;">&#x6D;&#105;&#99;&#104;&#x69;&#x65;&#x6C;&#x6A;&#x6F;&#114;&#105;&#115;&#x40;&#103;&#109;&#97;&#x69;&#x6C;&#46;&#99;&#x6F;&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -500,18 +500,18 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       </div>
 
       <!-- <button type="button" class="btn btn-inverse pull-right" -->
-                   <!--            style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button> -->
+      <!--            style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button> -->
 
-                   <span class="dropdown pull-right" >
-                     <button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle">
-                       Fields
-                     </button>
-                     <ul class="dropdown-menu">
-                       <li ng-repeat="choice in pickFieldsMenu">
-                         <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a>
-                       </li>
-                     </ul>
-                   </span>
+      <span class="dropdown pull-right" >
+        <button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle">
+          Fields
+        </button>
+        <ul class="dropdown-menu">
+          <li ng-repeat="choice in pickFieldsMenu">
+            <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a>
+          </li>
+        </ul>
+      </span>
     </div>
 
   </div>
@@ -539,7 +539,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
       <!-- <button class="btn btn-danger" ng-click="apply()">Apply</button> -->
       <!-- <button ng-disabled="modifiedCount == 0" class="btn btn-warning" -->
-                   <!-- ng-click="undo()">Undo edits</button> -->
+      <!-- ng-click="undo()">Undo edits</button> -->
     </div>
 
     <div class="span6">
@@ -555,18 +555,18 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <!-- </div> -->
 
       <!-- <\!-- <button type="button" class="btn btn-inverse pull-right" -\-> -->
-                 <!-- <\!--              style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button> -\-> -->
+      <!-- <\!--              style="font-size:12px;margin-right:5px;" ng-click="groupByState()">Group</button> -\-> -->
 
-                 <!-- <span class="dropdown pull-right" > -->
-                 <!--      <button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle"> -->
-                 <!--        Fields -->
-                 <!--      </button> -->
-                 <!--      <ul class="dropdown-menu"> -->
-                 <!--        <li ng-repeat="choice in pickFieldsMenu"> -->
-                 <!--          <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a> -->
-                 <!--        </li> -->
-                 <!--      </ul> -->
-                 <!-- </span> -->
+      <!-- <span class="dropdown pull-right" > -->
+      <!--      <button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle"> -->
+      <!--        Fields -->
+      <!--      </button> -->
+      <!--      <ul class="dropdown-menu"> -->
+      <!--        <li ng-repeat="choice in pickFieldsMenu"> -->
+      <!--          <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a> -->
+      <!--        </li> -->
+      <!--      </ul> -->
+      <!-- </span> -->
     </div>
 
   </div>
@@ -579,19 +579,31 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
         <h4>source</h4>
         <div style="padding-bottom:5px;">
           <input type="radio" ng-model="sourceType"  value="local"
-          ng-change="change('sourceType')">  Local
-          <input type="radio" ng-model="sourceType"  
-		 value="remote" ng-change="change('sourceType')">
+		 ng-change="change('sourceType')">  Local
+          <input type="radio" ng-model="sourceType"
+                 value="remote" ng-change="change('sourceType')">
           Remote <br>
         </div>
+	
 
-        <div >
-          <select  ui-select2="sourceSelect2Options" ng-change="change('sourceLocal')"
-                   ng-model="rep.sourceLocal" data-placeholder="Pick a database"
+        <div ng-show="sourceType=='local'">
+          <select  ui-select2="sourceSelect2Options" ng-change="change('sourceLocalDb')"
+                   ng-model="rep.sourceLocalDb" data-placeholder="Pick a database"
                    style="width:100%"
                    >
             <option value=""></option>
-            <option ng-repeat="s in sourceDatabases" value="{{s}}">{{s}}</option>
+            <option ng-repeat="s in localDatabases" value="{{s}}">{{s}}</option>
+          </select>
+        </div>
+
+
+        <div ng-show="sourceType=='remote'">
+          <select  ui-select2="sourceSelect2Options" ng-change="change('sourceRemoteDb')"
+                   ng-model="rep.sourceRemoteDb" data-placeholder="Pick a database"
+                   style="width:100%"
+                   >
+            <option value=""></option>
+            <option ng-repeat="s in remoteDatabases" value="{{s}}">{{s}}</option>
           </select>
         </div>
 
@@ -612,14 +624,14 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <div>
         <h4>target</h4>
         <div style="padding-bottom:5px;">
-          <input type="radio" ng-model="targetType"  value="local">  Local
-          <input type="radio" ng-model="targetType"  value="remote">
+          <input type="radio" ng-model="targetType"  value="local" ng-change="change('targetType')" >  Local
+          <input type="radio" ng-model="targetType"  value="remote"   ng-change="change('targetType')">
           Remote <br>
         </div>
 
         <div >
-          <select  ui-select2="targetSelect2Options"
-                   ng-model="rep.targetLocal" data-placeholder="Pick a database"
+          <select  ui-select2="targetSelect2Options"  ng-change="change('targetDatabase')"
+                   ng-model="rep.targetDb" data-placeholder="Pick a database"
                    style="width:100%"
                    >
             <option value=""></option>
@@ -629,13 +641,13 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
 
         <div ng-hide="targetType=='local'">
           url: <a xeditable ng-model="rep.targetUrl" data-unsavedclass=""
-                  data-placement="right"
+                  data-placement="right" ng-change="change('targetUrl')"
                   data-mode="popup">{{rep.targetUrl}}</a><br>
           user: <a xeditable ng-model="rep.targetUser" data-unsavedclass=""
-                   data-placement="right"
+                   data-placement="right" ng-change="change('targetUser')"
                    data-mode="popup">{{rep.targetUser}}</a><br>
           pwd: <a xeditable ng-model="rep.targetPwd" data-unsavedclass=""
-                  data-placement="right"
+                  data-placement="right"  ng-change="change('sourcePwd')"
                   data-mode="popup">{{rep.targetPwd}}</a><br>
         </div>
       </div>
@@ -670,8 +682,8 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
         <h4>filter</h4>
 
         <div ng-hide="fetchedFilters">
-	  {{rep.filter}}
-          <a  href="" ng-click="fetchFilters()">edit</a>
+          {{rep.filter}}
+          <a  href="" ng-click="fetchFilters()">set</a>
         </div>
         <div ng-show="fetchedFilters">
           <select   ui-select2="filterSelect2Options"
@@ -687,24 +699,24 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <hr>
       <div>
         <h4>doc_ids</h4>
-	
+
         <div ng-hide="fetchedDocIds">
           {{rep.doc_ids|json}}
-          <a  href="" ng-click="fetchDocIds()">edit</a>
+          <a  href="" ng-click="fetchDocIds()">set</a>
         </div>
-	
+
         <a ng-show="fetchedDocIds" ng-click="docIdsClick()" href="#" id="repIds" class="userRoles"
            data-type="select2"></a> <br>
         <!-- <select  ui-select2="idsSelect2Options" -->
-                      <!--          ng-model="rep.doc_ids" data-placeholder="Pick a some ids" -->
-                      <!--          style="width:100%" -->
-                      <!--          > -->
-                      <!--   <option value=""></option> -->
-                      <!--   <option ng-repeat="s in docIds" value="{{s}}">{{s}}</option> -->
-                      <!-- </select> -->
+        <!--          ng-model="rep.doc_ids" data-placeholder="Pick a some ids" -->
+        <!--          style="width:100%" -->
+        <!--          > -->
+        <!--   <option value=""></option> -->
+        <!--   <option ng-repeat="s in docIds" value="{{s}}">{{s}}</option> -->
+        <!-- </select> -->
 
       </div>
-      
+
       <hr>
       <h4>query_params</h4>
 
