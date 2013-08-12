@@ -1,7 +1,7 @@
-/*global cookie:false angular:false couchapi:false */
+/*global $:false console:false cookie:false angular:false couchapi:false */
 
 
-angular.module("myApp").controller("mainCntl", function ($scope, $location, state, defaults) {
+angular.module("myApp").controller("mainCntl", function ($scope, $location, config, state, persist, defaults) {
     // window.mainCntl = function ($location, $scope, $http) {
     "use strict";
     
@@ -18,12 +18,25 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
     
     
     $scope.changeCouchDbUrl = function(url) {
-      console.log("Switching to different couchDB url", url)  ;
+        console.log("Switching to different couchDB url", url)  ;
+        config.set({ couchDbUrl: url });
+        $('#couchDbUrl').editable('setValue', url, false);
+        state.initialize($scope);
     };
     
     $scope.changeUser = function(userName) {
-      console.log("Switching to different user", userName)  ;
+        console.log("Switching to different user", userName)  ;
+        $scope.loginText = userName;
+        if (state.pwds[userName]) {
+            $scope.passwordText = state.pwds[userName];
+            $scope.login();
+        }
+        else {
+            $scope.shouldBeOpen = true;
+            state.pwds[userName] = 'record..';
+        }
     };
+    
     
     $scope.isManagerView = function() {
         return $location.$$url !== '/manager';
@@ -41,27 +54,32 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
     $scope.getTitle = function() {
         return state.connected ? "" + state.connected : "Connect to CouchDB";
     };
+    
     $scope.reset = function($event) {
+        console.log('RESET');
         if ($event) $event.preventDefault();
         state.connected = false;
-        $scope.disconnected = true;
+        state.disconnected = true;
         delete state.user;
     };
+    
     $scope.getResetText = function() {
         if (state.connected) return 'disconnect';
         if (state.connecting) return 'Connecting..';
         return '';
     };
-    $scope.disconnected = false;
+    state.disconnected = false;
     
     $scope.openLogin = function() {
         $scope.shouldBeOpen = true;
+        delete state.pwds[$scope.loginText];
     };
 
    
     $scope.logout = function() {
         console.log('logout');
-        
+        if (state.user)
+            delete state.pwds[state.user.name];
         // couchapi.logout();
         
         //the above gives error in firefox, but not chrome, so using
@@ -71,6 +89,14 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
                 console.log('What????');
                 alert("No! There isn't a user ____ with pwd ____. Can't be!!!");
             },function() {
+                
+                if (state.user)  {
+                   var index = state.userShortList.indexOf(state.user.name);
+                    if (index !== -1) {
+                        state.userShortList.splice(index, 1);
+                        persist.put('userShortList', state.userShortList);
+                    }
+                }
                 console.log("Logged out..");
                 state.initialize($scope);
                 delete state.user;
@@ -85,12 +111,15 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, stat
             function(data) {
                 console.log('DATA from login', data);
                 state.user = data;
-                // $scope.passwordText = null;
+                if (state.pwds[$scope.loginText]) {
+                    state.pwds[$scope.loginText] = $scope.passwordText;
+                }
+                delete $scope.passwordText;
                 state.initialize($scope);
                 // $scope.$apply();
             },
             function(data) {
-                $scope.passwordText = null;
+                delete $scope.passwordText;
                 console.log('error', data);
             }  
         );

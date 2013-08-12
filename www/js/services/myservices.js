@@ -58,7 +58,7 @@ angular.module("myApp").factory('config', function(defaults) {
 //state
 angular.module("myApp").factory('state', function(defaults, config, persist, $rootScope) {
     var state = {};
-    
+    state.pwds = {};
     function checkSetting(setting, data)  {
         var value = data[setting[0]] ? data[setting[0]][setting[1]] : '';
         value = value || '';

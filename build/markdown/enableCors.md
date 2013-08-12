@@ -1,16 +1,16 @@
 This website and the roster app can't access the
-CouchDB server directly because they are served from different
-origins. But to configure CouchDB for our needs we needed access to
-it. That's why you either installed a 'cors proxy' or
-configured CouchDB manually to enable this access. 
+CouchDB server directly when they are served from different
+origins. But to configure CouchDB for our needs we need access to
+it. To enable this access you have to install either a 'cors proxy' or
+configure CouchDB manually. 
 
-However you need to choose a solution for long term access. My recommendation
-is to 'enable cors' for the CouchDB server. See below for other
-options.
+If you have a cors proxy running my recommendation 
+is to 'enable cors' for the CouchDB server. See below for other 
+options. 
 
 <p ng-show="state.corsConfigured">
-It looks like your CouchDB is configured just the way I need it to
-be (<a href="#" ng-click="checkCors($event)">check again</a>). If
+It looks like your CouchDB is configured for cors access 
+(<a href="#" ng-click="checkCors($event)">check again</a>). If
 you're happy with this (I would) <a href="#"
 ng-click="checkCors($event)">go on</a> to setting up your
 database. If not read on.
@@ -51,11 +51,13 @@ enable access to CouchDB.
 
 ###Other options:
 
-* You can choose not too modify CouchDB at all. But you will have to have a cors
-proxy in the background at all times so the roster app can access the
-database. <span ng-show="state.maybeCors">
+* Other than configuring your CouchDB for cors access, there is a
+second option. You can choose
+not too modify CouchDB at all. But you will have to have a cors proxy
+running in the background at all times so the roster app and this page
+can access the database. <span ng-show="state.maybeCors">
 It looks like we're accessing CouchDB through cors proxy at the
-moment. If so, you're done. 
+moment. 
 </span> 
 
   For info on how install to install this proxy <a href="#" ng-click="reset($event)">disconnect</a> and look at the help on how to enable access to CouchDB.

@@ -25,7 +25,7 @@
       
       <ul id="topmenu" ng-show="true" class="nav">
         <li class="">
-          <a class="sublink"  href="#" ng-click="reset()">{{getResetText()}}</a>
+          <a class="sublink"  href="#" ng-click="reset($event)">{{getResetText()}}</a>
         </li>
         <li ng-show="state.connected">
           <a title="Setup access to CouchDB" class="sublink" href="" ng-click="state.activeScreen='#enableCors'">access</a>

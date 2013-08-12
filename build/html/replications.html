@@ -63,7 +63,7 @@
       <a xeditable ng-model="rep._id" data-unsavedclass="" data-placement="right"
          data-mode="popup">{{rep._id}}</a><br>
 
-      <button class="pull-right btn btn-info" ng-click="done()">Done</button>
+      <button class="pull-left btn btn-info" ng-click="done()">Done</button>
       <!-- <button class="btn btn-success" ng-click="newRep()">New</button> -->
       <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
       <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
@@ -118,7 +118,7 @@
 
         <div ng-show="sourceType=='local'">
           <select  ui-select2="sourceSelect2Options" ng-change="change('sourceLocalDb')"
-                   ng-model="rep.sourceLocalDb" data-placeholder="Pick a database"
+                   ng-model="rep.sourceParsed.localDb" data-placeholder="Pick a database"
                    style="width:100%"
                    >
             <option value=""></option>
@@ -129,59 +129,123 @@
 
         <div ng-show="sourceType=='remote'">
           <select  ui-select2="sourceSelect2Options" ng-change="change('sourceRemoteDb')"
-                   ng-model="rep.sourceRemoteDb" data-placeholder="Pick a database"
+                   ng-model="rep.sourceParsed.remoteDb" data-placeholder="Pick a database"
                    style="width:100%"
                    >
             <option value=""></option>
-            <option ng-repeat="s in remoteDatabases" value="{{s}}">{{s}}</option>
+            <option ng-repeat="s in source.RemoteDatabases" value="{{s}}">{{s}}</option>
           </select>
         </div>
 
         <div ng-hide="sourceType=='local'">
-          url: <a xeditable ng-model="rep.sourceUrl" data-unsavedclass=""
-                  data-placement="right" ng-change="change('sourceUrl')"
-                  data-mode="popup">{{rep.sourceUrl}}</a><br>
-          user: <a xeditable ng-model="rep.sourceUser" data-unsavedclass=""
-                   data-placement="right" ng-change="change('sourceUser')"
-                   data-mode="popup">{{rep.sourceUser}}</a><br>
-          pwd: <a xeditable ng-model="rep.sourcePwd" data-unsavedclass=""
-                  data-placement="right" ng-change="change('sourcePwd')"
-                  data-mode="popup">{{rep.sourcePwd}}</a><br>
+          url: <a href="#" id="sourceUrl" data-type="text"></a> 
+	  <sup style="color:red" ng-show="source.RemoteError">{{source.RemoteError}}</sup><br>
+          user: <a href="#" id="sourceUser" data-type="text"></a> <br>
+          pwd: <a href="#" id="sourcePwd" data-type="text"></a> <br>
+          <!-- user: <a xeditable ng-model="rep.sourceParsed.user" data-unsavedclass="" -->
+          <!--          data-placement="right" ng-change="change('sourceUser')" -->
+          <!--          data-mode="popup">{{rep.sourceParsed.user}}</a><br> -->
+          <!-- pwd: <a xeditable ng-model="rep.sourceParsed.pwd" data-unsavedclass="" -->
+          <!--         data-placement="right" ng-change="change('sourcePwd')" -->
+          <!--         data-mode="popup">{{rep.sourceParsed.pwd}}</a><br> -->
         </div>
       </div>
 
       <hr>
+
       <div>
         <h4>target</h4>
         <div style="padding-bottom:5px;">
-          <input type="radio" ng-model="targetType"  value="local" ng-change="change('targetType')" >  Local
-          <input type="radio" ng-model="targetType"  value="remote"   ng-change="change('targetType')">
+          <input type="radio" ng-model="targetType"  value="local"
+		 ng-change="change('targetType')">  Local
+          <input type="radio" ng-model="targetType"
+                 value="remote" ng-change="change('targetType')">
           Remote <br>
         </div>
+	
 
-        <div >
-          <select  ui-select2="targetSelect2Options"  ng-change="change('targetDatabase')"
-                   ng-model="rep.targetDb" data-placeholder="Pick a database"
+        <div ng-show="targetType=='local'">
+          <select  ui-select2="targetSelect2Options" ng-change="change('targetLocalDb')"
+                   ng-model="rep.targetParsed.localDb" data-placeholder="Pick a database"
                    style="width:100%"
                    >
             <option value=""></option>
-            <option ng-repeat="s in targetDatabases" value="{{s}}">{{s}}</option>
+            <option ng-repeat="s in localDatabases" value="{{s}}">{{s}}</option>
+          </select>
+        </div>
+
+
+        <div ng-show="targetType=='remote'">
+          <select  ui-select2="targetSelect2Options" ng-change="change('targetRemoteDb')"
+                   ng-model="rep.targetParsed.remoteDb" data-placeholder="Pick a database"
+                   style="width:100%"
+                   >
+            <option value=""></option>
+            <option ng-repeat="s in target.RemoteDatabases" value="{{s}}">{{s}}</option>
           </select>
         </div>
 
         <div ng-hide="targetType=='local'">
-          url: <a xeditable ng-model="rep.targetUrl" data-unsavedclass=""
-                  data-placement="right" ng-change="change('targetUrl')"
-                  data-mode="popup">{{rep.targetUrl}}</a><br>
-          user: <a xeditable ng-model="rep.targetUser" data-unsavedclass=""
-                   data-placement="right" ng-change="change('targetUser')"
-                   data-mode="popup">{{rep.targetUser}}</a><br>
-          pwd: <a xeditable ng-model="rep.targetPwd" data-unsavedclass=""
-                  data-placement="right"  ng-change="change('sourcePwd')"
-                  data-mode="popup">{{rep.targetPwd}}</a><br>
+          url: <a href="#" id="targetUrl" data-type="text"></a> 
+	  <sup style="color:red" ng-show="target.RemoteError">{{target.RemoteError}}</sup><br>
+          user: <a href="#" id="targetUser" data-type="text"></a> <br>
+          pwd: <a href="#" id="targetPwd" data-type="text"></a> <br>
         </div>
       </div>
+      
+      
+      
+      
+      
+      <!-- <div> -->
+      <!--   <h4>target</h4> -->
+      <!--   <div style="padding-bottom:5px;"> -->
+      <!--     <input type="radio" ng-model="targetType"  value="local" -->
+      <!-- 		 ng-change="change('targetType')">  Local -->
+      <!--     <input type="radio" ng-model="targetType" -->
+      <!--            value="remote" ng-change="change('targetType')"> -->
+      <!--     Remote <br> -->
+      <!--   </div> -->
+	
 
+      <!--   <div ng-show="targetType=='local'"> -->
+      <!--     <select  ui-select2="targetSelect2Options" ng-change="change('targetLocalDb')" -->
+      <!--              ng-model="rep.target.localDb" data-placeholder="Pick a database" -->
+      <!--              style="width:100%" -->
+      <!--              > -->
+      <!--       <option value=""></option> -->
+      <!--       <option ng-repeat="s in localDatabases" value="{{s}}">{{s}}</option> -->
+      <!--     </select> -->
+      <!--   </div> -->
+
+
+      <!--   <div ng-show="targetType=='remote'"> -->
+      <!--     <select  ui-select2="targetSelect2Options" ng-change="change('targetRemoteDb')" -->
+      <!--              ng-model="rep.target.remoteDb" data-placeholder="Pick a database" -->
+      <!--              style="width:100%" -->
+      <!--              > -->
+      <!--       <option value=""></option> -->
+      <!--       <option ng-repeat="s in target.RemoteDatabases" value="{{s}}">{{s}}</option> -->
+      <!--     </select> -->
+      <!--   </div> -->
+
+      <!--   <div ng-hide="targetType=='local'"> -->
+      <!--     url: <a xeditable ng-model="rep.target.url" data-unsavedclass="" -->
+      <!--             data-placement="right" ng-change="change('targetUrl')" -->
+      <!--             data-mode="popup">{{rep.target.url}}</a> -->
+      <!-- 	  <sup style="color:red" ng-show="target.RemoteError">{{target.RemoteError}}</sup><br> -->
+      <!--     user: <a xeditable ng-model="rep.target.user" data-unsavedclass="" -->
+      <!--              data-placement="right" ng-change="change('targetUser')" -->
+      <!--              data-mode="popup">{{rep.target.user}}</a><br> -->
+      <!--     pwd: <a xeditable ng-model="rep.target.pwd" data-unsavedclass="" -->
+      <!--             data-placement="right" ng-change="change('targetPwd')" -->
+      <!--             data-mode="popup">{{rep.target.pwd}}</a><br> -->
+      <!--   </div> -->
+      <!-- </div> -->
+      
+      
+      
+      
       <hr>
       <h4>user_ctx</h4>
       <div>
@@ -214,6 +278,7 @@
         <div ng-hide="fetchedFilters">
           {{rep.filter}}
           <a  href="" ng-click="fetchFilters()">set</a>
+	  <sup style="color:red" ng-show="filterError">{{filterError}}</sup><br>
         </div>
         <div ng-show="fetchedFilters">
           <select   ui-select2="filterSelect2Options"
@@ -233,6 +298,7 @@
         <div ng-hide="fetchedDocIds">
           {{rep.doc_ids|json}}
           <a  href="" ng-click="fetchDocIds()">set</a>
+	  <sup style="color:red" ng-show="ibsError">{{idsError}}</sup><br>
         </div>
 
         <a ng-show="fetchedDocIds" ng-click="docIdsClick()" href="#" id="repIds" class="userRoles"

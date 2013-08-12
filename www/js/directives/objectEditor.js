@@ -54,10 +54,12 @@ myAppModule.directive('objectEditor', function(){
                                  if (angular.isArray(obj[k])) {
                                      prop.type = 'array';   
                                      prop.children = parseArray(obj[k]);
+                                     prop.minimized = true;
                                  }
                                  else if (angular.isObject(obj[k])) {
                                      prop.type = 'object';   
                                      prop.children = parseObject(obj[k]);
+                                     prop.minimized = true;
                                  }
                                  else prop.value = obj[k];
                                  values.push(prop);

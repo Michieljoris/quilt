@@ -10,18 +10,18 @@
 
 </div> -->
       <div id="manager--"  class="span12" ><div ng-hide="state.connected">
-  <div  id="setupConnection--" ><p ng-hide="disconnected"> 
+  <div  id="setupConnection--" ><p ng-hide="state.disconnected"> 
 I have tried to connect to CouchDB with the following two addresses:
 </p>
 
-<p ng-show="disconnected"> Please enter the urls of the CouchDB you want to try to connect to:</p>
+<p ng-show="state.disconnected"> Please enter the urls of the CouchDB you want to try to connect to:</p>
 
 <ul>
 <li><p><a href="#" id="couchDBurl" data-type="text"></a> (CouchDB)</p></li>
 <li><p><a href="#" id="corsProxy" data-type="text" ></a> (Cors proxy)</p></li>
 </ul>
 
-<div ng-hide="disconnected">
+<div ng-hide="state.disconnected">
 Neither of them gave back a valid response.
 
 Please correct them (by clicking on them) and then click the connect
@@ -40,7 +40,7 @@ button or refresh the page.
 <li><p>Download <a href="http://www.apache.org/dyn/closer.cgi?path=/couchdb/binary/win/1.3.1/setup-couchdb-1.3.1_R15B03-1.exe">CouchDB</a>. Install, say 'Yes' when
 asked to run the database as a service.</p></li>
 <li><p>Download this <a href="cors-proxy.zip">utility</a>. Unzip it somewhere and double-click
-the cors-proxy.bat in th unzipped folder.</p></li>
+the cors-proxy.bat in the unzipped folder.</p></li>
 <li><p>Refresh this page, or click the connect button</p></li>
 </ul>
 
@@ -83,13 +83,13 @@ computer. CouchDB should now be accessible from this site. <br>
 <li><p>If you know what you're doing go to the database config page, most
 likely <a href="http://localhost:5984/_utils/config.html">here</a> for a local
 install. If your CouchDB is on a network somewhere you will need to
-replace the <em>localhost:5984</em> part of this address with the proper address and
+replace the <em>localhost:5984</em> part of the address of this link with the proper address and
 port. <p> 
 You will need server admin credentials for a locked down CouchDB. On
 a fresh install you don't. Look for the option <strong>enable_cors</strong> and
 change its value to <strong>true</strong>. Look for the <strong>credentials</strong> options and
 change its value to <strong>true</strong>. Then go to the bottom of the page and
-click <strong>Add a new section</strong>. Fill in <strong>cors</strong>, <strong>origins</strong> and <strong>*</strong>
+click <strong>Add a new section</strong>. In the box that comes up fill in <strong>cors</strong>, <strong>origins</strong> and <strong>*</strong>
 for <strong>section</strong>, <strong>option</strong> and <strong>value</strong> respectively. Refresh this page or click the
 connect button.</p></li></ol></li>
 <li><p>CouchDB is installed and configured properly but neither of the addresses entered
@@ -101,7 +101,7 @@ now it might be because the CouchDB is actually configured correctly for cors
 access now. Accessing a cors enabled server via a cors proxy is
 problematic it seems. So check the database's direct address
 carefully, because that should work now.</p></li>
-<li><p>Is the port correct? For instance if you're CouchDB is on a https address the port is
+<li><p>Is the port correct? For instance if your CouchDB is on a https address the port is
 probably 6984. </p></li>
 <li><p>The second address is the default address for the
 little CorsProxy server that enables access. If you have a different
@@ -123,23 +123,23 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#x69;&#108;&#116;&#x6F;:&#x6D;&#105;&#99;&#104;&#x69;&#x65;&#x6C;&#x6A;&#x6F;&#114;&#105;&#115;&#x40;&#103;&#109;&#97;&#x69;&#x6C;&#46;&#99;&#x6F;&#109;">&#x6D;&#105;&#99;&#104;&#x69;&#x65;&#x6C;&#x6A;&#x6F;&#114;&#105;&#115;&#x40;&#103;&#109;&#97;&#x69;&#x6C;&#46;&#99;&#x6F;&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#97;&#x69;&#x6C;&#x74;&#x6F;:&#x6D;&#x69;&#99;&#x68;&#105;&#101;&#108;&#106;ori&#x73;&#x40;&#x67;&#109;&#x61;&#x69;&#x6C;&#46;&#99;&#x6F;&#109;">&#x6D;&#x69;&#99;&#x68;&#105;&#101;&#108;&#106;ori&#x73;&#x40;&#x67;&#109;&#x61;&#x69;&#x6C;&#46;&#99;&#x6F;&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
   <div ng-show="isActive('#enableCors')" id="enableCors--"><p>This website and the roster app can't access the
-CouchDB server directly because they are served from different
-origins. But to configure CouchDB for our needs we needed access to
-it. That's why you either installed a 'cors proxy' or
-configured CouchDB manually to enable this access. </p>
+CouchDB server directly when they are served from different
+origins. But to configure CouchDB for our needs we need access to
+it. To enable this access you have to install either a 'cors proxy' or
+configure CouchDB manually. </p>
 
-<p>However you need to choose a solution for long term access. My recommendation
-is to 'enable cors' for the CouchDB server. See below for other
-options.</p>
+<p>If you have a cors proxy running my recommendation 
+is to 'enable cors' for the CouchDB server. See below for other 
+options. </p>
 
 <p ng-show="state.corsConfigured">
-It looks like your CouchDB is configured just the way I need it to
-be (<a href="#" ng-click="checkCors($event)">check again</a>). If
+It looks like your CouchDB is configured for cors access 
+(<a href="#" ng-click="checkCors($event)">check again</a>). If
 you're happy with this (I would) <a href="#"
 ng-click="checkCors($event)">go on</a> to setting up your
 database. If not read on.
@@ -181,11 +181,13 @@ enable access to CouchDB.
 <h3>Other options:</h3>
 
 <ul>
-<li><p>You can choose not too modify CouchDB at all. But you will have to have a cors
-proxy in the background at all times so the roster app can access the
-database. <span ng-show="state.maybeCors">
+<li><p>Other than configuring your CouchDB for cors access, there is a
+second option. You can choose
+not too modify CouchDB at all. But you will have to have a cors proxy
+running in the background at all times so the roster app and this page
+can access the database. <span ng-show="state.maybeCors">
 It looks like we're accessing CouchDB through cors proxy at the
-moment. If so, you're done. 
+moment. 
 </span> </p>
 
 <p>For info on how install to install this proxy <a href="#" ng-click="reset($event)">disconnect</a> and look at the help on how to enable access to CouchDB.</p></li>
@@ -533,7 +535,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <a xeditable ng-model="rep._id" data-unsavedclass="" data-placement="right"
          data-mode="popup">{{rep._id}}</a><br>
 
-      <button class="pull-right btn btn-info" ng-click="done()">Done</button>
+      <button class="pull-left btn btn-info" ng-click="done()">Done</button>
       <!-- <button class="btn btn-success" ng-click="newRep()">New</button> -->
       <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
       <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
@@ -588,7 +590,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
 
         <div ng-show="sourceType=='local'">
           <select  ui-select2="sourceSelect2Options" ng-change="change('sourceLocalDb')"
-                   ng-model="rep.sourceLocalDb" data-placeholder="Pick a database"
+                   ng-model="rep.sourceParsed.localDb" data-placeholder="Pick a database"
                    style="width:100%"
                    >
             <option value=""></option>
@@ -599,59 +601,123 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
 
         <div ng-show="sourceType=='remote'">
           <select  ui-select2="sourceSelect2Options" ng-change="change('sourceRemoteDb')"
-                   ng-model="rep.sourceRemoteDb" data-placeholder="Pick a database"
+                   ng-model="rep.sourceParsed.remoteDb" data-placeholder="Pick a database"
                    style="width:100%"
                    >
             <option value=""></option>
-            <option ng-repeat="s in remoteDatabases" value="{{s}}">{{s}}</option>
+            <option ng-repeat="s in source.RemoteDatabases" value="{{s}}">{{s}}</option>
           </select>
         </div>
 
         <div ng-hide="sourceType=='local'">
-          url: <a xeditable ng-model="rep.sourceUrl" data-unsavedclass=""
-                  data-placement="right" ng-change="change('sourceUrl')"
-                  data-mode="popup">{{rep.sourceUrl}}</a><br>
-          user: <a xeditable ng-model="rep.sourceUser" data-unsavedclass=""
-                   data-placement="right" ng-change="change('sourceUser')"
-                   data-mode="popup">{{rep.sourceUser}}</a><br>
-          pwd: <a xeditable ng-model="rep.sourcePwd" data-unsavedclass=""
-                  data-placement="right" ng-change="change('sourcePwd')"
-                  data-mode="popup">{{rep.sourcePwd}}</a><br>
+          url: <a href="#" id="sourceUrl" data-type="text"></a> 
+	  <sup style="color:red" ng-show="source.RemoteError">{{source.RemoteError}}</sup><br>
+          user: <a href="#" id="sourceUser" data-type="text"></a> <br>
+          pwd: <a href="#" id="sourcePwd" data-type="text"></a> <br>
+          <!-- user: <a xeditable ng-model="rep.sourceParsed.user" data-unsavedclass="" -->
+          <!--          data-placement="right" ng-change="change('sourceUser')" -->
+          <!--          data-mode="popup">{{rep.sourceParsed.user}}</a><br> -->
+          <!-- pwd: <a xeditable ng-model="rep.sourceParsed.pwd" data-unsavedclass="" -->
+          <!--         data-placement="right" ng-change="change('sourcePwd')" -->
+          <!--         data-mode="popup">{{rep.sourceParsed.pwd}}</a><br> -->
         </div>
       </div>
 
       <hr>
+
       <div>
         <h4>target</h4>
         <div style="padding-bottom:5px;">
-          <input type="radio" ng-model="targetType"  value="local" ng-change="change('targetType')" >  Local
-          <input type="radio" ng-model="targetType"  value="remote"   ng-change="change('targetType')">
+          <input type="radio" ng-model="targetType"  value="local"
+		 ng-change="change('targetType')">  Local
+          <input type="radio" ng-model="targetType"
+                 value="remote" ng-change="change('targetType')">
           Remote <br>
         </div>
+	
 
-        <div >
-          <select  ui-select2="targetSelect2Options"  ng-change="change('targetDatabase')"
-                   ng-model="rep.targetDb" data-placeholder="Pick a database"
+        <div ng-show="targetType=='local'">
+          <select  ui-select2="targetSelect2Options" ng-change="change('targetLocalDb')"
+                   ng-model="rep.targetParsed.localDb" data-placeholder="Pick a database"
                    style="width:100%"
                    >
             <option value=""></option>
-            <option ng-repeat="s in targetDatabases" value="{{s}}">{{s}}</option>
+            <option ng-repeat="s in localDatabases" value="{{s}}">{{s}}</option>
+          </select>
+        </div>
+
+
+        <div ng-show="targetType=='remote'">
+          <select  ui-select2="targetSelect2Options" ng-change="change('targetRemoteDb')"
+                   ng-model="rep.targetParsed.remoteDb" data-placeholder="Pick a database"
+                   style="width:100%"
+                   >
+            <option value=""></option>
+            <option ng-repeat="s in target.RemoteDatabases" value="{{s}}">{{s}}</option>
           </select>
         </div>
 
         <div ng-hide="targetType=='local'">
-          url: <a xeditable ng-model="rep.targetUrl" data-unsavedclass=""
-                  data-placement="right" ng-change="change('targetUrl')"
-                  data-mode="popup">{{rep.targetUrl}}</a><br>
-          user: <a xeditable ng-model="rep.targetUser" data-unsavedclass=""
-                   data-placement="right" ng-change="change('targetUser')"
-                   data-mode="popup">{{rep.targetUser}}</a><br>
-          pwd: <a xeditable ng-model="rep.targetPwd" data-unsavedclass=""
-                  data-placement="right"  ng-change="change('sourcePwd')"
-                  data-mode="popup">{{rep.targetPwd}}</a><br>
+          url: <a href="#" id="targetUrl" data-type="text"></a> 
+	  <sup style="color:red" ng-show="target.RemoteError">{{target.RemoteError}}</sup><br>
+          user: <a href="#" id="targetUser" data-type="text"></a> <br>
+          pwd: <a href="#" id="targetPwd" data-type="text"></a> <br>
         </div>
       </div>
+      
+      
+      
+      
+      
+      <!-- <div> -->
+      <!--   <h4>target</h4> -->
+      <!--   <div style="padding-bottom:5px;"> -->
+      <!--     <input type="radio" ng-model="targetType"  value="local" -->
+      <!-- 		 ng-change="change('targetType')">  Local -->
+      <!--     <input type="radio" ng-model="targetType" -->
+      <!--            value="remote" ng-change="change('targetType')"> -->
+      <!--     Remote <br> -->
+      <!--   </div> -->
+	
 
+      <!--   <div ng-show="targetType=='local'"> -->
+      <!--     <select  ui-select2="targetSelect2Options" ng-change="change('targetLocalDb')" -->
+      <!--              ng-model="rep.target.localDb" data-placeholder="Pick a database" -->
+      <!--              style="width:100%" -->
+      <!--              > -->
+      <!--       <option value=""></option> -->
+      <!--       <option ng-repeat="s in localDatabases" value="{{s}}">{{s}}</option> -->
+      <!--     </select> -->
+      <!--   </div> -->
+
+
+      <!--   <div ng-show="targetType=='remote'"> -->
+      <!--     <select  ui-select2="targetSelect2Options" ng-change="change('targetRemoteDb')" -->
+      <!--              ng-model="rep.target.remoteDb" data-placeholder="Pick a database" -->
+      <!--              style="width:100%" -->
+      <!--              > -->
+      <!--       <option value=""></option> -->
+      <!--       <option ng-repeat="s in target.RemoteDatabases" value="{{s}}">{{s}}</option> -->
+      <!--     </select> -->
+      <!--   </div> -->
+
+      <!--   <div ng-hide="targetType=='local'"> -->
+      <!--     url: <a xeditable ng-model="rep.target.url" data-unsavedclass="" -->
+      <!--             data-placement="right" ng-change="change('targetUrl')" -->
+      <!--             data-mode="popup">{{rep.target.url}}</a> -->
+      <!-- 	  <sup style="color:red" ng-show="target.RemoteError">{{target.RemoteError}}</sup><br> -->
+      <!--     user: <a xeditable ng-model="rep.target.user" data-unsavedclass="" -->
+      <!--              data-placement="right" ng-change="change('targetUser')" -->
+      <!--              data-mode="popup">{{rep.target.user}}</a><br> -->
+      <!--     pwd: <a xeditable ng-model="rep.target.pwd" data-unsavedclass="" -->
+      <!--             data-placement="right" ng-change="change('targetPwd')" -->
+      <!--             data-mode="popup">{{rep.target.pwd}}</a><br> -->
+      <!--   </div> -->
+      <!-- </div> -->
+      
+      
+      
+      
       <hr>
       <h4>user_ctx</h4>
       <div>
@@ -684,6 +750,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
         <div ng-hide="fetchedFilters">
           {{rep.filter}}
           <a  href="" ng-click="fetchFilters()">set</a>
+	  <sup style="color:red" ng-show="filterError">{{filterError}}</sup><br>
         </div>
         <div ng-show="fetchedFilters">
           <select   ui-select2="filterSelect2Options"
@@ -703,6 +770,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
         <div ng-hide="fetchedDocIds">
           {{rep.doc_ids|json}}
           <a  href="" ng-click="fetchDocIds()">set</a>
+	  <sup style="color:red" ng-show="ibsError">{{idsError}}</sup><br>
         </div>
 
         <a ng-show="fetchedDocIds" ng-click="docIdsClick()" href="#" id="repIds" class="userRoles"
@@ -882,6 +950,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
 <a href="#" id="quiltRemoteUrl" data-type="text"></a> 
 </div> -->
 </div>
+
 
 
 

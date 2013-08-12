@@ -66,7 +66,9 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         }
         console.log('endEdit', row);
         var different = Object.keys(row).some(function(e) {
-            if (e === 'modified' || e === 'original' || (!row[e] && !row.original[e]) ||
+            if (e === 'modified' || e === 'original' ||
+                e === 'sourceParsed' || e === 'targetParsed' || 
+                (!row[e] && !row.original[e]) ||
                 angular.equals(row[e], row.original[e])) return false; 
             return true;
         });
@@ -81,52 +83,134 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
             $scope.modifiedCount--;   
         }
     } 
+    
+    function parseUrl(url) {
+        var parsed = {};
+        if (url) {
+            if (url.startsWith('http')) {
+                var creds = url.match(/(http[s]?:\/\/)(.+):(.+)@(.+)/);
+                if (creds) {
+                    parsed.user = creds[2];
+                    parsed.pwd = creds[3];
+                    var domain = creds[4].slice(0, creds[4].lastIndexOf('/'));
+                    parsed.remoteDb = creds[4].slice(creds[4].lastIndexOf('/') + 1);
+                    parsed.url = creds[1] + domain;
+                }
+                else {
+                    parsed.url = url.slice(0, url.lastIndexOf('/'));
+                    parsed.remoteDb = url.slice(url.lastIndexOf('/') + 1);
+                }
+            }
+            else  {
+                parsed.localDb = url;
+            }
+        }
+        
+        return parsed;
+    }
+    
     $scope.editRep = function(rep) {
         $scope.editMode = true;
+        rep.sourceParsed = parseUrl(rep.source);
+        if (rep.sourceParsed.url) $scope.sourceType = 'remote';
+        else $scope.sourceType = 'local';
+        rep.targetParsed = parseUrl(rep.target);
+        if (rep.targetParsed.url) $scope.targetType = 'remote';
+        else $scope.targetType = 'local';
+        
+        
         $scope.rep = rep;
+        
+        $('#sourceUrl').editable('setValue', rep.sourceParsed.url, false);
+        $('#sourceUser').editable('setValue', rep.sourceParsed.user, false);
+        $('#sourcePwd').editable('setValue', rep.sourceParsed.pwd, false);
+        $('#targetUrl').editable('setValue', rep.targetParsed.url, false);
+        $('#targetUser').editable('setValue', rep.targetParsed.user, false);
+        $('#targetPwd').editable('setValue', rep.targetParsed.pwd, false);
+        
+        if ($scope.sourceType === 'remote') {
+            fetchAllDb('source');
+        }
+        if ($scope.targetType === 'remote') {
+            fetchAllDb('target');
+        }
+        $scope.fetchedFilters = $scope.fetchedDocIds = false;
+        
+        
+        
         console.log(rep);  
     };
 
-    $scope.editMode = true;
-    $scope.rep = {
-        "_id": "pull_waterfordwest2",
-        "_rev": "64-f8b32510693b7a78cf151001c1dc8527",
-        "source": "db1",
-        "target": "url1",
-        "continuous": true,
-        "user_ctx": {
-            "roles": [
-                "_admin"
-            ]
-        },
-        filter: "myfilter",
-        doc_ids: ['a', 'b'],
-        "owner": "_admin",
-        "_replication_state": "triggered",
-        "_replication_state_time": "2013-07-30T09:52:45+10:00",
-        "_replication_id": "43345201b8b61db47a85bde99d8a0e66",
-        "couch": true,
-        "original": {
-            "_id": "pull_waterfordwest",
-            "_rev": "64-f8b32510693b7a78cf151001c1dc8527",
-            "source": "http://multicap.ic.ht:5984/waterfordwestrep",
-            "target": "waterfordwest",
-            "continuous": true,
-            "user_ctx": {
-                "roles": [
-                    "_admin"
-                ]
-            },
-            "owner": "_admin",
-            "_replication_state": "triggered",
-            "_replication_state_time": "2013-07-30T09:52:45+10:00",
-            "_replication_id": "43345201b8b61db47a85bde99d8a0e66",
-            "couch": true
-        },
-        "modified": true
-    };
+    // $scope.editMode = true;
+    // $scope.rep = {
+    //     "_id": "pull_waterfordwest2",
+    //     "_rev": "64-f8b32510693b7a78cf151001c1dc8527",
+    //     "source": "db1",
+    //     "target": "url1",
+    //     "continuous": true,
+    //     "user_ctx": {
+    //         "roles": [
+    //             "_admin"
+    //         ]
+    //     },
+    //     filter: "myfilter",
+    //     doc_ids: ['a', 'b'],
+    //     "owner": "_admin",
+    //     "_replication_state": "triggered",
+    //     "_replication_state_time": "2013-07-30T09:52:45+10:00",
+    //     "_replication_id": "43345201b8b61db47a85bde99d8a0e66",
+    //     "couch": true,
+    //     "original": {
+    //         "_id": "pull_waterfordwest",
+    //         "_rev": "64-f8b32510693b7a78cf151001c1dc8527",
+    //         "source": "http://multicap.ic.ht:5984/waterfordwestrep",
+    //         "target": "waterfordwest",
+    //         "continuous": true,
+    //         "user_ctx": {
+    //             "roles": [
+    //                 "_admin"
+    //             ]
+    //         },
+    //         "owner": "_admin",
+    //         "_replication_state": "triggered",
+    //         "_replication_state_time": "2013-07-30T09:52:45+10:00",
+    //         "_replication_id": "43345201b8b61db47a85bde99d8a0e66",
+    //         "couch": true
+    //     },
+    //     "modified": true
+    // };
     $scope.done = function() {
         $scope.editMode = false;
+        if ($scope.sourceType === 'local')
+            $scope.rep.source = $scope.rep.sourceParsed.localDb;
+        else {
+            if ($scope.rep.sourceParsed.url)
+                $scope.rep.source = makeUrl(
+                    $scope.rep.sourceParsed.user, $scope.rep.sourceParsed.pwd,
+                    $scope.rep.sourceParsed.url) + '/' +
+                $scope.rep.sourceParsed.remoteDb;
+            else $scope.rep.source = "";
+        }
+        if ($scope.targetType === 'local')
+            $scope.rep.target = $scope.rep.targetParsed.localDb;
+        else {
+            if ($scope.rep.targetParsed.url)
+                $scope.rep.target = makeUrl(
+                    $scope.rep.targetParsed.user, $scope.rep.targetParsed.pwd,
+                    $scope.rep.targetParsed.url) + '/' +
+                $scope.rep.targetParsed.remoteDb;
+            else $scope.rep.target = "";
+        }
+        endEdit($scope.rep);
+        // if ($scope.targetType === 'local') $scope.rep.target = $scope.rep.targetLocalDb;
+        // else {
+        //     if ($scope.rep.targetUrl)
+        //         $scope.rep.target = makeUrl(
+        //             $scope.rep.targetUser, $scope.rep.targetPwd,
+        //             $scope.rep.targetUrl) + '/' +
+        //         $scope.rep.targetRemoteDb;
+        //     else $scope.rep.target = "";
+        // } 
     };
     
     function defineGrid() {
@@ -146,7 +230,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
              cellTemplate: checkBoxTemplate, enableCellEdit:false},
             {visGroup:'Essential', field:'create_target', displayName:'create_target', width: 77, w:77,
              cellTemplate: checkBoxTemplate, enableCellEdit:false},
-            {visGroup:'More', field:'filter', displayName:'filter', visible:false},
+            {visGroup:'More', field:'filter', displayName:'filter', visible:false, enableCellEdit:false},
             {visGroup:'More', field:'query_params', displayName:'params', visible:false, enableCellEdit:false},
             {visGroup:'More', field:'doc_ids', displayName:'doc_ids', visible:false, enableCellEdit:false},
             {visGroup:'More', field:'user_ctx', displayName:'user_ctx', visible:false, enableCellEdit:false},
@@ -268,13 +352,43 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     
     $scope.apply = function() {
         var repsToRemove = [];
+        var repsToCommit = []; 
         var selRows = $scope.gridOptions.$gridScope.selectedItems;
         state.reps.filter(function(r) {
             return r.modified;
         }).forEach(function(r) {
             storeInQuilt(r);
             if (!r.couch) repsToRemove.push(r);
+            else repsToCommit.push(r);
         });
+        repsToCommit = repsToCommit.map(function(rep) {
+            rep = angular.copy(rep);
+            rep.sourceParsed = parseUrl(rep.source);
+            rep.targetParsed = parseUrl(rep.target);
+            if (rep.sourceParsed.pwd === "_prompt_")
+                {
+                    rep.sourceParsed.pwd = prompt('Please enter password for: ' +
+                                                 rep.targetParsed.remoteDb);
+        //TODO add to couch
+                    //unfinished..
+                    
+                }
+            if (rep.targetParsed.pwd === "_prompt_")
+                {
+                    rep.targetParsed.pwd = prompt('Please enter password for: ' +
+                                                 rep.targetParsed.remoteDb);
+        //TODO add to couch
+                    //unfinished..
+                    
+                }
+            delete rep.original;
+            delete rep.sourceParsed;
+            delete rep.targetParsed;
+            delete rep.couch;
+            delete rep.modified;
+            return rep;
+        });
+        
         persist.put('reps', state.quilt_reps);
         couchapi.docBulkRemove(repsToRemove, '_replicator').when(
             function(data) {
@@ -286,6 +400,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                 $scope.refresh();
             }
         );
+        couchapi.
         console.log('apply');
     };
 
@@ -315,12 +430,55 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     
     //----------------------------edit rep------------------------------------------
     
-    $scope.change = function(data) {
-        console.log('change:', data, $scope.rep);
-        $scope.rep.doc_ids = $scope.filter = "";
-        $scope.fetchedFilters = $scope.fetchedDocIds = false;
-        $('#repIds').editable('option', 'disabled', true);
-        
+    function fetchAllDb(type) {
+        var urlPrefix = $scope.rep[type + 'Parsed'].url; 
+        var  oldUrlPrefix = $.couch.urlPrefix;
+        $.couch.urlPrefix = urlPrefix;
+        console.log('fetchAllDb', type, urlPrefix);
+        couchapi.dbAll().when(
+            function(data) {
+                console.log('success loading alldbs for ' + urlPrefix);
+                $.couch.urlPrefix = oldUrlPrefix;
+                $scope[type].RemoteDatabases = data;  
+                $scope.$apply();
+            },
+            function(error) {
+                console.log('error retrieving all dbs for ' + urlPrefix, error);
+                $.couch.urlPrefix = oldUrlPrefix;
+                $scope[type].RemoteDatabases = [];  
+                $scope[type].RemoteError = "  invalid url";
+                setTimeout(function() {
+                    $scope[type].RemoteError = false;
+                    $scope.$apply();
+                    
+                }, 10000);
+                $scope.$apply();
+                
+            }
+        );
+    }
+    
+    $scope.change = function(delta) {
+        if (!$scope.editMode) return;
+        console.log('change:',  delta);
+        if (($scope.sourceType === 'remote') &&
+            (delta === 'sourceUrl' || delta === 'sourceType')) {
+            fetchAllDb('source');
+        }
+        if (($scope.targetType === 'remote') &&
+            (delta === 'targetUrl' || delta === 'targetType')) {
+            fetchAllDb('target');
+        }
+        if (delta === 'sourceLocalDb' || delta === 'sourceRemoteDb') {
+            $scope.rep.doc_ids =[];
+            $('#repIds').editable('setValue', $scope.rep.doc_ids, false);
+            $('#repIds').editable('option', 'select2',
+                                  { tags: ['read-',  'write-']});
+            $scope.rep.filter = "";
+            $scope.fetchedFilters = $scope.fetchedDocIds = false;
+            $('#repIds').editable('option', 'disabled', true);
+        }
+        // console.log('change:', data, $scope.rep);
         
     };
     
@@ -374,8 +532,71 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         }
     });   
     
+    
+    $('#sourceUrl').editable({
+        unsavedclass: null,
+        type: 'text',
+        success: function(response, newValue) {
+            $scope.rep.sourceParsed.url = newValue;
+            $scope.change('sourceUrl');
+            $scope.$apply();
+        }
+    });
+    $('#sourceUser').editable({
+        unsavedclass: null,
+        type: 'text',
+        success: function(response, newValue) {
+            $scope.rep.sourceParsed.user = newValue;
+            $scope.change('sourceUser');
+            $scope.$apply();
+        }
+    });
+    
+    $('#sourcePwd').editable({
+        unsavedclass: null,
+        type: 'text',
+        success: function(response, newValue) {
+            $scope.rep.sourceParsed.pwd = newValue;
+            $scope.change('sourcePwd');
+            $scope.$apply();
+        }
+    });
+    
+    $('#targetUrl').editable({
+        unsavedclass: null,
+        type: 'text',
+        success: function(response, newValue) {
+            $scope.rep.targetParsed.url = newValue;
+            $scope.change('targetUrl');
+            $scope.$apply();
+        }
+    });
+    $('#targetUser').editable({
+        unsavedclass: null,
+        type: 'text',
+        success: function(response, newValue) {
+            $scope.rep.targetParsed.user = newValue;
+            $scope.change('targetUser');
+            $scope.$apply();
+        }
+    });
+    
+    $('#targetPwd').editable({
+        unsavedclass: null,
+        type: 'text',
+        success: function(response, newValue) {
+            $scope.rep.targetParsed.pwd = newValue;
+            $scope.change('targetPwd');
+            $scope.$apply();
+        }
+    });
+    
     function makeUrl(user, pwd, url) {
-        if (!pwd || !user || user.length === 0 || pwd.length === 0) return url;
+        if (!url || url.length === 0) return "";
+        if (!user || user.length === 0) return url;
+        if (!pwd || pwd.length === 0) {
+            pwd = "_prompt_";
+        }
         var i = 0;
         var prefix = "";
         if (url.startsWith('http://')) i = 7;
@@ -389,13 +610,19 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         var vow = VOW.make();
         if (!dbName) return vow['break']('Error: no db passed in');
         console.log('getting design docs for ' , dbName);
+        var timer = setTimeout(function() {
+            $scope.designError = "Unable to retrieve database design docs";
+            vow['break']('timeout');
+            vow = false;
+        },5000);
         couchapi.docAllDesignInclude(dbName).when(
             function(data) {
                 var designDocs = data.rows.map(function(r) {
                     console.log('r.doc =', r.doc);
                     return r.doc;
                 });
-                vow.keep(designDocs);
+                clearTimeout(timer);
+                if (vow) vow.keep(designDocs);
             }
             ,function(err) {
                 console.log('error', err);
@@ -405,7 +632,9 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                 else {
                     $scope.designError = "Unable to retrieve database design docs" + err;
                 }
-                vow['break']('$scope.designError');
+                
+                clearTimeout(timer);
+                if (vow) vow['break']('$scope.designError');
             }
         );
         
@@ -415,21 +644,26 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     $scope.fetchDocIds = function() {
         console.log('in fetchDocsIds');
         
-        $scope.fetchedDocIds = true;
         $('#repIds').editable('option', 'disabled', false);
         
         
-        var url, urlPrefix, oldUrlPrefix, db;
+        var urlPrefix, oldUrlPrefix, db;
         if ($scope.sourceType === 'remote') {
-            url = makeUrl($scope.rep.sourceUser, $scope.rep.sourcePwd, $scope.rep.sourceUrl);
+            urlPrefix = makeUrl($scope.rep.sourceParsed.user, $scope.rep.sourceParsed.pwd,
+                          $scope.rep.sourceParsed.url);
             oldUrlPrefix = $.couch.urlPrefix;
-            urlPrefix = url.slice(0, url.lastIndexOf('/'));
-            db = url.slice(url.lastIndexOf('/')+1);
             $.couch.urlPrefix = urlPrefix;
+            db = $scope.rep.sourceParsed.remoteDb;
         }
-        else db = $scope.rep.sourceLocal;
+        else db = $scope.rep.sourceParsed.localDb;
         if (!db || db.length === 0) {
             $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
+            console.log('no valid db', db);
+            $scope.idsError = "no valid source db";
+            setTimeout(function() {
+                $scope.idsError = false;
+                $scope.$apply();
+            }, 3000);
             console.log('no valid db');
             return;
         }
@@ -438,56 +672,68 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
             function(data) {
                 console.log('docIds:', data);
                 $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
-                // var docs = [];
                 var rows = data.rows; 
-                // var docs = rows.reduce(function(prev, row) {
-                //     if (angular.isArray(row)) return row.concat(prev);
-                //     else return prev;
-                // }, []);
                 var docs = rows.map(function(r) {
                     return r.id;
                 }, []);
                 console.log('rows' ,docs);
-                $('#repIds').editable('option', 'select2',
-                                      { tags: docs});
-                
+                if (docs.length > 0) {
+                    $('#repIds').editable('option', 'select2',
+                                          { tags: docs});
+                    $scope.fetchedDocIds = true;
+                }
+                else {
+                    $scope.idsError = "source db contains no documents";
+                    setTimeout(function() {
+                        $scope.dbsError = false;
+                        $scope.$apply();
+                    }, 3000);
+                    
+                }
                 $scope.$apply();
             },
             function(err) {
+                $scope.idsError = "error retrieving docs from source db";
+                setTimeout(function() {
+                    $scope.dbsError = false;
+                    $scope.$apply();
+                }, 3000);
                 console.log(err);  
                 $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
+                $scope.$apply();
             }
         );
     };
     
     
-    $scope.fetchFilters = function(urlPrefix, db) {
+    $scope.fetchFilters = function() {
         var vow = VOW.make();
         console.log('in fetchFilters');
+        var urlPrefix, oldUrlPrefix, db;
+        if ($scope.sourceType === 'remote') {
+            urlPrefix = makeUrl($scope.rep.sourceParsed.user, $scope.rep.sourceParsed.pwd,
+                          $scope.rep.sourceParsed.url);
+            oldUrlPrefix = $.couch.urlPrefix;
+            db = $scope.rep.sourceParsed.remoteDb;
+            $.couch.urlPrefix = urlPrefix;
+        }
+        else db = $scope.rep.sourceParsed.localDb;
+        if (!db || db.length === 0) {
+            $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
+            console.log('no valid db', db);
+            $scope.filterError = "no valid source db";
+            setTimeout(function() {
+                $scope.filterError = false;
+                $scope.$apply();
+            }, 3000);
+            return vow['break'];   
+        }
         
-        // var urlPrefix, oldUrlPrefix, db;
-        // if ($scope.sourceType === 'remote') {
-        //     url = makeUrl($scope.rep.sourceUser, $scope.rep.sourcePwd, $scope.rep.sourceUrl);
-        //     oldUrlPrefix = $.couch.urlPrefix;
-        //     urlPrefix = url.slice(0, url.lastIndexOf('/'));
-        //     db = url.slice(url.lastIndexOf('/')+1);
-        //     $.couch.urlPrefix = urlPrefix;
-        // }
-        // else db = $scope.rep.sourceLocal;
-        // if (!db || db.length === 0) {
-        //     $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
-        //     console.log('no valid db', db);
-        //     return;   
-        // }
-        var  oldUrlPrefix = $.couch.urlPrefix;
-       $.couch.urlPrefix = urlPrefix;
-        
-        $scope.fetchedFilters = true;
-        
+        console.log('getting designdocs for ' , $.couch.urlPrefix, db);
         getDesignDocs(db).when(
             function(ddocs) {
                 console.log('designdocs:', ddocs);
-                $.couch.urlPrefix = oldUrlPrefix;
+                $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
                 var allFilters = [];
                 ddocs.forEach(function(dd) {
                     if (dd.filters) {
@@ -498,13 +744,30 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                     }
                     
                 }); 
-                $scope.filters = allFilters;
+                if (allFilters.length > 0 ) {
+                    $scope.filters = allFilters;
+                    $scope.fetchedFilters = true;
+                }
+                else {
+                    $scope.filterError = "source db has no filters defined";
+                    setTimeout(function() {
+                        $scope.filterError = false;
+                        $scope.$apply();
+                    }, 3000);
+                }
                 console.log('all filters', allFilters);
                 $scope.$apply();
             },
             function(err) {
+                $scope.filterError = "error retrieving desing docs for source db";
+                setTimeout(function() {
+                    $scope.filterError = false;
+                    $scope.$apply();
+                }, 3000);
+                $scope.fetchedFilters = false;
                 console.log('Error', err);  
-                $.couch.urlPrefix = oldUrlPrefix;
+                $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
+                $scope.$apply();
             }
         );
         return vow.promise;
@@ -580,6 +843,10 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                    function() {
                        var viewState = localStorage.getItem('quilt_repsViewState');
                        var fieldGroup = localStorage.getItem('quilt_fieldGroup');
+                       
+                       $scope.source = {};
+                       $scope.target = {};
+                       
                        $scope.viewStateSet(viewState);
                        $scope.pickFields(fieldGroup || 'Essential') ;
                        
@@ -590,8 +857,8 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                        $scope.docIds = ['a', 'b'];
                        // initXEditable('targetdb', $scope.sources, $scope.rep.target);
                        
-                       $scope.sourceType = 'remote';
-                       $scope.targetType = 'remote';
+                       // $scope.sourceType = 'local';
+                       // $scope.targetType = 'local';
         
                        $scope.sourceSelect2Options = {
                            width:"60%"

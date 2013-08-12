@@ -695,6 +695,10 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         delete newRow.copy;
         var notUnique;
         if ($scope.viewState1.docs) {
+            if (newRow.type !== 'doc') {
+                alert('Please select one and only one row to copy the doc from for the new row.');
+                return;
+            }
             angular.extend(newRow, {
                 design: prompt("New design document name ?")
             });
@@ -715,6 +719,10 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         
         }
         else {
+            if (newRow.type !== 'value' || !$scope.viewStateGroup[newRow.funcType ] ) {
+                alert('Please select one and only one row to copy the settings from for the new row.');
+                return;
+            }
             angular.extend(newRow, {
                 name: prompt("New " + newRow.funcType.slice(0, newRow.funcType.length -1 ) + " name ?")
             });

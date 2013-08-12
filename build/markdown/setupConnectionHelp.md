@@ -4,7 +4,7 @@ For windows do the following:
   asked to run the database as a service.
   
 * Download this [utility][corsproxy.zip]. Unzip it somewhere and double-click
-  the cors-proxy.bat in th unzipped folder.
+  the cors-proxy.bat in the unzipped folder.
   
 * Refresh this page, or click the connect button
 
@@ -49,13 +49,13 @@ If you still can't connect this could be for the following reasons:
   1. If you know what you're doing go to the database config page, most
   likely [here][local couchdb config] for a local
   install. If your CouchDB is on a network somewhere you will need to
-  replace the _localhost:5984_ part of this address with the proper address and
+  replace the _localhost:5984_ part of the address of this link with the proper address and
   port. <p> 
   You will need server admin credentials for a locked down CouchDB. On
   a fresh install you don't. Look for the option **enable_cors** and
   change its value to **true**. Look for the **credentials** options and
   change its value to **true**. Then go to the bottom of the page and
-  click **Add a new section**. Fill in **cors**, **origins** and *****
+  click **Add a new section**. In the box that comes up fill in **cors**, **origins** and *****
   for **section**, **option** and **value** respectively. Refresh this page or click the
   connect button.
   
@@ -69,7 +69,7 @@ If you still can't connect this could be for the following reasons:
   problematic it seems. So check the database's direct address
   carefully, because that should work now.
   
-  * Is the port correct? For instance if you're CouchDB is on a https address the port is
+  * Is the port correct? For instance if your CouchDB is on a https address the port is
   probably 6984. 
   
   * The second address is the default address for the
