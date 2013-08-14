@@ -15,7 +15,7 @@ All replication params can be edited and set.
 
 You can save replications and design functions in local storage or in a CouchDB database, which you can sync or pull from another CouchDB instance
 
-There is an examine tab that lets you make queries, conflicts, change feeds and the CouchDB log. 
+There is an examine tab that lets you make queries and view conflicts, change feeds and the CouchDB log. 
 
 The test tab under Examine lets you set up simple read and write tests to test security set by the security object of databases and any validate_doc_update functions.
 
