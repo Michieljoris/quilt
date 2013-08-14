@@ -14,7 +14,8 @@
 	"bb-server": "*",
 	"html-builder": "*",
 	"nodemailer": "*",
-	"dbox": "*"
+	"dbox": "*",
+	"nano": "*"
     },
     "bugs": {
 	"url": "https://github.com/michieljoris/couchdb_manager/issues"
