@@ -170,9 +170,9 @@ var exports = {
               ,tagIdPostfix: '--' //can be overridden per template
               // ,out: 'helpView.html'
               ,mapping: {
-                  setupConnection: 'markdown/setupConnection.md',
-                  setupConnectionHelp: 'markdown/setupConnectionHelp.md',
-                  enableCors: 'markdown/enableCors.md'
+                  setupConnection: 'markdown/setupConnection.md'
+                  ,setupConnectionHelp: 'markdown/setupConnectionHelp.md'
+                  ,enableCors: 'markdown/enableCors.md'
                   ,simple: 'markdown/simple.md'
                   ,info: 'markdown/info.md'
                   ,'allUsers': 'html/allUsers.html'
@@ -183,11 +183,11 @@ var exports = {
                   ,'quilt': 'html/quilt.html'
                   // ,'log': 'html/log.html'
                   
-                  // ,'serverAdmins': 'markdown/serverAdmins.md'
-                  // ,'users': 'html/users.html'
+                  ,'serverAdmins': 'markdown/serverAdmins.md'
+                  ,'users': 'html/users.html'
               }
-            },
-            { src: 'views/help.html' 
+            }
+            ,{ src: 'views/help.html' 
               ,tagIdPostfix: '--' //can be overridden per template
               ,out: 'helpView.html'
               ,mapping: {

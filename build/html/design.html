@@ -22,33 +22,14 @@
         <div class="row">
 
           <div class="rep-buttons span3">
-            <!-- <button class="btn btn-info" ng-click="refresh()">Refresh</button> -->
             <button ng-disabled="viewStateGroup.validate" class="btn btn-success" ng-click="newRow()">New</button>
-            <!-- <button class="btn btn-success" ng-click="extract()">Extract</button> -->
-            <!-- <button class="btn btn-danger" ng-click="delete()">Delete</button> -->
             <button class="btn btn-danger" ng-click="apply()">Apply</button>
             <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
                     ng-click="undo()">Undo edits</button>
           </div>
 
           <div class="span7">
-            <!-- <div class="btn-group pull-right" > -->
-            <!--   <button ng-class="viewState2.table" type="button" class="btn btn-inverse" -->
-            <!--           style="font-size:12px;" -->
-            <!--           ng-click="toggleViewState2('table')">Table</button> -->
-            <!--   <button ng-class="viewState2.tree" type="button" class="btn btn-inverse" -->
-            <!--           style="font-size:12px;" -->
-            <!--           ng-click="toggleViewState2('tree')">Tree</button> -->
-            <!-- </div> -->
 
-
-            <!-- <div class="btn-group pull-right " style="margin-right:5px" > -->
-            <!--   <\!-- <button ng-class="viewState1.all" type="button" class="btn btn-inverse" ng-click="toggleValueKeyAll('all')">All</button> -\-> -->
-            <!--   <button ng-class="viewState1.docs" type="button" class="btn btn-inverse" ng-click="toggleDocsFunctions('docs')">Docs</button> -->
-            <!--   <button style="width:90px;" ng-class="viewState1.values" type="button" class="btn btn-inverse" ng-click="toggleDocsFunctions('values')">Functions</button> -->
-            <!-- </div> -->
-	    
-	    
             <div ng-hide="false && viewState1.docs" class="btn-group pull-right" style="margin-right:10px">
 
               <button ng-repeat="funcType in funcTypes" ng-class="viewStateGroup[funcType]"
@@ -57,29 +38,11 @@
             </div>
 
 
-            <!-- <div class="btn-group pull-right" style="margin-right:5px"> -->
-            <!--   <button ng-class="multipleSingle.multiple" type="button" class="btn btn-inverse" -->
-            <!--           style="font-size:12px;" -->
-            <!--           ng-click="toggleMultipleSingle('multiple')">Multiple</button> -->
-            <!--   <button ng-class="multipleSingle.single" type="button" class="btn btn-inverse" -->
-            <!--           style="font-size:12px;" -->
-            <!--           ng-click="toggleMultipleSingle('single')">Single</button> -->
-            <!-- </div> -->
           </div>
         </div>
 
 
         <div class="row">
-          <!-- <span class="dropdown pull-right" > -->
-          <!--      <button style="font-size:12px;margin-right:12px;" class="btn btn-inverse dropdown-toggle"> -->
-          <!--        Fields -->
-          <!--      </button> -->
-          <!--      <ul class="dropdown-menu"> -->
-          <!--        <li ng-repeat="choice in pickFieldsMenu"> -->
-          <!--          <a ng-click="pickFields(choice)" style="fontsize:10px;">{{choice}}</a> -->
-          <!--        </li> -->
-          <!--      </ul> -->
-          <!-- </span> -->
         </div>
 
       </div>
@@ -89,8 +52,7 @@
 
         <div ng-hide="viewState1.docs" style="margin-left:10px;" class="span6">
           <pre id="editor">
-
-            </pre>
+          </pre>
         </div>
       </div>
 
