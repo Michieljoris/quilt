@@ -5,6 +5,22 @@
 
 angular.module("myApp").controller("replicationsCntl", function ($scope, $location, state, defaults, persist) {
     
+    
+    
+    $scope.getActiveTasks = function () {
+        couchapi.activeTasks().when(
+            function(data) {
+                console.log('active tasks', data);
+                $scope.activeTasks = data;
+                $scope.$apply();
+            },
+            function(error) {
+                $scope.activeTasks = error;
+                $scope.$apply();
+            }
+        );
+    };
+    
     var screenState = {
         fieldGroup: 'Essential'
         ,filterState: 'triggered'
@@ -87,20 +103,20 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     function parseUrl(url) {
         var parsed = {};
         if (url) {
-            if (url.startsWith('http')) {
-                var creds = url.match(/(http[s]?:\/\/)(.+):(.+)@(.+)/);
-                if (creds) {
-                    parsed.user = creds[2];
-                    parsed.pwd = creds[3];
-                    var domain = creds[4].slice(0, creds[4].lastIndexOf('/'));
-                    parsed.remoteDb = creds[4].slice(creds[4].lastIndexOf('/') + 1);
-                    parsed.url = creds[1] + domain;
+                if (url.startsWith('http')) {
+                    var creds = url.match(/(http[s]?:\/\/)(.+):(.+)@(.+)/);
+                    if (creds) {
+                        parsed.user = creds[2];
+                        parsed.pwd = creds[3];
+                        var domain = creds[4].slice(0, creds[4].lastIndexOf('/'));
+                        parsed.remoteDb = creds[4].slice(creds[4].lastIndexOf('/') + 1);
+                        parsed.url = creds[1] + domain;
+                    }
+                    else {
+                        parsed.url = url.slice(0, url.lastIndexOf('/'));
+                        parsed.remoteDb = url.slice(url.lastIndexOf('/') + 1);
+                    }
                 }
-                else {
-                    parsed.url = url.slice(0, url.lastIndexOf('/'));
-                    parsed.remoteDb = url.slice(url.lastIndexOf('/') + 1);
-                }
-            }
             else  {
                 parsed.localDb = url;
             }
@@ -351,7 +367,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     }
     
     $scope.apply = function() {
-        var repsToRemove = [];
+            var repsToRemove = [];
         var repsToCommit = []; 
         var selRows = $scope.gridOptions.$gridScope.selectedItems;
         state.reps.filter(function(r) {
@@ -365,42 +381,47 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
             rep = angular.copy(rep);
             rep.sourceParsed = parseUrl(rep.source);
             rep.targetParsed = parseUrl(rep.target);
-            if (rep.sourceParsed.pwd === "_prompt_")
-                {
-                    rep.sourceParsed.pwd = prompt('Please enter password for: ' +
-                                                 rep.targetParsed.remoteDb);
-        //TODO add to couch
-                    //unfinished..
-                    
-                }
-            if (rep.targetParsed.pwd === "_prompt_")
-                {
-                    rep.targetParsed.pwd = prompt('Please enter password for: ' +
-                                                 rep.targetParsed.remoteDb);
-        //TODO add to couch
-                    //unfinished..
-                    
-                }
+            if (rep.sourceParsed.pwd === "_prompt_") {
+                rep.sourceParsed.pwd = prompt('Please enter password for: ' +
+                                              rep.sourceParsed.remoteDb);
+                rep.source = makeUrl(rep.sourceParsed.user, rep.sourceParsed.pwd,
+                                     rep.sourceParsed.url);
+            }
+            if (rep.targetParsed.pwd === "_prompt_") {
+                rep.targetParsed.pwd = prompt('Please enter password for: ' +
+                                              rep.targetParsed.remoteDb);
+                rep.target = makeUrl(rep.targetParsed.user, rep.targetParsed.pwd,
+                                     rep.targetParsed.url);
+            }
             delete rep.original;
             delete rep.sourceParsed;
-            delete rep.targetParsed;
+            delete rep.targeTparsed;
             delete rep.couch;
             delete rep.modified;
             return rep;
         });
         
         persist.put('reps', state.quilt_reps);
+        
         couchapi.docBulkRemove(repsToRemove, '_replicator').when(
             function(data) {
-                console.log('success', data);
+                console.log('success remove', data);
                 $scope.refresh();
             },
             function(err) {
-                console.log('error',err);
+                console.log('error remove',err);
                 $scope.refresh();
             }
         );
-        couchapi.
+        couchapi.docBulkSave(repsToCommit, '_replicator').when(
+            function(data) {
+                console.log('success save', data);
+                
+            },
+            function(error) {
+                console.log('error save', error);
+            }
+        );
         console.log('apply');
     };
 
@@ -650,7 +671,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         var urlPrefix, oldUrlPrefix, db;
         if ($scope.sourceType === 'remote') {
             urlPrefix = makeUrl($scope.rep.sourceParsed.user, $scope.rep.sourceParsed.pwd,
-                          $scope.rep.sourceParsed.url);
+                                $scope.rep.sourceParsed.url);
             oldUrlPrefix = $.couch.urlPrefix;
             $.couch.urlPrefix = urlPrefix;
             db = $scope.rep.sourceParsed.remoteDb;
@@ -712,7 +733,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         var urlPrefix, oldUrlPrefix, db;
         if ($scope.sourceType === 'remote') {
             urlPrefix = makeUrl($scope.rep.sourceParsed.user, $scope.rep.sourceParsed.pwd,
-                          $scope.rep.sourceParsed.url);
+                                $scope.rep.sourceParsed.url);
             oldUrlPrefix = $.couch.urlPrefix;
             db = $scope.rep.sourceParsed.remoteDb;
             $.couch.urlPrefix = urlPrefix;
@@ -734,12 +755,12 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
             function(ddocs) {
                 console.log('designdocs:', ddocs);
                 $.couch.urlPrefix = oldUrlPrefix || $.couch.urlPrefix;
-                var allFilters = [];
+                    var allFilters = [];
                 ddocs.forEach(function(dd) {
                     if (dd.filters) {
-                        var filterNames = Object.keys(dd.filters).map(function(f) {
-                            return dd._id.slice(8) + '/' + f;
-                        }); 
+                            var filterNames = Object.keys(dd.filters).map(function(f) {
+                                return dd._id.slice(8) + '/' + f;
+                            }); 
                         allFilters = allFilters.concat(filterNames);
                     }
                     
