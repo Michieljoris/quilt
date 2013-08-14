@@ -3,7 +3,7 @@ quilt
 
 Opiniated CouchDB manager, similar to Futon.
 
-I thought Futon was a bit cumbersome, and my setup for CouchDB for another app was a bit involved so I wrote a easier manager.
+I thought Futon was a bit cumbersome, and my setup for CouchDB for another app was a bit involved so I wrote an easier manager.
 
 It tries to step you through installing and setting up a CouchDb instance, configuring cors if necessary.
 
@@ -19,7 +19,7 @@ There is an examine tab that lets you make queries and view conflicts, change fe
 
 The test tab under Examine lets you set up simple read and write tests to test security set by the security object of databases and any validate_doc_update functions.
 
-Clone the repo, then run ./serve in the root dir, and visit the app at the port displayed. 
+Clone the repo, do a npm install and then run ./serve in the root dir, and visit the app at the port displayed. 
 
 Or run ./develop and edit the source. On save the site gets rebuilt. Refresh the browser to see the result.
 
