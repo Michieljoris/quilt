@@ -13,7 +13,7 @@
       <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
               ng-click="undo()">Undo edits</button>
 
-      <!-- <button class="btn btn-info" ng-click="refresh()">Refresh</button> -->
+      <button class="btn btn-info" ng-click="refresh()">Refresh</button> 
     </div>
 
     <div class="span7">
@@ -54,7 +54,8 @@
   </div>
   <div class="row">
     <div class="span6">
-      <h3>active<a style="font-weight:normal;font-size:12px" href="" ng-click="getActiveTasks()">all</a></h3>
+      <h3>active<a style="font-weight:normal;font-size:12px" href=""
+      ng-click="getActiveTasks()">  all</a></h3>
       <pre>{{activeTasks|json}}</pre>
 
     </div>

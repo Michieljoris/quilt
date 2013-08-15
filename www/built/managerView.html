@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#97;i&#108;&#116;&#x6F;:&#x6D;&#105;&#x63;&#104;&#x69;&#x65;&#108;&#x6A;&#111;&#114;&#x69;&#115;&#x40;&#x67;&#x6D;&#97;&#105;&#x6C;&#x2E;c&#x6F;&#109;">&#x6D;&#105;&#x63;&#104;&#x69;&#x65;&#108;&#x6A;&#111;&#114;&#x69;&#115;&#x40;&#x67;&#x6D;&#97;&#105;&#x6C;&#x2E;c&#x6F;&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#x69;&#108;&#x74;&#111;:&#x6D;&#x69;&#x63;&#104;&#x69;&#x65;&#108;&#x6A;&#x6F;&#x72;&#x69;&#x73;&#64;&#103;&#x6D;&#x61;&#105;&#108;&#x2E;&#x63;o&#109;">&#x6D;&#x69;&#x63;&#104;&#x69;&#x65;&#108;&#x6A;&#x6F;&#x72;&#x69;&#x73;&#64;&#103;&#x6D;&#x61;&#105;&#108;&#x2E;&#x63;o&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -401,6 +401,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
               ng-click="undo()">Undo edits</button>
 
+      <button class="btn btn-info" ng-click="refresh()">Refresh</button> 
       <div class="input-prepend " style="">
 	<span style="height:20px;" class="add-on"><i class="icon-search"></i></span>
 	<input id="inputIcon" type="text" ng-change="search()"  ng-model="searchText">
@@ -485,7 +486,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
               ng-click="undo()">Undo edits</button>
 
-      <!-- <button class="btn btn-info" ng-click="refresh()">Refresh</button> -->
+      <button class="btn btn-info" ng-click="refresh()">Refresh</button> 
     </div>
 
     <div class="span7">
@@ -526,7 +527,8 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
   </div>
   <div class="row">
     <div class="span6">
-      <h3>active<a style="font-weight:normal;font-size:12px" href="" ng-click="getActiveTasks()">all</a></h3>
+      <h3>active<a style="font-weight:normal;font-size:12px" href=""
+      ng-click="getActiveTasks()">  all</a></h3>
       <pre>{{activeTasks|json}}</pre>
 
     </div>

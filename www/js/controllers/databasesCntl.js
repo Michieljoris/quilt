@@ -89,6 +89,8 @@ console.log(row, field, old, row[field]);
              // editableCellTemplate : editableCellTemplate,
              cellTemplate : cellTemplate, width:120,
              field:'name', displayName:'name', enableCellEdit: false, visible:true}
+            ,{visGroup:'Essential', field:'delete', displayName:'delete',
+              cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true }
             
             ,{visGroup:'Essential',
              cellTemplate : cellTemplate,
@@ -112,8 +114,6 @@ console.log(row, field, old, row[field]);
               field:'update_seq', displayName:'update_seq',
               enableCellEdit: false, visible:true}
             
-            ,{visGroup:'Essential', field:'delete', displayName:'delete',
-              cellTemplate: checkBoxTemplate, enableCellEdit:false, width:40, visible:true }
             // {visGroup:'Essential', field:'pwd', displayName:'password', enableCellEdit: true, visible:true},
             // {visGroup:'UserOnly', field:'roles', displayName:'roles', enableCellEdit: true, visible:true},
             // {visGroup:'Essential', field:'type', displayName:'type', enableCellEdit: false, visible:true},
@@ -191,12 +191,13 @@ console.log(row, field, old, row[field]);
     // };
 
 
-    // $scope.refresh = function() {
-    //     console.log('refresh' state.reps);
-    //     window.test = $scope.databaseGridOptions;
-    //     state.setActiveScreen($scope, '#replications');
-    //     // defineGrid();
-    // };
+    $scope.refresh = function() {
+        // console.log('refresh' state.reps);
+        // window.test = $scope.databaseGridOptions;
+        state.databases = false;
+        state.setActiveScreen($scope, '#databases');
+        // defineGrid();
+    };
 
 
     $scope.undo = function() {

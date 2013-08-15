@@ -784,7 +784,7 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
     function validateFunc(s) {
         var old = window.test;
         var result;
-        s = 'test=' + s;
+        s = 'window.test=' + s;
         try {
             result = eval(s);
         } catch (e) {

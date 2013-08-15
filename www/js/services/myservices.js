@@ -372,8 +372,8 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                         if (rep.live) delete rep.live;
                         else {
                             rep.quilt = true;
-                            rep._replication_state = 'inactive';
                             rep.original = angular.copy(rep);
+                            rep._replication_state = 'inactive';
                             state.reps.push(rep);   
                         }
                     });

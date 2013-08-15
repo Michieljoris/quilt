@@ -1,4 +1,4 @@
-/*global angular:false couchapi:false */
+/*global VOW:false angular:false couchapi:false */
 /*jshint strict:false unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
 /*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/ 
 
@@ -143,6 +143,28 @@ angular.module("myApp").controller("queryCntl", function ($scope, $location, sta
     
     $scope.apply = function() {
         console.log('apply');
+        var vows = [];
+        $scope.docs.filter(function(d) {
+            console.log(d);
+            return d.modified;
+        }).forEach(function(d) {
+            if (d['delete']) vows.push(couchapi.docRemoveById(d.id , $scope.selDb));
+            else {
+                if (d.doc)
+                    vows.push(couchapi.docSave(d.doc, $scope.selDb));   
+                else console.log("ERROR: doc is modified but there is no doc property!!");
+            }
+        });
+        VOW.every(vows).when(
+            function(data) {
+                console.log("All docs saved", data);
+                onChangeSelDbs([$scope.selDb], []);
+            },
+            function(error) {
+                console.log("Couldn't save all docs!!", error);
+                onChangeSelDbs([$scope.selDb], []);
+            }
+        );
     };
 
     $scope.newRow = function() {
@@ -151,7 +173,7 @@ angular.module("myApp").controller("queryCntl", function ($scope, $location, sta
         if (!id) id = couchapi.UUID();
         var newDoc = {
             id: id,
-            doc: { "hello": "world"}
+            doc: { _id: id }
         };
         newDoc['delete'] = true;
         newDoc.original = angular.copy(newDoc);
@@ -161,6 +183,7 @@ angular.module("myApp").controller("queryCntl", function ($scope, $location, sta
     };
     
     function onChangeSelDbs(updated, old) {
+        $scope.doc = {};
         if (angular.equals(updated, old)) return;
         if (updated.length === 0) {
             $scope.docs = [];   

@@ -94,6 +94,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         console.log('endEdit', row, field, old);
         var different = Object.keys(row).some(function(e) {
             if (e === 'modified' || e === 'original' || e === 'quilt' ||
+                e === '_replication_state' || 
                 e === 'sourceParsed' || e === 'targetParsed' || 
                 (!row[e] && !row.original[e]) ||
                 angular.equals(row[e], row.original[e])) return false; 
@@ -159,6 +160,8 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         $('#targetUrl').editable('setValue', rep.targetParsed.url, false);
         $('#targetUser').editable('setValue', rep.targetParsed.user, false);
         $('#targetPwd').editable('setValue', rep.targetParsed.pwd, false);
+        $scope.target_to_create = rep.target;
+        $('#target_to_create').editable('setValue', $scope.target_to_create, false);
         var done;
         if ($scope.sourceType === 'remote') {
             done = fetchAllDb('source');
@@ -248,19 +251,38 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                 $scope.rep.sourceParsed.remoteDb;
             else $scope.rep.source = "";
         }
-        if ($scope.targetType === 'local')
-            $scope.rep.target = $scope.rep.targetParsed.localDb;
-        else {
-            if ($scope.rep.targetParsed.url)
-                $scope.rep.target = makeUrl(
-                    $scope.rep.targetParsed.user, $scope.rep.targetParsed.pwd,
-                    $scope.rep.targetParsed.url) + '/' +
-                $scope.rep.targetParsed.remoteDb;
-            else $scope.rep.target = "";
+        if ($scope.rep.create_target) {
+            $scope.rep.target = $scope.target_to_create;
         }
+        else {
+            if ($scope.targetType === 'local')
+                $scope.rep.target = $scope.rep.targetParsed.localDb;
+            else {
+                if ($scope.rep.targetParsed.url)
+                    $scope.rep.target = makeUrl(
+                        $scope.rep.targetParsed.user, $scope.rep.targetParsed.pwd,
+                        $scope.rep.targetParsed.url) + '/' +
+                    $scope.rep.targetParsed.remoteDb;
+                else $scope.rep.target = "";
+            }
+        }
+        
+        Object.keys($scope.rep).forEach(function(k) {
+            var val = $scope.rep[k];
+            if (!val ||
+                ( angular.isArray(val) && val.length === 0 ) ||
+                ( angular.isObject(val) && Object.keys(val).length === 0) ||
+                ( typeof val === 'string' && val.length === 0)) 
+                delete $scope.rep[k]; 
+        });
+        
+        // var couch = $scope.rep.couch;
+        // var quilt  = $scope.rep.quilt;
         // var original = $scope.rep.original;
-        // $scope.rep = makePureRep($scope.rep);
+        // angular.copy(makePureRep($scope.rep), $scope.rep);
         // $scope.rep.original = original;
+        // $scope.rep.couch = couch;
+        // $scope.rep.quilt = quilt;
         endEdit($scope.rep);
         // if ($scope.targetType === 'local') $scope.rep.target = $scope.rep.targetLocalDb;
         // else {
@@ -290,7 +312,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
              cellTemplate: checkBoxTemplate, enableCellEdit:false},
             {visGroup:'More', field:'create_target', displayName:'create_target', width: 77, w:77,
              cellTemplate: checkBoxTemplate, enableCellEdit:false},
-            {visGroup:'More', field:'target_to_create', displayName:'target to create', enableCellEdit:false},
+            // {visGroup:'More', field:'target_to_create', displayName:'target to create', enableCellEdit:false},
             {visGroup:'More', field:'filter', displayName:'filter', visible:false, enableCellEdit:false},
             {visGroup:'More', field:'query_params', displayName:'params', visible:false, enableCellEdit:false},
             {visGroup:'More', field:'doc_ids', displayName:'doc_ids', visible:false, enableCellEdit:false},
@@ -459,19 +481,20 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         var repsToRemove = [];
         var repsToCommit = []; 
         // var selRows = $scope.gridOptions.$gridScope.selectedItems;
+        state.quilt_reps =  {};
         state.reps.filter(function(r) {
+            if (!r._id || r._id.length === 0)
+                r._id = couchapi.UUID();
             if (r.quilt) {
-                state.quilt_reps =  state.quilt_reps || {};
                 state.quilt_reps[r._id] = makePureRep(r);
-                
+                // state.quilt_reps[r._id].target_to_create = r.target_to_create;
             }
             else delete state.quilt_reps[r._id];
-            
-            return r.modified !== 'quilt' &&
-                (r._id && r._id.length > 0) &&
-                (r.source && r.source.length>0) &&
-                ((r.target && r.target.length>0) ||
-                 (r.create_target && r.target_to_create && r.target_to_create.length>0));
+            var valid = (r.source && r.source.length>0) &&
+                (r.target && r.target.length>0); 
+            if (!valid && r.couch) alert("Make sure source and target are filled in for rep with id: " + r._id +
+                                         "\n\nRep not applied to couchdb");
+            return r.modified !== 'quilt' && valid;
         }).forEach(function(r) { 
             repsToRemove.push(r.original);   
             if (r.couch) {
@@ -489,7 +512,6 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                     r.target = makeUrl(r.targetParsed.user, r.targetParsed.pwd,
                                        r.targetParsed.url);
                 }
-                if (r.create_target) r.target = r.target_to_create;
 
                 repsToCommit.push(makePureRep(r));       
             }
@@ -731,7 +753,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         placement:'right',
         type: 'text',
         success: function(response, newValue) {
-            $scope.rep.target_to_create = newValue;
+            $scope.target_to_create = newValue;
             $scope.$apply();
         }
     });
