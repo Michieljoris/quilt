@@ -1,4 +1,5 @@
 /*global VOW:false $:false angular:false cookie:false couchapi:false*/
+
 /*jshint strict:false unused:true smarttabs:true eqeqeq:true immed: true undef:true*/
 /*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/ 
 
@@ -361,6 +362,8 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                             state.quilt_reps[row.doc._id].live = true;
                         }
                         row.doc.original = angular.copy(row.doc);
+                        if (!row.doc._replication_state)
+                            row.doc._replication_state = "none";
                         return row.doc;
                     });
                     // console.log(state.users);               
@@ -368,6 +371,8 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                         var rep = state.quilt_reps[k];
                         if (rep.live) delete rep.live;
                         else {
+                            rep.quilt = true;
+                            rep._replication_state = 'inactive';
                             rep.original = angular.copy(rep);
                             state.reps.push(rep);   
                         }

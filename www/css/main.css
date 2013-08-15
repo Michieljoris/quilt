@@ -1387,3 +1387,7 @@ body .modal {
     width: 15px;
     height: 15px;
 }
+
+hr {
+    border-bottom: 1px solid lightgray;
+}

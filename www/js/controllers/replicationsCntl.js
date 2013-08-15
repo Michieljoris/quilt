@@ -7,11 +7,22 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     
     
     
-    $scope.getActiveTasks = function () {
+    $scope.getActiveTasks = function (id) {
+        console.log('activetasks for ', id);
         couchapi.activeTasks().when(
             function(data) {
                 console.log('active tasks', data);
-                $scope.activeTasks = data;
+                if (id) {
+                    $scope.activeTasks = "not active";
+                    data.some(function(t) {
+                        if (t.doc_id === id) {
+                            $scope.activeTasks = t;
+                            return true;
+                        }
+                        return false;
+                    }); 
+                }
+                else $scope.activeTasks = data;
                 $scope.$apply();
             },
             function(error) {
@@ -80,9 +91,9 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
             row._id = old;
             row._id = getUniqueId(newId);
         }
-        console.log('endEdit', row);
+        console.log('endEdit', row, field, old);
         var different = Object.keys(row).some(function(e) {
-            if (e === 'modified' || e === 'original' ||
+            if (e === 'modified' || e === 'original' || e === 'quilt' ||
                 e === 'sourceParsed' || e === 'targetParsed' || 
                 (!row[e] && !row.original[e]) ||
                 angular.equals(row[e], row.original[e])) return false; 
@@ -93,8 +104,12 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
             row.modified = true;   
             $scope.modifiedCount++;
         }
-        
-        if (!different && row.modified) {
+        if (!row.quilt) delete row.quilt;
+        if (!different && row.quilt !== row.original.quilt)  {
+            row.modified = 'quilt';
+            $scope.modifiedCount--;   
+        }
+        else if (!different && row.modified) {
             row.modified = false;
             $scope.modifiedCount--;   
         }
@@ -137,23 +152,49 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         
         $scope.rep = rep;
         
+        $('#repId').editable('setValue', rep._id, false);
         $('#sourceUrl').editable('setValue', rep.sourceParsed.url, false);
         $('#sourceUser').editable('setValue', rep.sourceParsed.user, false);
         $('#sourcePwd').editable('setValue', rep.sourceParsed.pwd, false);
         $('#targetUrl').editable('setValue', rep.targetParsed.url, false);
         $('#targetUser').editable('setValue', rep.targetParsed.user, false);
         $('#targetPwd').editable('setValue', rep.targetParsed.pwd, false);
-        
+        var done;
         if ($scope.sourceType === 'remote') {
-            fetchAllDb('source');
+            done = fetchAllDb('source');
         }
-        if ($scope.targetType === 'remote') {
-            fetchAllDb('target');
-        }
+        else done = VOW.kept();
+        done.when(
+            function() {
+                if ($scope.targetType === 'remote') {
+                    return fetchAllDb('target');
+                }
+                return VOW.kept();
+            }
+        ).when(
+            function() {
+                $scope.getActiveTasks(rep._id);
+                $scope.$apply();
+            }
+        );
+        
+        
         $scope.fetchedFilters = $scope.fetchedDocIds = false;
         
-        
-        
+        $scope.rep.user_ctx = $scope.rep.user_ctx || {};
+                       
+        $('#repRoles').editable('setValue', $scope.rep.user_ctx.roles, false);
+        $('#repRoles').editable('option', 'select2',
+                                { tags: ['read-',  'write-']});
+                       
+        $('#repNames').editable('setValue', $scope.rep.user_ctx.names, false);
+        $('#repNames').editable('option', 'select2',
+                                { tags: ['read-',  'write-']});
+        $('#repIds').editable('setValue', $scope.rep.doc_ids, false);
+        $('#repIds').editable('option', 'select2',
+                              { tags: ['read-',  'write-']});
+        $scope.filters = [ $scope.rep.filter ];
+        $scope.rep.query_params  = $scope.rep.query_params || {};
         console.log(rep);  
     };
 
@@ -217,6 +258,9 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                 $scope.rep.targetParsed.remoteDb;
             else $scope.rep.target = "";
         }
+        // var original = $scope.rep.original;
+        // $scope.rep = makePureRep($scope.rep);
+        // $scope.rep.original = original;
         endEdit($scope.rep);
         // if ($scope.targetType === 'local') $scope.rep.target = $scope.rep.targetLocalDb;
         // else {
@@ -235,17 +279,18 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
             {visGroup:'Essential', field:'edit', displayName:'edit', enableCellEdit:false, visible:false
              ,cellTemplate: buttonTemplate, width:30
             }
-            ,{visGroup:'Essential', field:'_id', displayName:'id', enableCellEdit: true, visible:true},
+            ,{visGroup:'Essential', field:'_id', displayName:'id', enableCellEdit: false, visible:true},
             {visGroup:'All', field:'_rev', displayName:'rev', enableCellEdit: false, visible:false},
             // {visGroup:'Essential', field:'modified', displayName:'modified',
             // enableCellEdit:false },
             // {visGroup:'All', field:'auth', displayName:'auth', enableCellEdit:false, width:100},
-            {visGroup:'Essential', field:'source', displayName:'source', enableCellEdit:true},
-            {visGroup:'Essential', field:'target', displayName:'target'},
+            {visGroup:'Essential', field:'source', displayName:'source', enableCellEdit:false},
+            {visGroup:'Essential', field:'target', displayName:'target', enableCellEdit:false},
             {visGroup:'Essential', field:'continuous', displayName:'continuous', width:64, w:64 ,
              cellTemplate: checkBoxTemplate, enableCellEdit:false},
-            {visGroup:'Essential', field:'create_target', displayName:'create_target', width: 77, w:77,
+            {visGroup:'More', field:'create_target', displayName:'create_target', width: 77, w:77,
              cellTemplate: checkBoxTemplate, enableCellEdit:false},
+            {visGroup:'More', field:'target_to_create', displayName:'target to create', enableCellEdit:false},
             {visGroup:'More', field:'filter', displayName:'filter', visible:false, enableCellEdit:false},
             {visGroup:'More', field:'query_params', displayName:'params', visible:false, enableCellEdit:false},
             {visGroup:'More', field:'doc_ids', displayName:'doc_ids', visible:false, enableCellEdit:false},
@@ -276,7 +321,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                                '</div></div>'
                                ,enableRowSelection: true
                                ,enableCellEditOnFocus: true
-                               ,selectWithCheckboxOnly: true
+                               ,selectWithCheckboxOnly: false
                                ,enableCellEdit: false
                                ,showSelectionCheckbox: true
                                ,enableColumnResize: true
@@ -302,9 +347,29 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     // makeGrid();
     
     function selChange(row) {
+        if ($scope.editMode) return;
         console.log(row);
+        if (row && row.entity) {
+            $scope.stats = {
+                state: row.entity._replication_state
+                ,time: row.entity._replication_state_time
+                ,id: row.entity._replication_id
+                ,stats: row.entity._replication_stats
+            };
+            // row.entity._replication_stats;
+            $scope.getActiveTasks(row.entity._id);
+        }
+        else $scope.stats = $scope.activeTasks = "select a replication..";
     }
-    
+
+    $scope.getReps = function() {
+        if (!angular.isArray(state.reps)) return "";
+        return state.reps.map(function(r) {
+            var rep = angular.copy(r);
+            delete rep.original;
+            return rep;
+        });
+    };
     // $scope.$on('ngGridEventDigestGridParent', function(event, rep, field, old) {
     //     console.log('digest');
     // });
@@ -325,6 +390,25 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         $scope.gridOptions.groupBy(grouped ? '' : '_replication_state');
     }; 
     
+    $scope.togglePolling = function() {
+        console.log('polling');
+        if (!$scope.polling) {
+            state.setActiveScreen($scope, '#replications');
+            $scope.polling = setInterval(function() {
+                if (state.activeScreen === '#replications') {
+                    state.setActiveScreen($scope, '#replications');
+                    $scope.$apply();
+                    return;
+                }
+                clearTimeout($scope.polling);
+                $scope.polling = false;
+            }, 3000);
+        }
+        else {
+            clearTimeout($scope.polling);   
+            $scope.polling = false;
+        }
+    };
     
     $scope.refresh = function() {
         console.log('refresh', state.reps);
@@ -346,94 +430,113 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         $scope.gridOptions.selectVisible(false);
     }; 
     
-    function storeInQuilt(rep) {
-        state.quilt_reps =  state.quilt_reps || {};
-        if (rep.quilt) {
-            state.quilt_reps[rep._id] = {
-                _id: rep._id
-                ,source: rep.source
-                ,target: rep.target
-                ,continuous: rep.continuous
-                ,create_target: rep.create_target
-                ,params: rep.params
-                ,doc_ids: rep.doc_ids
-                ,user_ctx: rep.user_ctx
-                ,quilt:true
-            };
-        }
-        else {
-            delete state.quilt_reps[rep._id];
-        }
+    function makePureRep(rep) {
+        var cleanRep = {
+            _id: rep._id
+            ,source: rep.source
+            ,target: rep.target
+            ,continuous: rep.continuous
+            ,create_target: rep.create_target
+            ,filter: rep.filter
+            ,query_params: rep.query_params
+            ,doc_ids: rep.doc_ids
+            ,user_ctx: rep.user_ctx
+        };
+        Object.keys(cleanRep).forEach(function(k) {
+            var val = cleanRep[k];
+            if (!val ||
+                ( angular.isArray(val) && val.length === 0 ) ||
+                ( angular.isObject(val) && Object.keys(val).length === 0) ||
+                ( typeof val === 'string' && val.length === 0)) 
+                delete cleanRep[k]; 
+        });
+        return cleanRep;
+        
     }
     
     $scope.apply = function() {
-            var repsToRemove = [];
+        console.log('apply');
+        var repsToRemove = [];
         var repsToCommit = []; 
-        var selRows = $scope.gridOptions.$gridScope.selectedItems;
+        // var selRows = $scope.gridOptions.$gridScope.selectedItems;
         state.reps.filter(function(r) {
-            return r.modified;
-        }).forEach(function(r) {
-            storeInQuilt(r);
-            if (!r.couch) repsToRemove.push(r);
-            else repsToCommit.push(r);
-        });
-        repsToCommit = repsToCommit.map(function(rep) {
-            rep = angular.copy(rep);
-            rep.sourceParsed = parseUrl(rep.source);
-            rep.targetParsed = parseUrl(rep.target);
-            if (rep.sourceParsed.pwd === "_prompt_") {
-                rep.sourceParsed.pwd = prompt('Please enter password for: ' +
-                                              rep.sourceParsed.remoteDb);
-                rep.source = makeUrl(rep.sourceParsed.user, rep.sourceParsed.pwd,
-                                     rep.sourceParsed.url);
+            if (r.quilt) {
+                state.quilt_reps =  state.quilt_reps || {};
+                state.quilt_reps[r._id] = makePureRep(r);
+                
             }
-            if (rep.targetParsed.pwd === "_prompt_") {
-                rep.targetParsed.pwd = prompt('Please enter password for: ' +
-                                              rep.targetParsed.remoteDb);
-                rep.target = makeUrl(rep.targetParsed.user, rep.targetParsed.pwd,
-                                     rep.targetParsed.url);
+            else delete state.quilt_reps[r._id];
+            
+            return r.modified !== 'quilt' &&
+                (r._id && r._id.length > 0) &&
+                (r.source && r.source.length>0) &&
+                ((r.target && r.target.length>0) ||
+                 (r.create_target && r.target_to_create && r.target_to_create.length>0));
+        }).forEach(function(r) { 
+            repsToRemove.push(r.original);   
+            if (r.couch) {
+                r.sourceParsed = parseUrl(r.source);
+                r.targetParsed = parseUrl(r.target);
+                if (r.sourceParsed.pwd === "_prompt_") {
+                    r.sourceParsed.pwd = prompt('Please enter password for: ' +
+                                                r.sourceParsed.remoteDb);
+                    r.source = makeUrl(r.sourceParsed.user, r.sourceParsed.pwd,
+                                       r.sourceParsed.url);
+                }
+                if (r.targetParsed.pwd === "_prompt_") {
+                    r.targetParsed.pwd = prompt('Please enter password for: ' +
+                                                r.targetParsed.remoteDb);
+                    r.target = makeUrl(r.targetParsed.user, r.targetParsed.pwd,
+                                       r.targetParsed.url);
+                }
+                if (r.create_target) r.target = r.target_to_create;
+
+                repsToCommit.push(makePureRep(r));       
             }
-            delete rep.original;
-            delete rep.sourceParsed;
-            delete rep.targeTparsed;
-            delete rep.couch;
-            delete rep.modified;
-            return rep;
         });
         
         persist.put('reps', state.quilt_reps);
         
-        couchapi.docBulkRemove(repsToRemove, '_replicator').when(
-            function(data) {
-                console.log('success remove', data);
-                $scope.refresh();
-            },
-            function(err) {
-                console.log('error remove',err);
-                $scope.refresh();
-            }
-        );
-        couchapi.docBulkSave(repsToCommit, '_replicator').when(
-            function(data) {
-                console.log('success save', data);
+        couchapi.docBulkRemove(repsToRemove, '_replicator')
+            .when(
+                function() {
+                    return couchapi.docBulkSave(repsToCommit, '_replicator');
+                })
+            .when(
+                function(data) {
+                    if (!$scope.polling) {
+                        $scope.togglePolling(); 
+                        var polling = $scope.polling;
+                        setTimeout(function() {
+                            clearTimeout(polling);
+                            $scope.polling = false;
+                            $scope.$apply();
+                        },5000);
+                    }
+                    else {
+                        $scope.refresh();
+                    }
+                    console.log('success save reps', data);
                 
-            },
-            function(error) {
-                console.log('error save', error);
-            }
-        );
-        console.log('apply');
+                },
+                function(error) {
+                    $scope.refresh(); 
+                    console.log('error save or removing reps: ', error);
+                }
+            );
     };
 
     $scope.newRep = function() {
         var newRep = {
-            _id: prompt("Replication id?"),
-            _replication_state: 'stored'
-            ,store: true
-            ,user_ctx: { "roles" :["_admin"]}
+            // _id: 'newRep',
+            // _replication_state: 'stored'
+            user_ctx: { "roles" :["_admin"]}
         };
         newRep.original = angular.copy(newRep);
+        newRep.quilt = true;
         state.reps.push(newRep);
+        endEdit(newRep, 'quilt', false);
+        $scope.editRep(newRep);
     };
     
     $scope.viewStateSet = function(repState) {
@@ -452,6 +555,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     //----------------------------edit rep------------------------------------------
     
     function fetchAllDb(type) {
+        var vow = VOW.make();
         var urlPrefix = $scope.rep[type + 'Parsed'].url; 
         var  oldUrlPrefix = $.couch.urlPrefix;
         $.couch.urlPrefix = urlPrefix;
@@ -462,6 +566,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                 $.couch.urlPrefix = oldUrlPrefix;
                 $scope[type].RemoteDatabases = data;  
                 $scope.$apply();
+                vow.keep();
             },
             function(error) {
                 console.log('error retrieving all dbs for ' + urlPrefix, error);
@@ -474,9 +579,11 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                     
                 }, 10000);
                 $scope.$apply();
+                vow.keep();
                 
             }
         );
+        return vow.promise;
     }
     
     $scope.change = function(delta) {
@@ -486,7 +593,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
             (delta === 'sourceUrl' || delta === 'sourceType')) {
             fetchAllDb('source');
         }
-        if (($scope.targetType === 'remote') &&
+        else if (($scope.targetType === 'remote') &&
             (delta === 'targetUrl' || delta === 'targetType')) {
             fetchAllDb('target');
         }
@@ -556,6 +663,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     
     $('#sourceUrl').editable({
         unsavedclass: null,
+        placement:'right',
         type: 'text',
         success: function(response, newValue) {
             $scope.rep.sourceParsed.url = newValue;
@@ -565,6 +673,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     });
     $('#sourceUser').editable({
         unsavedclass: null,
+        placement:'right',
         type: 'text',
         success: function(response, newValue) {
             $scope.rep.sourceParsed.user = newValue;
@@ -575,6 +684,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     
     $('#sourcePwd').editable({
         unsavedclass: null,
+        placement:'right',
         type: 'text',
         success: function(response, newValue) {
             $scope.rep.sourceParsed.pwd = newValue;
@@ -585,6 +695,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     
     $('#targetUrl').editable({
         unsavedclass: null,
+        placement:'right',
         type: 'text',
         success: function(response, newValue) {
             $scope.rep.targetParsed.url = newValue;
@@ -594,6 +705,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     });
     $('#targetUser').editable({
         unsavedclass: null,
+        placement:'right',
         type: 'text',
         success: function(response, newValue) {
             $scope.rep.targetParsed.user = newValue;
@@ -604,10 +716,32 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
     
     $('#targetPwd').editable({
         unsavedclass: null,
+        placement:'right',
         type: 'text',
         success: function(response, newValue) {
             $scope.rep.targetParsed.pwd = newValue;
             $scope.change('targetPwd');
+            $scope.$apply();
+        }
+    });
+    
+    
+    $('#target_to_create').editable({
+        unsavedclass: null,
+        placement:'right',
+        type: 'text',
+        success: function(response, newValue) {
+            $scope.rep.target_to_create = newValue;
+            $scope.$apply();
+        }
+    });
+    
+    $('#repId').editable({
+        unsavedclass: null,
+        placement:'right',
+        type: 'text',
+        success: function(response, newValue) {
+            $scope.rep._id = newValue;
             $scope.$apply();
         }
     });
@@ -862,6 +996,7 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
 
         $scope.$on('initReps',
                    function() {
+                       console.log('in initReps');
                        var viewState = localStorage.getItem('quilt_repsViewState');
                        var fieldGroup = localStorage.getItem('quilt_fieldGroup');
                        
@@ -888,20 +1023,13 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                            width:200
                        };
                        
-                       $scope.rep.user_ctx = $scope.rep.user_ctx || {};
-                       
-                       $('#repRoles').editable('setValue', $scope.rep.user_ctx.roles, false);
-                       $('#repRoles').editable('option', 'select2',
-                                               { tags: ['read-',  'write-']});
-                       
-                       $('#repNames').editable('setValue', $scope.rep.user_ctx.names, false);
-                       $('#repNames').editable('option', 'select2',
-                                               { tags: ['read-',  'write-']});
-                       $('#repIds').editable('setValue', $scope.rep.doc_ids, false);
-                       $('#repIds').editable('option', 'select2',
-                                             { tags: ['read-',  'write-']});
-                       $scope.filters = [ $scope.rep.filter ];
-                       $scope.rep.query_params  = $scope.rep.query_params || { p1: 'v1', p2: 'v2'};
+
+                       // if ($scope.polling) {
+                       //     $scope.polling = setInterval(function() {
+                       //         $scope.refresh();
+                       //         $scope.$apply();
+                       //     }, 3000);
+                       // }
                    });
     } 
 }); 

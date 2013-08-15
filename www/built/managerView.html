@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#x69;&#108;&#x74;&#111;:&#x6D;&#105;&#99;h&#105;&#x65;&#108;&#x6A;&#111;&#x72;&#x69;&#115;&#64;&#103;&#x6D;&#x61;&#x69;&#108;&#x2E;&#x63;&#111;&#x6D;">&#x6D;&#105;&#99;h&#105;&#x65;&#108;&#x6A;&#111;&#x72;&#x69;&#115;&#64;&#103;&#x6D;&#x61;&#x69;&#108;&#x2E;&#x63;&#111;&#x6D;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#97;i&#108;&#116;&#x6F;:&#x6D;&#105;&#x63;&#104;&#x69;&#x65;&#108;&#x6A;&#111;&#114;&#x69;&#115;&#x40;&#x67;&#x6D;&#97;&#105;&#x6C;&#x2E;c&#x6F;&#109;">&#x6D;&#105;&#x63;&#104;&#x69;&#x65;&#108;&#x6A;&#111;&#114;&#x69;&#115;&#x40;&#x67;&#x6D;&#97;&#105;&#x6C;&#x2E;c&#x6F;&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -479,17 +479,16 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
 
 
   <div class="row">
-    <div class="rep-buttons span6">
-      <button class="btn btn-info" ng-click="refresh()">Refresh</button>
+    <div class="rep-buttons span5">
       <button class="btn btn-success" ng-click="newRep()">New</button>
       <button class="btn btn-danger" ng-click="apply()">Apply</button>
       <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
               ng-click="undo()">Undo edits</button>
 
-      <button class="btn btn-danger" ng-click="getActiveTasks()">active</button>
+      <!-- <button class="btn btn-info" ng-click="refresh()">Refresh</button> -->
     </div>
 
-    <div class="span6">
+    <div class="span7">
 
 
       <div class="btn-group pull-right " data-toggle="buttons-radio">
@@ -512,18 +511,47 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
           </li>
         </ul>
       </span>
+
+      <span class="pull-right" >
+        <button ng-class="{'active':polling}" ng-click="togglePolling()" style="font-size:12px;margin-right:12px;" class="btn btn-inverse">
+          poll
+        </button>
+      </span>
     </div>
 
   </div>
 
-  <div class="gridStyle" ng-grid="gridOptions"></div>
+  <div class="row">
+    <div class="span12 gridStyle" ng-grid="gridOptions"></div>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <h3>active<a style="font-weight:normal;font-size:12px" href="" ng-click="getActiveTasks()">all</a></h3>
+      <pre>{{activeTasks|json}}</pre>
 
-  <h3>reps</h3>
-    <pre>{{activeTasks|json}}</pre>
-  <pre>
-    <!-- {{modifiedReps | json}}     -->
-    {{state.reps | json}}
-  </pre>
+    </div>
+    <div class="span6">
+      <h3>stats</h3>
+      <pre>
+	{{stats | json}}
+      </pre>
+
+    </div>
+  </div>
+  <div class="row">
+    
+    <div class="span12">
+      <h3>reps</h3>
+      <pre>
+	<!-- {{modifiedReps | json}}     -->
+	{{state.reps | json}} 
+	<!-- {{getReps() | json}} -->
+      </pre>
+
+    </div>
+  </div>
+  
+  
 </div>
 
 <div ng-show="state.configAccessible && editMode">
@@ -548,11 +576,11 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <div>
         <h4>id</h4>
         <div style="padding-bottom:5px;">
-
-          <a xeditable ng-model="rep._id" data-unsavedclass="" data-placement="right"
-             data-mode="popup">{{rep._id}}</a><br>
+          <a href="#" id="repId" data-type="text"></a>
+          <!-- <a xeditable ng-model="rep._id" data-unsavedclass="" data-placement="right" -->
+                  <!--    data-mode="popup">{{rep._id}}</a><br> -->
         </div>
-
+        <hr>
 
         <h4>source</h4>
         <div style="padding-bottom:5px;">
@@ -597,6 +625,8 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
 
       <div>
         <h4>target</h4>
+
+
         <div style="padding-bottom:5px;">
           <input type="radio" ng-model="targetType"  value="local"
                  ng-change="change('targetType')">  Local
@@ -605,8 +635,14 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
           Remote <br>
         </div>
 
+        <label class="checkbox">
+          <input ng-model="rep.create_target" type="checkbox" value="">
+          create_target
+        </label>
+        <span ng-show="rep.create_target">Name: <a href="#" id="target_to_create"
+                                                   data-type="text"></a></span>
 
-        <div ng-show="targetType=='local'">
+        <div ng-show="targetType=='local'&&!rep.create_target">
           <select  ui-select2="targetSelect2Options" ng-change="change('targetLocalDb')"
                    ng-model="rep.targetParsed.localDb" data-placeholder="Pick a database"
                    style="width:100%"
@@ -617,7 +653,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
         </div>
 
 
-        <div ng-show="targetType=='remote'">
+        <div ng-show="targetType=='remote'&&!rep.create_target">
           <select  ui-select2="targetSelect2Options" ng-change="change('targetRemoteDb')"
                    ng-model="rep.targetParsed.remoteDb" data-placeholder="Pick a database"
                    style="width:100%"
@@ -635,33 +671,45 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
         </div>
       </div>
 
-      <hr>
-      <h4>user_ctx</h4>
-      <div>
-        Names: <br> <a href="#" id="repNames" class="userRoles"
-                       data-type="select2"></a> <br>
-        Roles: <br> <a href="#" id="repRoles" class="userRoles"
-                       data-type="select2"></a> <br>
-      </div>
-
       <div>
         <hr>
-        <h4>other</h4>
         <label class="checkbox">
           <input ng-model="rep.continuous" type="checkbox" value="">
           continuous
         </label>
-        <label class="checkbox">
-          <input ng-model="rep.create_target" type="checkbox" value="">
-          create_target
-        </label>
 
       </div>
+
 
     </div>
 
     <div class="span4">
       <div>
+        <h4>user_ctx</h4>
+        <div>
+          Names: <br> <a href="#" id="repNames" class="userRoles"
+                         data-type="select2"></a> <br>
+          Roles: <br> <a href="#" id="repRoles" class="userRoles"
+                         data-type="select2"></a> <br>
+        </div>
+      </div>
+
+      <div>
+        <hr>
+        <h4>doc_ids</h4>
+
+        <div ng-hide="fetchedDocIds">
+          {{rep.doc_ids|json}}
+          <a  href="" ng-click="fetchDocIds()">set</a>
+          <sup style="color:red" ng-show="ibsError">{{idsError}}</sup><br>
+        </div>
+
+        <a ng-show="fetchedDocIds" ng-click="docIdsClick()" href="#" id="repIds" class="userRoles"
+           data-type="select2"></a> <br>
+      </div>
+
+      <div>
+        <hr>
         <h4>filter</h4>
 
         <div ng-hide="fetchedFilters">
@@ -680,19 +728,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
         </div>
 
       </div>
-      <hr>
-      <div>
-        <h4>doc_ids</h4>
 
-        <div ng-hide="fetchedDocIds">
-          {{rep.doc_ids|json}}
-          <a  href="" ng-click="fetchDocIds()">set</a>
-          <sup style="color:red" ng-show="ibsError">{{idsError}}</sup><br>
-        </div>
-
-        <a ng-show="fetchedDocIds" ng-click="docIdsClick()" href="#" id="repIds" class="userRoles"
-           data-type="select2"></a> <br>
-      </div>
 
       <hr>
       <h4>query_params</h4>
@@ -702,8 +738,18 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
     </div>
 
     <div class="span5">
-      <pre>{{rep|json}}</pre>
+
+      <h3>Status <a style="font-weight:normal;font-size:12px" href=""
+                    ng-click="getActiveTasks(rep._id)">refresh</a></h3>
+      <pre>{{activeTasks|json}}</pre>
     </div>
+
+  </div>
+
+  <div class="row">
+    <h4>Raw json</h4>
+    <pre>{{rep|json}}</pre>
+
   </div>
 </div>
 </div> 
