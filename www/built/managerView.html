@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#x69;&#108;&#x74;&#111;:&#x6D;&#x69;&#x63;&#104;&#x69;&#x65;&#108;&#x6A;&#x6F;&#x72;&#x69;&#x73;&#64;&#103;&#x6D;&#x61;&#105;&#108;&#x2E;&#x63;o&#109;">&#x6D;&#x69;&#x63;&#104;&#x69;&#x65;&#108;&#x6A;&#x6F;&#x72;&#x69;&#x73;&#64;&#103;&#x6D;&#x61;&#105;&#108;&#x2E;&#x63;o&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="m&#97;&#105;&#108;&#116;&#111;:m&#x69;&#99;h&#x69;e&#x6C;&#x6A;&#x6F;&#x72;i&#115;&#x40;&#x67;&#x6D;a&#x69;&#108;&#x2E;&#99;&#111;&#109;">m&#x69;&#99;h&#x69;e&#x6C;&#x6A;&#x6F;&#x72;i&#115;&#x40;&#x67;&#x6D;a&#x69;&#108;&#x2E;&#99;&#111;&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -806,10 +806,16 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
 
       <div class="row">
         <div class="gridStyle span4" ng-grid="designGridOptions"></div>
+        <div class="span4">
+          <div ng-show="state.showEditor" style="margin-left:10px;" class="span6">
+            <pre id="editor">
+            </pre>
+          </div>
+          <div ng-hide="state.showEditor" class="well well-small">
+            Please select a database on the far left. After that select
+            a design function<br> and edit it here.<br><br>The editor uses vim style editing.<br><br>In normal mode press q to toggle full screen.<br><br>In insert mode press F10 to do the same.<br><br>To save the edits to the selected design function press F8 in normal mode.
 
-        <div ng-hide="viewState1.docs" style="margin-left:10px;" class="span6">
-          <pre id="editor">
-          </pre>
+          </div>
         </div>
       </div>
 
@@ -818,9 +824,13 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
 
   </div>
 </div>
+<div style="margin-top:30px;" class="row">
 
-<pre>{{designRows | json}}</pre>
-<pre>{{designDocs | json}}</pre>
+  <div class="span12">
+    <pre>{{designDocs | json}}</pre>
+    <pre>{{designRows | json}}</pre>
+  </div>
+</div>
 </div>
   <div ng-controller="examineCntl" ng-show="state.activeScreen=='#examine'" id="examine--"><div class="row">
 

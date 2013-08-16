@@ -49,10 +49,16 @@
 
       <div class="row">
         <div class="gridStyle span4" ng-grid="designGridOptions"></div>
+        <div class="span4">
+          <div ng-show="state.showEditor" style="margin-left:10px;" class="span6">
+            <pre id="editor">
+            </pre>
+          </div>
+          <div ng-hide="state.showEditor" class="well well-small">
+            Please select a database on the far left. After that select
+            a design function<br> and edit it here.<br><br>The editor uses vim style editing.<br><br>In normal mode press q to toggle full screen.<br><br>In insert mode press F10 to do the same.<br><br>To save the edits to the selected design function press F8 in normal mode.
 
-        <div ng-hide="viewState1.docs" style="margin-left:10px;" class="span6">
-          <pre id="editor">
-          </pre>
+          </div>
         </div>
       </div>
 
@@ -61,6 +67,10 @@
 
   </div>
 </div>
+<div style="margin-top:30px;" class="row">
 
-<pre>{{designRows | json}}</pre>
-<pre>{{designDocs | json}}</pre>
+  <div class="span12">
+    <pre>{{designDocs | json}}</pre>
+    <pre>{{designRows | json}}</pre>
+  </div>
+</div>
