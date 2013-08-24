@@ -435,7 +435,9 @@ define(
             $.couch.db(dbName).allDocs({
                 "include_docs": true,
                 success: vow.keep,
-                error: vow.break
+                error: function(status, reason) {
+                  vow.break(reason);
+                }
             });
             return vow.promise;
         };
@@ -446,7 +448,10 @@ define(
             var vow = VOW.make(); 
             $.couch.db(dbName).allDocs({
                 success: vow.keep,
-                error: vow.break
+                
+                error: function(status, reason) {
+                  vow.break(reason); }
+                
             });
             return vow.promise;
         };

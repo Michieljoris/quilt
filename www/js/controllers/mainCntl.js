@@ -26,8 +26,10 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, conf
     
     $scope.changeUser = function(userName) {
         console.log("Switching to different user", userName)  ;
-        $scope.loginText = userName;
-        if (state.pwds[userName]) {
+        
+        if (userName === 'Other..') $scope.loginText = "";
+        else $scope.loginText = userName;
+        if (state.pwds[userName] && userName !== 'Other.') {
             $scope.passwordText = state.pwds[userName];
             $scope.login();
         }
@@ -71,6 +73,7 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, conf
     state.disconnected = false;
     
     $scope.openLogin = function() {
+        if ($scope.loginText === 'Other..') $scope.loginText = "";
         $scope.shouldBeOpen = true;
         delete state.pwds[$scope.loginText];
     };
@@ -90,13 +93,13 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, conf
                 alert("No! There isn't a user ____ with pwd ____. Can't be!!!");
             },function() {
                 
-                if (state.user)  {
-                   var index = state.userShortList.indexOf(state.user.name);
-                    if (index !== -1) {
-                        state.userShortList.splice(index, 1);
-                        persist.put('userShortList', state.userShortList);
-                    }
-                }
+                // if (state.user)  {
+                //    var index = state.userShortList.indexOf(state.user.name);
+                //     if (index !== -1) {
+                //         state.userShortList.splice(index, 1);
+                //         persist.put('userShortList', state.userShortList);
+                //     }
+                // }
                 console.log("Logged out..");
                 state.initialize($scope);
                 delete state.user;
@@ -105,6 +108,7 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, conf
     };
     
     $scope.login = function () {
+        if ($scope.loginText === 'Other..') return;
         state.allUsers = null;
         state.databases = null;
         couchapi.login($scope.loginText, $scope.passwordText).when(
@@ -120,6 +124,7 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, conf
             },
             function(data) {
                 delete $scope.passwordText;
+                delete state.pwds[$scope.loginText];
                 console.log('error', data);
             }  
         );
@@ -127,6 +132,18 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, conf
     };
     
     $scope.close = function () {
+        $scope.shouldBeOpen = false;
+    };
+    
+    
+    $scope.cancel = function () {
+        console.log('deleting user pwd', $scope.loginText, state.pwds);
+        var index = state.userShortList.indexOf($scope.loginText);
+        if (index !== -1 && $scope.loginText !== 'Other..') {
+            state.userShortList.splice(index, 1); 
+            persist.put('userShortList', state.userShortList);
+        }
+        delete state.pwds[$scope.loginText];
         $scope.shouldBeOpen = false;
     };
     

@@ -409,10 +409,14 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
     });
     
     $('#userRoles').editable({
-        value: [2, 3],    
-        unsavedclass: null,
-        select2: {
-            tags: ['read-_users', 'write-_users']
+        // value: [2, 3],    
+        unsavedclass: null
+        ,mode:'inline'
+        ,inputclass:'userEditable' 
+        ,showbuttons:'bottom'
+        ,viewseparator: ' , '
+        ,select2: {
+            tags: ['read', 'write']
         }
         ,success: function(response, newRoles) {
             console.log($scope.selectedUser,newRoles);
@@ -438,6 +442,32 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
                        // dereg()
                        
                        $scope.toggleAdminsUsers(localStorage.getItem('quilt_usersViewState') || 'users');
+                       var databaseRoles = [];
+                       
+                       state.databases.forEach(function(d) {
+                           databaseRoles.push('read-' + d.name);
+                           databaseRoles.push('write-' + d.name);
+                           var moreRoles = [
+                               "allow_" + d.name + "_type:'shift'"
+                               ,"allow_" + d.name + "_type:'location'"
+                               ,"allow_" + d.name + "_type:'person'"
+                               ,"allow_" + d.name + "_type:'user'"
+                               ,"allow_" + d.name + "_type:'settings'"
+                           ];
+                           databaseRoles = databaseRoles.concat(moreRoles);
+                       }); 
+                       var moreRoles = [
+                           'read', 'write'
+                           ,"allow_*_type:'shift'"
+                           ,"allow_*_type:'location'"
+                           ,"allow_*_type:'person'"
+                           ,"allow_*_type:'user'"
+                           ,"allow_*_type:'settings'"
+                       ];
+                       databaseRoles = databaseRoles.concat(moreRoles);
+                       
+                       $('#userRoles').editable('option', 'select2',
+                                                    { tags: databaseRoles });
                        // $scope.rows = state.allUsers;
 
                        // defineGrid();

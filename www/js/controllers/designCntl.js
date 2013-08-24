@@ -320,7 +320,7 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
                 ,{visGroup:'hidden', field:'funcType', displayName:'funcType', enableCellEdit: true, visible:true, width:70} //toggle
                 
                 ,{visGroup:'both', field:'database', displayName:'database', enableCellEdit: false, visible:true, cellTemplate: cellTemplate}
-                ,{visGroup:'both', field:'design', displayName:'_design/', enableCellEdit: false, visible:true //cellTemplate: cellTemplate,
+                ,{visGroup:'both', field:'design', displayName:'_design/', enableCellEdit: false, visible:true ,cellTemplate: cellTemplate
                   // ,editableCellTemplate: editableCellTemplateDesignDoc
                  }
                 ,$scope.nameField

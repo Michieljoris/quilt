@@ -162,6 +162,7 @@ angular.module("myApp").controller("queryCntl", function ($scope, $location, sta
             },
             function(error) {
                 console.log("Couldn't save all docs!!", error);
+                alert("Couldn't save all docs!!\n" + error.reason);
                 onChangeSelDbs([$scope.selDb], []);
             }
         );
@@ -205,6 +206,7 @@ angular.module("myApp").controller("queryCntl", function ($scope, $location, sta
             }
             ,function(err) {
                 console.log(err);
+                alert(err);
                 $scope.docs = [];
                 $scope.$apply();
             }

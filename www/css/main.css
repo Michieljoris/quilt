@@ -1391,3 +1391,15 @@ body .modal {
 hr {
     border-bottom: 1px solid lightgray;
 }
+
+.databaseEditable {
+    width:240px;
+}
+
+.userEditable {
+    width:340px;
+}
+
+#userRoles {
+    border-bottom: 0px;
+}

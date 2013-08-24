@@ -396,6 +396,8 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
                 quilt: true
             };
             state.testDocs.push(newRow);
+            state.testDocsMap[newRow.doc] = newRow.value;
+            
             endEdit(newRow, "quilt", false);
             $scope.testDocsGridOptions.selectVisible(false);
             // console.log('index', state.testDocs.length);

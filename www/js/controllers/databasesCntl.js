@@ -290,11 +290,11 @@ console.log(row, field, old, row[field]);
                     row.namesArray = secObj.members ? secObj.members.names: [];
                     row.rolesArray = secObj.members ? secObj.members.roles: [];
                     $('#dbMemberNames').editable('setValue', row.namesArray, false);
-                    $('#dbMemberNames').editable('option', 'select2',
-                                                 { tags: state.allUsersArray});
+                    // $('#dbMemberNames').editable('option', 'select2',
+                    //                              { tags: state.allUsersArray});
                     $('#dbMemberRoles').editable('setValue', row.rolesArray, false);
                     $('#dbMemberRoles').editable('option', 'select2',
-                                                 { tags: ['read-' + row.name, 'write-' + row.name]});
+                                                 { tags: ['read', 'write', 'read-' + row.name, 'write-' + row.name]});
                     row.names = row.namesArray ? row.namesArray.toString() : 'error';
                     row.roles = row.rolesArray ? row.rolesArray.toString() : 'error';
 
@@ -396,8 +396,13 @@ console.log(row, field, old, row[field]);
     
     $('#dbMemberNames').editable({
         unsavedclass: null
+        ,mode:'inline'
+        ,showbuttons:'bottom'
+        ,inputclass:'databaseEditable' 
+        // ,placeholder: 'select/enter strings'
         ,select2: {
-            tags: ['read-_users', 'write-_users']
+            tags: ["_type:'shift'", "_type:'location'", "_type:'person'", "_type:'user'", "_type:'settings'"]
+            // ,separator: ''
         }
         ,success: function(response, newValue) {
             console.log(newValue);
@@ -409,11 +414,14 @@ console.log(row, field, old, row[field]);
         }
     });
 
-
     $('#dbMemberRoles').editable({
         unsavedclass: null
+        ,mode:'inline'
+        ,inputclass:'databaseEditable' 
+        ,showbuttons:'bottom'
+        // ,placeholder: 'select/enter database roles'
         ,select2: {
-            tags: ['read-_users', 'write-_users']
+           tags: ['read', 'write']
         }
         ,success: function(response, newValue) {
             console.log(newValue);

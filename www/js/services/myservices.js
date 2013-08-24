@@ -167,6 +167,9 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 if (sessionInfo && sessionInfo.userCtx && sessionInfo.userCtx.name) {
                     state.user = sessionInfo.userCtx;
                     state.userShortList = persist.get('userShortList') || [];
+                    if (state.userShortList.indexOf('Other..') === -1) {
+                        state.userShortList = ['Other..'].concat(state.userShortList);
+                       } 
                     if (state.userShortList.indexOf(state.user.name) === -1) {
                         state.userShortList.push(state.user.name);
                         persist.put('userShortList', state.userShortList);
@@ -244,7 +247,10 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 (state.configAccessible.admins ?
                  state.configAccessible.admins : []) : []);
         
-        couchapi.docAll('_users').when(
+        initScreen['#databases']().when(
+            function() {
+                return couchapi.docAll('_users');
+            }).when(
             function(users) {
                 // console.log('in initsrfeen', users , admins);
                 state.allUsersArray = [];
@@ -266,6 +272,8 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 
                 // users.forEach()
                 state.allUsers = users;
+                
+        // initScreen['#databases']().when(
                 return VOW.kept();
                 
                 //are we fetching the user docs here?
@@ -279,6 +287,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 }
                 ,function(err) {
                     console.log('ERROR', err);
+                    alert('ERROR:' + err);
                     state.allUsers = [];
                     
                     $rootScope.$broadcast('initAllUsers');
@@ -311,7 +320,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
             function(databases) {
                 console.log(databases);
                 state.databases = databases.filter(function(str) {
-                    if (str.startsWith('_')) return false;
+                    // if (str.startsWith('_')) return false;
                     return true;
                 }).map(function(db) {
                     return {
