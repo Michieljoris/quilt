@@ -170,12 +170,13 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
     // };
 
 
-    // $scope.refresh = function() {
-    //     console.log('refresh' state.reps);
-    //     window.test = $scope.usersGridOptions;
-    //     state.setActiveScreen($scope, '#replications');
-    //     // defineGrid();
-    // };
+    $scope.refresh = function() {
+        // console.log('refresh' state.reps);
+        window.test = $scope.usersGridOptions;
+        delete state.allUsers;
+        state.setActiveScreen($scope, '#allUsers');
+        // defineGrid();
+    };
 
 
     $scope.undo = function() {
@@ -417,6 +418,7 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
         ,viewseparator: ' , '
         ,select2: {
             tags: ['read', 'write']
+            ,tokenSeparators: [";"]
         }
         ,success: function(response, newRoles) {
             console.log($scope.selectedUser,newRoles);
@@ -467,7 +469,9 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
                        databaseRoles = databaseRoles.concat(moreRoles);
                        
                        $('#userRoles').editable('option', 'select2',
-                                                    { tags: databaseRoles });
+                                                { tags: databaseRoles
+                                                  // ,tokenSeparators: [";"]
+                                                });
                        // $scope.rows = state.allUsers;
 
                        // defineGrid();

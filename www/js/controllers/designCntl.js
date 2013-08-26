@@ -49,7 +49,7 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
     };
 
     $scope.funcTypes = [
-        'docs', 'validate', 'views', 'shows', 'lists', 'updates', 'filters'
+        'docs', 'validate', 'views', 'shows', 'lists', 'updates', 'filters', 'lib'
     ];
     
     $scope.toggleViewStateGroup = function(someFuncType) {
@@ -117,7 +117,10 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
             else {
                 newValue.value = '';
                 newValue.couch = false;
-                newValue.name = funcType.slice(0, funcType.length -1) + ' name', 
+                if (funcType !== 'lib')
+                    newValue.name = funcType.slice(0, funcType.length -1) + ' name';
+                else newValue.name = funcType+ ' name'; 
+                
                 newValue.original = angular.copy(newValue);
                 state.designRows.push(newValue);
             }
@@ -675,7 +678,7 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
             console.log(docs, db);
         });
         if (vows.length === 0) {
-            alert('Nothing to do!!!');
+            alert('Nothing to do!!!\nDon\'t forget to tick the couch box for any modified rows you actually want to store');
             return;
         }
         VOW.every(vows).when(
@@ -813,10 +816,11 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         setDocsFunctionsState();
     };
     
-    function validateFunc(s) {
+    
+    function validateCode(s) {
         var old = window.test;
         var result;
-        s = 'window.test=' + s;
+        s = 'window.test = function test(){' + s + "};";
         try {
             result = eval(s);
         } catch (e) {
@@ -829,6 +833,23 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
         console.log('Error: not a function');
         return false;
     }
+    
+    // function validateFunc(s) {
+    //     var old = window.test;
+    //     var result;
+    //     s = 'window.test=' + s;
+    //     try {
+    //         result = eval(s);
+    //     } catch (e) {
+    //         console.log(e.name, e.message);
+    //         window.test = old;
+    //         return false;
+    //     }
+    //     window.test = old;
+    //     if ( typeof result === 'function') return true;
+    //     console.log('Error: not a function');
+    //     return false;
+    // }
     
     // $scope.toggleViewState2 = function(toggle) {
     //     $scope.viewState2 = {};
@@ -857,10 +878,10 @@ angular.module("myApp").controller("designCntl", function ($scope, $location, st
                 console.log('saving data into row', $scope, state.rowInAce);
                 var value = editor.session.getValue();
                 var oldValue = state.rowInAce.value;
-                if (!validateFunc(value)) {
-                    alert('Error in validating function');
-                    return;
-                }
+                // if (!validateFunc(value)) {
+                //     alert('Error in validating function');
+                //     return;
+                // }
                 state.rowInAce.value = value;
                 endEdit(state.rowInAce, 'value', oldValue);
                 // console.log('change', rowInAce.value);

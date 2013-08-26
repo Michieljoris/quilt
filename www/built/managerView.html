@@ -123,7 +123,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#97;i&#108;t&#x6F;:&#109;i&#x63;&#104;&#x69;&#x65;&#108;&#106;&#111;&#x72;&#x69;&#115;&#x40;&#x67;&#x6D;&#x61;&#x69;&#108;&#x2E;c&#111;&#109;">&#109;i&#x63;&#104;&#x69;&#x65;&#108;&#106;&#111;&#x72;&#x69;&#115;&#x40;&#x67;&#x6D;&#x61;&#x69;&#108;&#x2E;c&#111;&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#x69;&#108;&#116;&#111;:&#109;&#105;&#99;&#x68;&#105;&#x65;&#x6C;&#106;&#x6F;&#114;&#105;&#x73;&#x40;&#x67;&#109;&#97;&#x69;&#108;&#x2E;&#99;&#x6F;&#109;">&#109;&#105;&#99;&#x68;&#105;&#x65;&#x6C;&#106;&#x6F;&#114;&#105;&#x73;&#x40;&#x67;&#109;&#97;&#x69;&#108;&#x2E;&#99;&#x6F;&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -270,6 +270,7 @@ ng-click="simpleSetup($event)">simple</a> version.</p>
       <button ng-disabled="modifiedCount == 0" class="btn btn-warning"
               ng-click="undo()">Undo edits</button>
 
+      <button class="btn btn-info" ng-click="refresh()">Refresh</button>
       <div class="input-prepend " style="">
 	<span style="height:20px;" class="add-on"><i class="icon-search"></i></span>
 	<input id="inputIcon" type="text" ng-change="search()"  ng-model="searchText">

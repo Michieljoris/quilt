@@ -21,6 +21,8 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, conf
         console.log("Switching to different couchDB url", url)  ;
         config.set({ couchDbUrl: url });
         $('#couchDbUrl').editable('setValue', url, false);
+        delete state.databases;
+        delete state.allUsers;
         state.initialize($scope);
     };
     

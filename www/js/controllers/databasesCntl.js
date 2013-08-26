@@ -294,7 +294,11 @@ console.log(row, field, old, row[field]);
                     //                              { tags: state.allUsersArray});
                     $('#dbMemberRoles').editable('setValue', row.rolesArray, false);
                     $('#dbMemberRoles').editable('option', 'select2',
-                                                 { tags: ['read', 'write', 'read-' + row.name, 'write-' + row.name]});
+                                                 { tags: ['read', 'write', 'read-' + row.name, 'write-' + row.name]
+                                                   // ,tokenSeparators: [";"]
+                                                   // ,separator: ';'
+                                                 }
+                                                );
                     row.names = row.namesArray ? row.namesArray.toString() : 'error';
                     row.roles = row.rolesArray ? row.rolesArray.toString() : 'error';
 
@@ -338,7 +342,7 @@ console.log(row, field, old, row[field]);
             },
             function(data) {
                 console.log("error",data);
-                alert('The database already exists probably. Anyway the database has not been created.', data);
+                alert('Database not created: note that only lowercase characters (a-z), digits (0-9), or any of the characters _, $, (, ), +, -, and / are allowed. Or the database exists already.', data);
             }
         );
 
@@ -399,10 +403,13 @@ console.log(row, field, old, row[field]);
         ,mode:'inline'
         ,showbuttons:'bottom'
         ,inputclass:'databaseEditable' 
+        ,viewseparator: ' , '
+        ,separator: ';'
         // ,placeholder: 'select/enter strings'
         ,select2: {
             tags: ["_type:'shift'", "_type:'location'", "_type:'person'", "_type:'user'", "_type:'settings'"]
-            // ,separator: ''
+            // ,tokenSeparators: [";"]
+            // ,separator: ';'
         }
         ,success: function(response, newValue) {
             console.log(newValue);
@@ -419,9 +426,12 @@ console.log(row, field, old, row[field]);
         ,mode:'inline'
         ,inputclass:'databaseEditable' 
         ,showbuttons:'bottom'
+        // ,viewseparator: ';'
         // ,placeholder: 'select/enter database roles'
         ,select2: {
-           tags: ['read', 'write']
+            tags: ['read', 'write']
+            // ,tokenSeparators: [";"]
+            // ,separator: ';'
         }
         ,success: function(response, newValue) {
             console.log(newValue);

@@ -8,7 +8,7 @@ angular.module("myApp").factory('defaults', function() {
     return {
         couchDbUrl : "http://localhost:5984"
         ,corsProxy : "http://localhost:1234"
-        ,timeout: 5000
+        ,timeout: 60000
         ,firstScreen: '#info'
         ,logBytes: 3000
         // ,logRefresh: 2000 //in ms
