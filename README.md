@@ -1,6 +1,8 @@
 quilt
 =====
 
+Bit buggy still at the moment, but basically working.
+
 Opiniated CouchDB manager, similar to Futon.
 
 I thought Futon was a bit cumbersome, and my setup for CouchDB for another app was a bit involved so I wrote an easier manager.

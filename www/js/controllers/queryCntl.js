@@ -171,7 +171,8 @@ angular.module("myApp").controller("queryCntl", function ($scope, $location, sta
     $scope.newRow = function() {
         if (!$scope.selDb) return;
         var id = prompt('Doc id? \nLeave blank to have one generated');
-        if (!id) id = couchapi.UUID();
+        if (id === null) return;
+        if (id.length === 0) id = couchapi.UUID();
         var newDoc = {
             id: id,
             doc: { _id: id }
@@ -180,7 +181,9 @@ angular.module("myApp").controller("queryCntl", function ($scope, $location, sta
         newDoc.original = angular.copy(newDoc);
         newDoc['delete'] = false;
         endEdit(newDoc);
+        docSelected({entity:newDoc});
         $scope.docs.push(newDoc);
+        
     };
     
     function onChangeSelDbs(updated, old) {

@@ -481,6 +481,10 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         var repsToRemove = [];
         var repsToCommit = []; 
         // var selRows = $scope.gridOptions.$gridScope.selectedItems;
+        // if (selRows.length === 0) {
+        //     alert('Nothing to do!!!\nPlease (control) select some rows to apply.');
+        //     return;
+        // }
         state.quilt_reps =  {};
         state.reps.filter(function(r) {
             if (!r._id || r._id.length === 0)
@@ -502,13 +506,15 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                 r.targetParsed = parseUrl(r.target);
                 if (r.sourceParsed.pwd === "_prompt_") {
                     r.sourceParsed.pwd = prompt('Please enter password for: ' +
-                                                r.sourceParsed.remoteDb);
+                                                r.sourceParsed.url);
+                    if (!r.sourceParsed.pwd) return;
                     r.source = makeUrl(r.sourceParsed.user, r.sourceParsed.pwd,
                                        r.sourceParsed.url);
                 }
                 if (r.targetParsed.pwd === "_prompt_") {
                     r.targetParsed.pwd = prompt('Please enter password for: ' +
-                                                r.targetParsed.remoteDb);
+                                                r.targetParsed.url);
+                    if (!r.targetParsed.pwd) return;
                     r.target = makeUrl(r.targetParsed.user, r.targetParsed.pwd,
                                        r.targetParsed.url);
                 }
