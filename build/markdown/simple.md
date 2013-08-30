@@ -1,4 +1,13 @@
+<ul class="nav nav-tabs">
+  <li><a href="#home" data-toggle="tab">Setup COUch</a></li>
+  <li><a href="#profile" data-toggle="tab">Profile</a></li>
+  <li><a href="#messages" data-toggle="tab">Messages</a></li>
+  <li><a href="#settings" data-toggle="tab">Settings</a></li>
+</ul>
+
 Setup CouchDB
+
+
 _____
 
 <div ng-hide="state.configAccessible">
