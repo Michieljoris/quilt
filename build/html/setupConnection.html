@@ -8,11 +8,12 @@ I am trying to connect to the following addresses:
 
 
 <div ng-show="disconnected"> Please enter the urls of the CouchDB you want to try to connect to:</div>
-
+<p></p>
 - <a href="#" id="couchDBurl" data-type="text"></a> (CouchDB)
-
+<br>
 - <a href="#" id="corsProxy" data-type="text" ></a> (Cors proxy)
 
+<p></p>
 <div ng-hide="disconnected || state.connecting">
 Neither of them gave back a valid response.
 
@@ -22,3 +23,4 @@ button or refresh the page.
 
 <button class="btn btn-small btn-primary" ng-click="connect()">Connect</button>
 
+<br>

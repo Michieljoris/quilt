@@ -233,10 +233,13 @@
                 },
                 complete: function(req) {
                     var resp = $.parseJSON(req.responseText);
+                    console.log('in login:', resp, req);
                     if (req.status == 200) {
                         if (options.success) options.success(resp);
                     } else if (options.error) {
-                        options.error(req.status, resp.error, resp.reason);
+                        options.error(req.status, resp && resp.reason ||
+                                       resp && resp.error || "no response");
+                        // options.error(req.status, resp.error, resp.reason);
                     } else {
                         throw 'An error occurred logging in: ' + resp.reason;
                     }
@@ -1051,7 +1054,7 @@
                     options.ajaxStart(resp);
                 }
                 if (req.status == options.successStatus) {
-                    if (options.beforeSuccess) options.beforeSuccess(req, resp);
+                   if (options.beforeSuccess) options.beforeSuccess(req, resp);
                     if (options.success) options.success(resp);
                 } else if (options.error) {
                     options.error(req.status, resp && resp.reason ||

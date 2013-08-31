@@ -1,21 +1,3 @@
-<ul class="nav nav-tabs">
-  <li><a href="#home" data-toggle="tab">Setup COUch</a></li>
-  <li><a href="#profile" data-toggle="tab">Profile</a></li>
-  <li><a href="#messages" data-toggle="tab">Messages</a></li>
-  <li><a href="#settings" data-toggle="tab">Settings</a></li>
-</ul>
-
-Setup CouchDB
-
-
-_____
-
-<div ng-hide="state.configAccessible">
-<b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b>
-<button class="btn btn-small btn-primary" ng-click="openLogin()">Log
-in your CouchDB</button>
-</div>
-
 <span ng-show="state.partyMode">
 Your CouchDB is in party mode as it's called. Which means there is no
 server admin configured. This makes your database quite insecure. It

@@ -147,6 +147,7 @@ var exports = {
                     ,   'controllers/logCntl'
                     ,   'controllers/testCntl'
                     ,'controllers/quiltCntl'
+                    ,'controllers/multicapCntl'
                     
                     // ,'controllers/treeCntl'
                 ],
@@ -165,15 +166,23 @@ var exports = {
             //     },
         ]
         ,template: [
-            { src: 'html/manager.html' 
+            { src: 'html/multicap_setup.html' 
+              ,tagIdPostfix: '--' //can be overridden per template
+              ,id: "multicap_setup"
+              ,mapping: {
+                  setupCouch: "markdown/simple.md"
+                  ,createLocation: "html/createLocation"
+              }
+            }
+            ,{ src: 'html/manager.html' 
               ,id: "manager"
               ,tagIdPostfix: '--' //can be overridden per template
               // ,out: 'helpView.html'
               ,mapping: {
-                  setupConnection: 'markdown/setupConnection.md'
+                  setupConnection: 'html/setupConnection.html'
                   ,setupConnectionHelp: 'markdown/setupConnectionHelp.md'
                   ,enableCors: 'markdown/enableCors.md'
-                  ,simple: 'markdown/simple.md'
+                  ,simple: 'multicap_setup'
                   ,info: 'markdown/info.md'
                   ,'allUsers': 'html/allUsers.html'
                   ,'databases': 'html/databases.html'

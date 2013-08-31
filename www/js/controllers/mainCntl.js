@@ -2,7 +2,7 @@
 
 
 angular.module("myApp").controller("mainCntl", function ($scope, $location, config, state, persist, defaults) {
-    // window.mainCntl = function ($location, $scope, $http) {
+   // window.mainCntl = function ($location, $scope, $http) {
     "use strict";
     
     console.log('in main');
@@ -123,14 +123,20 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, conf
                 delete $scope.passwordText;
                 state.initialize($scope);
                 // $scope.$apply();
+                $scope.shouldBeOpen = false;
             },
             function(data) {
-                delete $scope.passwordText;
-                delete state.pwds[$scope.loginText];
-                console.log('error', data);
+                // delete $scope.passwordText;
+                // delete state.pwds[$scope.loginText];
+                console.log('error loggin in', arguments);
+                $scope.loginError = data.reason || data.status;
+                setTimeout(function() {
+                    $scope.loginError = "";
+                    $scope.$apply();
+                }, 3000);
+                $scope.$apply();
             }  
         );
-        $scope.shouldBeOpen = false;
     };
     
     $scope.close = function () {
@@ -145,6 +151,7 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, conf
             state.userShortList.splice(index, 1); 
             persist.put('userShortList', state.userShortList);
         }
+        delete $scope.passwordText;
         delete state.pwds[$scope.loginText];
         $scope.shouldBeOpen = false;
     };

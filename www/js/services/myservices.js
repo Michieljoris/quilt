@@ -144,7 +144,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
             vow.keep();
             state.connected = false;
         }, defaults.timeout);
-         
+         state.userShortList = [];
         couchapi.withCredentials(true);
         VOW.first([tryUrl(config.couchDbUrl), tryUrl(config.corsProxy)]).when(
             function(url) {
@@ -236,6 +236,13 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
     
     var initScreen = {};
     
+    initScreen["#simple"] = function() {
+        initScreen['#databases']().when( function() {
+            $rootScope.$broadcast('initMulticap');
+        });
+        return VOW.kept();
+    };
+    
     initScreen['#allUsers']  = function() {
         
         console.log('initing #users');
@@ -287,7 +294,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 }
                 ,function(err) {
                     console.log('ERROR', err);
-                    alert('ERROR:' + err);
+                    // alert('ERROR:' + err);
                     state.allUsers = [];
                     
                     $rootScope.$broadcast('initAllUsers');

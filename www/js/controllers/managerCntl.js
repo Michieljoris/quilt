@@ -125,53 +125,6 @@ function managerCntl($scope, config, state, defaults) {
     //     ];
     
     
-    $('#remoteUrl').editable({
-        unsavedclass: null,
-        type: 'text',
-        // value: state.remoteUrl,
-        value: "http:multicapdb.iriscouch.com",
-        success: function(response, newValue) {
-            config.set({ couchDbUrl: newValue });
-            $scope.$apply();
-        }
-    });
-    
-    $('#remoteUserName').editable({
-        unsavedclass: null,
-        type: 'text',
-        value: state.remoteUserName,
-        success: function(response, newValue) {
-            // config.set({ corsProxy: newValue });
-            // $scope.$apply();
-        }
-    });
-    
-    $('#remotePassword').editable({
-        unsavedclass: null,
-        type: 'text',
-        value: state.remotePassword,
-        success: function(response, newValue) {
-            // config.set({ corsProxy: newValue });
-            // $scope.$apply();
-        }
-    });
-    
-    $('#locationsToSync').editable({
-        unsavedclass: null,
-        // type: 'checklist',
-        value: [2, 3],    
-        source: [
-              {value: 1, text: 'Waterford West'},
-              {value: 2, text: 'Runcorn 9'},
-              {value: 3, text: 'Rubicon'}
-           ],
-        success: function(response, newValue) {
-            console.log(newValue);
-            // config.set({ corsProxy: newValue });
-            
-            // $scope.$apply();
-        }
-    });
     
     
     

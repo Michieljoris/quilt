@@ -1,0 +1,29 @@
+
+<div ng-hide="state.configAccessible">
+<b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b>
+<button class="btn btn-small btn-primary" ng-click="openLogin()">Log
+in your CouchDB</button>
+</div>
+
+<div ng-show="state.configAccessible" ng-controller="multicapCntl">
+  <button class="btn btn-small btn-danger" ng-click="test()">test</button>
+  <button class="btn btn-small btn-info" ng-click="refresh()">Refresh</button>
+  <ul class="nav nav-tabs" id="multicapTabs">
+    <li class="active"><a href="#setupCouch" data-toggle="tab">Setup CouchDB</a>
+    </li>
+    <li><a href="#createLocation" data-toggle="tab">Create location</a></li>
+    <!-- <li><a href="#messages" data-toggle="tab">Messages</a></li> -->
+    <!-- <li><a href="#settings" data-toggle="tab">Settings</a></li> -->
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane active" id="setupCouch">
+      <div id="setupCouch--"> </div>
+    </div>
+    <div class="tab-pane" id="createLocation">
+      <div id="createLocation--"></div>
+      </div>
+    <!-- <div class="tab-pane" id="messages">...</div> -->
+    <!-- <div class="tab-pane" id="settings">...</div> -->
+  </div>
+</div>

@@ -10,25 +10,33 @@
 
 </div> -->
       <div id="manager--"  class="span12" ><div ng-hide="state.connected">
-  <div  id="setupConnection--" ><p ng-hide="state.disconnected"> 
+  <div  id="setupConnection--" ><div ng-hide="disconnected || state.connecting"> 
 I have tried to connect to CouchDB with the following two addresses:
-</p>
+</div>
 
-<p ng-show="state.disconnected"> Please enter the urls of the CouchDB you want to try to connect to:</p>
+<div ng-show="state.connecting"> 
+I am trying to connect to the following addresses:
+</div>
 
-<ul>
-<li><p><a href="#" id="couchDBurl" data-type="text"></a> (CouchDB)</p></li>
-<li><p><a href="#" id="corsProxy" data-type="text" ></a> (Cors proxy)</p></li>
-</ul>
 
-<div ng-hide="state.disconnected">
+<div ng-show="disconnected"> Please enter the urls of the CouchDB you want to try to connect to:</div>
+<p></p>
+- <a href="#" id="couchDBurl" data-type="text"></a> (CouchDB)
+<br>
+- <a href="#" id="corsProxy" data-type="text" ></a> (Cors proxy)
+
+<p></p>
+<div ng-hide="disconnected || state.connecting">
 Neither of them gave back a valid response.
 
 Please correct them (by clicking on them) and then click the connect
 button or refresh the page.
 </div>
 
-<p><button class="btn btn-small btn-primary" ng-click="connect()">Connect</button></p></div>
+<button class="btn btn-small btn-primary" ng-click="connect()">Connect</button>
+
+<br>
+</div>
   <!-- <div ng-show="disconnected" id="setupConnectionDisconnected--" ></div> -->
   <a  ng-click="isSetupConnectionHelpCollapsed =
                 !isSetupConnectionHelpCollapsed">Help on how to
@@ -123,7 +131,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#97;&#105;&#108;&#116;&#x6F;:&#109;&#105;&#x63;&#x68;&#105;&#x65;&#108;&#x6A;&#111;&#x72;&#105;&#115;&#x40;&#103;&#x6D;&#x61;&#x69;&#108;&#46;c&#x6F;&#109;">&#109;&#105;&#x63;&#x68;&#105;&#x65;&#108;&#x6A;&#111;&#x72;&#105;&#115;&#x40;&#103;&#x6D;&#x61;&#x69;&#108;&#46;c&#x6F;&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#97;&#x69;&#x6C;&#x74;&#x6F;:&#109;&#105;&#99;&#x68;i&#x65;&#108;&#106;&#111;&#114;&#105;&#115;&#x40;&#x67;&#109;&#x61;&#105;&#108;&#46;&#x63;o&#x6D;">&#109;&#105;&#99;&#x68;i&#x65;&#108;&#106;&#111;&#114;&#105;&#115;&#x40;&#x67;&#109;&#x61;&#105;&#108;&#46;&#x63;o&#x6D;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -212,24 +220,27 @@ Replicate this app and the roster app to your CouchDB</button>
 <p>Go to <a href="{{state.connected}}/quilt">{{state.connected}}/quilt</a>
 for this app, and <a target="_blank" href="{{state.connected}}/roster">{{state.connected}}/roster</a> for the roster.</p></li>
 </ul></div>
-  <div ng-show="isActive('#simple')" id="simple--"><ul class="nav nav-tabs">
-  <li><a href="#home" data-toggle="tab">Setup COUch</a></li>
-  <li><a href="#profile" data-toggle="tab">Profile</a></li>
-  <li><a href="#messages" data-toggle="tab">Messages</a></li>
-  <li><a href="#settings" data-toggle="tab">Settings</a></li>
-</ul>
-
-<p>Setup CouchDB</p>
-
-<hr />
-
+  <div ng-show="isActive('#simple')" id="simple--">
 <div ng-hide="state.configAccessible">
 <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b>
 <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
 in your CouchDB</button>
 </div>
 
-<p><span ng-show="state.partyMode">
+<div ng-show="state.configAccessible" ng-controller="multicapCntl">
+  <button class="btn btn-small btn-danger" ng-click="test()">test</button>
+  <button class="btn btn-small btn-info" ng-click="refresh()">Refresh</button>
+  <ul class="nav nav-tabs" id="multicapTabs">
+    <li class="active"><a href="#setupCouch" data-toggle="tab">Setup CouchDB</a>
+    </li>
+    <li><a href="#createLocation" data-toggle="tab">Create location</a></li>
+    <!-- <li><a href="#messages" data-toggle="tab">Messages</a></li> -->
+    <!-- <li><a href="#settings" data-toggle="tab">Settings</a></li> -->
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane active" id="setupCouch">
+      <div id="setupCouch--"><p><span ng-show="state.partyMode">
 Your CouchDB is in party mode as it's called. Which means there is no
 server admin configured. This makes your database quite insecure. It
 is not strictly necessary, but highly recommended to create a server
@@ -254,6 +265,54 @@ data-original-title="Select locations"></a> <br></p>
 
 <p><button class="btn btn-small btn-primary"
 ng-click="setupSimple()">Setup your CouchDB!!</button></p></div>
+    </div>
+    <div class="tab-pane" id="createLocation">
+      <div id="createLocation--"><button class="btn btn-small btn-success"
+	ng-click="newLocationShouldBeOpen=true">New location</button>
+<p></p>
+<h5>Locations with databases found at this CouchDB instance:</h5>
+<div>
+  <ul>
+    <li ng-repeat="locationName in locationNames">
+      {{locationListObj[locationName].name}}
+    </li>
+  </ul>
+</div>
+<!-- {{locationListObj | json}} -->
+
+
+
+<div id="addLocationDialog" modal="newLocationShouldBeOpen" close="closeLocation()" options="logopts">
+  <div class="modal-header">
+    <h3>New location name</h3>
+    <!-- <h3 ng-show="viewState.users">Create user</h3> -->
+    <!-- <h3 ng-show="viewState.admins&&!justPwd">Create server admin</h3> -->
+    <!-- <h3 ng-show="justPwd">{{userName}}</h3> -->
+
+  </div>
+  <div class="modal-body">
+    <form>
+      <fieldset>
+        <!-- <input ng-hide="justPwd" type="text" placeholder="name" ng-model="userName"><br> -->
+        <input type="text" placeholder="location name" ng-model="locationName">
+      </fieldset>
+    </form>
+    {{error}}
+
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-warning cancel pull-left" ng-click="closeLocation()">Cancel</button>
+    <button class="btn btn-primary" ng-click="createLocationDb()">Ok</button>
+  </div>
+</div>
+</div>
+      </div>
+    <!-- <div class="tab-pane" id="messages">...</div> -->
+    <!-- <div class="tab-pane" id="settings">...</div> -->
+  </div>
+</div>
+</div>
   <div ng-show="isActive('#info')" id="info--"><p>You've switched to the advanced version of this app. If you didn't
 mean to this please switch back to the <a href="#"
 ng-click="simpleSetup($event)">simple</a> version.</p>
