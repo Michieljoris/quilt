@@ -294,7 +294,7 @@ console.log(row, field, old, row[field]);
                     //                              { tags: state.allUsersArray});
                     $('#dbMemberRoles').editable('setValue', row.rolesArray, false);
                     $('#dbMemberRoles').editable('option', 'select2',
-                                                 { tags: ['read', 'write', 'read-' + row.name, 'write-' + row.name]
+                                                 { tags: ['read', 'write', 'read_' + row.name, 'write_' + row.name]
                                                    // ,tokenSeparators: [";"]
                                                    // ,separator: ';'
                                                  }

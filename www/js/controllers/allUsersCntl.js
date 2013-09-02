@@ -447,8 +447,8 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
                        var databaseRoles = [];
                        
                        state.databases.forEach(function(d) {
-                           databaseRoles.push('read-' + d.name);
-                           databaseRoles.push('write-' + d.name);
+                           databaseRoles.push('read_' + d.name);
+                           databaseRoles.push('write_' + d.name);
                            var moreRoles = [
                                "allow_" + d.name + "_type:'shift'"
                                ,"allow_" + d.name + "_type:'location'"

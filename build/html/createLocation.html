@@ -1,11 +1,23 @@
 <button class="btn btn-small btn-success"
-	ng-click="newLocationShouldBeOpen=true">New location</button>
+        ng-click="newLocationShouldBeOpen=true">New location</button>
+
+<button class="btn btn-small btn-info" ng-click="refreshDatabases()">Refresh</button>
+<p></p>
+<div style="width:500px;">
+  This is an easy way to create a new database for a new
+  location. Normally you would only have to do this if you want to add a
+  new location database to a master CouchDB instance. If you just want
+  to replicate and sync an existing location database please go to the
+  'Setup CouchDB' tab.
+</div>
+
 <p></p>
 <h5>Locations with databases found at this CouchDB instance:</h5>
+<p></p>
 <div>
   <ul>
     <li ng-repeat="locationName in locationNames">
-      {{locationListObj[locationName].name}}
+      {{locationsDoc[locationName].name}}
     </li>
   </ul>
 </div>

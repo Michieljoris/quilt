@@ -1,0 +1,61 @@
+<span ng-show="state.partyMode">
+  Your CouchDB is in party mode as it's called. Which means there is no
+  server admin configured. This makes your database quite insecure. It
+  is not strictly necessary, but highly recommended to create a server
+  admin. Please click the button to do so.
+  <button class="btn btn-small btn-primary" ng-click="createServerAdmin()">Log
+    in your CouchDB</button>
+</span>
+<div style="width:500px;">
+  <i>Please edit the url of the CouchDB instance you want to use as
+    the source and the name of the database at {{state.connected}} you want to
+    synchronize/replicate to.
+  </i>
+</div>
+<p></p>
+
+<b>Source CouchDB:</b> <a href="#" id="remoteUrl" data-type="text"></a> <br>
+<b>Target database:</b> <a href="#" id="targetDatabase" data-type="text"></a> <br>
+<br>
+<div style="width:500px;">
+  <i>Please fill in user name and password for the source CouchDB
+    instance. If you leave pwd blank when clicking connect and you've
+    entered your password before those credentials will be used. If you're
+    not getting all the databases you're expecting fill in the password
+    and possibly the user name and click connect again.</i>
+</div>
+<br>
+
+<b>User name:</b> <a href="#" id="remoteUserName" data-type="text" ></a> <br>
+<b>Password:</b> <a href="#" id="remotePassword" data-type="password" ></a> <br>
+
+
+<p></p>
+
+<button class="btn btn-small btn-primary"
+        ng-click="getDbs()">Connect</button>
+<p></p>
+
+<b><i>Please edit the list of locations you want to aggregate.
+    <p></i></b>
+
+<div>
+  <ul class="unstyled">
+    <li ng-repeat="locationToSync in locationsToSync">
+      <label class="checkbox">
+        <input type="checkbox"
+               ng-model="locationToSync.checked"> 
+	{{locationToSync.name}}
+      </label>
+    </li>
+  </ul>
+</div>
+
+<button class="btn btn-small btn-primary"
+        ng-click="setupSimple()">Setup your CouchDB!!</button>
+<p></p>
+<pre>{{readable|json}}</pre>
+<pre>{{writable|json}}</pre>
+<pre>{{locationsDoc|json}}</pre>
+
+

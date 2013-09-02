@@ -170,7 +170,7 @@ var exports = {
               ,tagIdPostfix: '--' //can be overridden per template
               ,id: "multicap_setup"
               ,mapping: {
-                  setupCouch: "markdown/simple.md"
+                  setupCouch: "html/setupCouch"
                   ,createLocation: "html/createLocation"
               }
             }
