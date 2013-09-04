@@ -313,6 +313,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
     }
     
     $scope.getDbs = function() {
+        $scope.connectedToSource = true;
         var urlPrefix = $('#remoteUrl').editable('getValue').remoteUrl;
         var userName = $('#remoteUserName').editable('getValue').remoteUserName;
         var userPwd = $('#remotePassword').editable('getValue').remotePassword;
@@ -322,17 +323,19 @@ function multicapCntl($scope, config, state, defaults, persist) {
         }
         getLocationsToSync(urlPrefix, userName, userPwd).when(
             function(data) {
-                
-                $scope.locationsToSync = data.filter(function(db) {
+                $scope.setup.databasesToSync = data;
+                $scope.setup.locationsToSync = data.filter(function(db) {
                     
                     return db.dbName !== 'locations' && db.dbName !== 'persons';
                 });
                 $scope.$apply();
             }
             ,function(error) {
-                alert("Couldn't fetch info. Please check the url, username, password and your (inter)network connection." +
-                     "\nIf it is all correct then you might not have the enough permissions.\n" + error.reason);
+                alert("Couldn't fetch info. " +
+                     "\n\nError:\n\n" + (error.reason || ""));
                 console.log(error);
+                $scope.connectedToSource = false;
+                $scope.$apply(); 
             }
         );
     };
@@ -365,7 +368,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
                     console.log('readable:',readableDbs);
                     if (readableDbs.indexOf('locations') === -1 ||
                         readableDbs.indexOf('persons') === -1)
-                        return VOW.broken('You have no read permission for the locations and persons databases. Or they might not exist');
+                        return VOW.broken({ reason:'You have no read permission for the locations and/or persons database. Or they might not exist.'});
                         
                     else return getSecObjs(readableDbs);
                 })
@@ -383,9 +386,9 @@ function multicapCntl($scope, config, state, defaults, persist) {
                         
                     var databasesToSync = readableDbs.map(function(dbName) {
                         var result =  locationsDoc[dbName.slice(9)] || {};
-                        result[dbName] = dbName;
+                        result.dbName = dbName;
                         result.name = result.name || dbName;
-                        result.sync =  writableDbs.indexOf(dbName) !== -1;
+                        result.sync =  writableDbs.indexOf(dbName) !== -1 ? "sync" : "replicate";
                         return result;
                     });
                         
@@ -396,14 +399,44 @@ function multicapCntl($scope, config, state, defaults, persist) {
                     vow.keep(databasesToSync);
                 },
                 function(error) {
-                    console.log('error retrieving all dbs for ' + urlPrefix, error);
+                    // console.log('error retrieving all dbs for ' + urlPrefix, error);
                     $.couch.urlPrefix = oldUrlPrefix;
+                    // alert(error);
                     vow.breek(error);
                 }
             );
         return vow.promise;
     }
     
+    function makeRep(id, local, remote, dir, params) {
+        
+    }
+    
+    $scope.setupSimple = function() {
+        console.log('Setting up CouchDB', $scope.setup);
+        //TODO take http(s):// from remoteUrl
+        var remoteUrl = 'http://' + $scope.setup.remoteUserName + ':' +
+            $scope.setup.remotePwd + '@' + $scope.setup.remoteUrl;
+        //remove targetDatabase
+        //remove reps that start with targetDatabase_
+        //make targetDatabase, set permissions and roles
+        
+        //reps: id=targetDatabase
+        //id_users: targetDatabase > local _users (filter type=user)
+        
+        //id_pull_locations: remote locations > targetDatabase (filter requested locations)
+        //id_push_locations: targetDatabase > remote locations (if sync= "sync", filter requested locations)
+        
+        //id_pull_persons: remote persons > targetDatabase 
+        //id_push_persons: targetDatabase > remote persons (if sync= "sync", use filter for type=user,person,setting)
+        
+        //id_pull_houseName1: remote house database1 > targetDatabase
+        //id_push_houseName1: targetDatabase > remoteHouseDatabase1 ( if sync="sync" filter=shift)
+        
+        //id_pull_houseName2: remote house database2 > targetDatabase
+        //id_push_houseName2: targetDatabase > remoteHouseDatabase2 ( if sync="sync" filter=shift)
+        // etc
+   }; 
     
     $('#remoteUrl').editable({
         unsavedclass: null,
@@ -425,8 +458,8 @@ function multicapCntl($scope, config, state, defaults, persist) {
         // value: "http://multicapdb.iriscouch.com",
         value: "database",
         success: function(response, newValue) {
+            $scope.setup.targetDatabase = newValue;
             persist.put('setupCouchTarget', newValue);
-            // $scope.getDbs();
             $scope.$apply();
         }
     });
@@ -436,35 +469,44 @@ function multicapCntl($scope, config, state, defaults, persist) {
         type: 'text',
         value: state.remoteUserName,
         success: function(response, newValue) {
+            $scope.setup.remoteUserName = newValue;
             persist.put('setupCouchUserName', newValue);
-            // config.set({ corsProxy: newValue });
-            // $scope.$apply();
         }
     });
     
     $('#remotePassword').editable({
         unsavedclass: null,
         type: 'text',
-        value: state.remotePassword,
-        success: function(response, newValue) {
-            // config.set({ corsProxy: newValue });
-            // $scope.$apply();
+        value: state.remotePassword
+        ,success: function(response, newValue) {
+            $scope.setup.remotePwd = newValue;
         }
     });
     
     if (!state.multicapDone) {
         state.multicapDone = true;
         $('#multicapTabs a[href="#setupCouch"]').tab('show');
+        $scope.setup = {};
         $scope.$on('initMulticap',
                    function() {
                        updateLocationDoc();
+                       $scope.setup.remoteUrl =
+                           persist.get('setupCouchRemoteUrl') || 'http://localhost:5984';
                        $('#remoteUrl').editable(
                            'setValue'
-                           ,persist.get('setupCouchRemoteUrl') || 'http://localhost:5984'
+                           ,$scope.setup.remoteUrl
                            , false);
+                       $scope.setup.remoteUserName =
+                           persist.get('setupCouchUserName') || '';
                        $('#remoteUserName').editable(
                            'setValue'
-                           ,persist.get('setupCouchUserName') || ''
+                           ,$scope.setup.remoteUserName
+                           , false);
+                       $scope.setup.targetDatabase =
+                           persist.get('setupCouchTarget') || '';
+                       $('#targetDatabase').editable(
+                           'setValue'
+                           ,$scope.setup.targetDatabase
                            , false);
                    });
     }

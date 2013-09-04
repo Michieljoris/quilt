@@ -8,54 +8,83 @@
 </span>
 <div style="width:500px;">
   <i>Please edit the url of the CouchDB instance you want to use as
-    the source and the name of the database at {{state.connected}} you want to
-    synchronize/replicate to.
+    the source. Leave the default if you don't know what to fill in
+    here.
   </i>
 </div>
 <p></p>
 
 <b>Source CouchDB:</b> <a href="#" id="remoteUrl" data-type="text"></a> <br>
-<b>Target database:</b> <a href="#" id="targetDatabase" data-type="text"></a> <br>
-<br>
+<hr>
 <div style="width:500px;">
   <i>Please fill in user name and password for the source CouchDB
-    instance. If you leave pwd blank when clicking connect and you've
-    entered your password before those credentials will be used. If you're
-    not getting all the databases you're expecting fill in the password
-    and possibly the user name and click connect again.</i>
+    instance. Don't use the user name and pwd of the server admin
+    account of the CouchDB instance you're trying to set up. If you
+    leave either one blank an existing session is used if found,
+    however a password is needed to setup CouchDB (blue button).</i>
 </div>
 <br>
 
 <b>User name:</b> <a href="#" id="remoteUserName" data-type="text" ></a> <br>
-<b>Password:</b> <a href="#" id="remotePassword" data-type="password" ></a> <br>
-
-
+<b>Password:</b> <a href="#" id="remotePassword" data-type="password"
+                    ></a>
 <p></p>
+<hr>
+<button ng-hide="connectedToSource" class="btn btn-small btn-success"
+        ng-click="getDbs()">Connect to source CouchDB instance</button>
 
-<button class="btn btn-small btn-primary"
-        ng-click="getDbs()">Connect</button>
-<p></p>
+<div ng-show="connectedToSource">
+  <div style="width:500px;">
+    <i>
+      Tick the locations that you want to synchronize
+      with <b>{{targetDatabase}}</b>. If you're not getting all the
+      databases you're expecting modify user and password or the
+      source url and click the refresh button.
+    </i>
+  </div>
+  <br>
+  <div>
+    <ul class="unstyled">
+      <li ng-repeat="locationToSync in setup.locationsToSync">
+        <label class="checkbox">
+          <input type="checkbox"
+                 ng-model="locationToSync.checked">
+          {{locationToSync.name}} ({{locationToSync.sync}})
+        </label>
+      </li>
+    </ul>
+  </div>
 
-<b><i>Please edit the list of locations you want to aggregate.
-    <p></i></b>
+  <button class="btn btn-small btn-success"
+          ng-click="getDbs()">Refresh list of databases</button>
 
-<div>
-  <ul class="unstyled">
-    <li ng-repeat="locationToSync in locationsToSync">
-      <label class="checkbox">
-        <input type="checkbox"
-               ng-model="locationToSync.checked"> 
-	{{locationToSync.name}}
-      </label>
-    </li>
-  </ul>
+  <hr>
+  <div style="width:500px;">
+    <i>
+      Edit the name of the database you want to create at
+      <b> {{state.connected}}</b>. Leave the default if you don't know
+      what to fill in here.
+    </i>
+  </div>
+  <br>
+  <b>Target database:</b> <a href="#" id="targetDatabase"
+                             data-type="text"></a> <br>
+  <hr>
+  <div style="width:500px;">
+    <i>When clicking the blue button databases will be created,
+      permissions set and replications setup. When this is done you
+      should be able to connect using the roster app at <b>{{state.connected}}/{{targetDatabase}}</b>.</i>
+  </div>
+  <br>
+
+  <button class="btn btn-small btn-primary"
+          ng-click="setupSimple()">Setup your CouchDB!!</button>
+  <p></p>
+
+  <pre>{{setup.databasesToSync|json}}</pre>
+  <pre>{{setup.locationsToSync|json}}</pre>
+  <pre>{{readable|json}}</pre>
+  <pre>{{writable|json}}</pre>
+  <pre>{{locationsDoc|json}}</pre>
+
 </div>
-
-<button class="btn btn-small btn-primary"
-        ng-click="setupSimple()">Setup your CouchDB!!</button>
-<p></p>
-<pre>{{readable|json}}</pre>
-<pre>{{writable|json}}</pre>
-<pre>{{locationsDoc|json}}</pre>
-
-
