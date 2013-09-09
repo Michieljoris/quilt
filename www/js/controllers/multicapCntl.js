@@ -503,7 +503,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
                            ,$scope.setup.remoteUserName
                            , false);
                        $scope.setup.targetDatabase =
-                           persist.get('setupCouchTarget') || '';
+                           persist.get('setupCouchTarget') || 'database';
                        $('#targetDatabase').editable(
                            'setValue'
                            ,$scope.setup.targetDatabase
