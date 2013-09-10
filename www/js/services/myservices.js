@@ -237,7 +237,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
     var initScreen = {};
     
     initScreen["#simple"] = function() {
-        initScreen['#databases']().when( function() {
+        initScreen['#replications']().when( function() {
             $rootScope.$broadcast('initMulticap');
         });
         return VOW.kept();

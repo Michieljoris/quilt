@@ -313,7 +313,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
     }
     
     $scope.getDbs = function() {
-        $scope.connectedToSource = true;
+        $scope.connectingToSource = true;
         var urlPrefix = $('#remoteUrl').editable('getValue').remoteUrl;
         var userName = $('#remoteUserName').editable('getValue').remoteUserName;
         var userPwd = $('#remotePassword').editable('getValue').remotePassword;
@@ -328,6 +328,9 @@ function multicapCntl($scope, config, state, defaults, persist) {
                     
                     return db.dbName !== 'locations' && db.dbName !== 'persons';
                 });
+                $scope.connectedToSource = true;
+                
+                $scope.connectingToSource = false;
                 $scope.$apply();
             }
             ,function(error) {
@@ -335,6 +338,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
                      "\n\nError:\n\n" + (error.reason || ""));
                 console.log(error);
                 $scope.connectedToSource = false;
+                $scope.connectingToSource = false;
                 $scope.$apply(); 
             }
         );
@@ -408,17 +412,83 @@ function multicapCntl($scope, config, state, defaults, persist) {
         return vow.promise;
     }
     
-    function makeRep(id, local, remote, dir, params) {
-        
+    
+    function makePureRep(rep) {
+        var cleanRep = {
+            _id: rep._id
+            ,source: rep.source
+            ,target: rep.target
+            ,continuous: rep.continuous
+            ,create_target: rep.create_target
+            ,filter: rep.filter
+            ,query_params: rep.query_params
+            ,doc_ids: rep.doc_ids
+            ,user_ctx: rep.user_ctx
+        };
+        Object.keys(cleanRep).forEach(function(k) {
+            var val = cleanRep[k];
+            if (!val ||
+                ( angular.isArray(val) && val.length === 0 ) ||
+                ( angular.isObject(val) && Object.keys(val).length === 0) ||
+                ( typeof val === 'string' && val.length === 0)) 
+                delete cleanRep[k]; 
+        });
+        return cleanRep;
     }
+    
+    function validateSetup(setup) {
+        if (!setup.targetDatabase) {
+            alert('Target database not set!!');
+            return false;
+        }
+        if (!setup.remotePwd) {
+            alert('Remote pwd not set!!');
+            return false;
+        }
+        if (!setup.remoteUserName) {
+            alert('Remote user name not set!!');
+            return false;
+        }
+        if (setup.databasesToSync.length === 0) {
+            alert('Nothing to do!!!');
+            return false;
+        }
+        return true;
+    }
+    
     
     $scope.setupSimple = function() {
         console.log('Setting up CouchDB', $scope.setup);
-        //TODO take http(s):// from remoteUrl
-        var remoteUrl = 'http://' + $scope.setup.remoteUserName + ':' +
-            $scope.setup.remotePwd + '@' + $scope.setup.remoteUrl;
-        //remove targetDatabase
-        //remove reps that start with targetDatabase_
+        var setup = $scope.setup;
+        if (!validateSetup(setup)) return;
+        var url = validateUrl(setup.remoteUrl);
+        if (!url) {
+            alert('url is not valid');
+            return;   
+        }
+        var remoteUrl = url.protocol+ setup.remoteUserName + ':' +
+            setup.remotePwd + '@' + url.path;
+        console.log(remoteUrl);
+        
+        var repsToRemove = state.reps.filter(
+            function(r) {
+               return (r._id.startsWith(setup.targetDatabase));
+            }
+        ).map(function(r){
+            return r.original;
+        });
+        
+        couchapi.dbRemove(setup.targetDatabase).when(
+            function() {
+                console.log('removed targetDatabase:' + setup.targetDatabase);
+                return couchapi.docBulkRemove(repsToRemove, '_replicator');
+            }
+        ).when(
+            function(data) {
+                console.log('removed reps relating to targetDatabase:', data);
+                couchapi.dbCreate(setup.targetDatabase);
+            }
+        );
         //make targetDatabase, set permissions and roles
         
         //reps: id=targetDatabase
@@ -438,6 +508,23 @@ function multicapCntl($scope, config, state, defaults, persist) {
         // etc
    }; 
     
+    function validateUrl(url) {
+        var parsed = {};
+        if (url.startsWith('https://'))  {
+            parsed.protocol = 'https://';   
+            parsed.path = url.slice(8);
+            if (!parsed.path) return null;
+            return parsed;
+        }
+        else if (url.startsWith('http://'))  {
+            parsed.protocol = 'http://';   
+            parsed.path = url.slice(7);
+            if (!parsed.path) return null;
+            return parsed;
+        }
+        return null;
+    }
+    
     $('#remoteUrl').editable({
         unsavedclass: null,
         type: 'text',
@@ -445,8 +532,13 @@ function multicapCntl($scope, config, state, defaults, persist) {
         // value: "http://multicapdb.iriscouch.com",
         value: "http://localhost:5984",
         success: function(response, newValue) {
+            var url = validateUrl($scope.setup.remoteUrl);
+            if (!url) {
+                alert('Invalid url');
+                return;
+            }
             persist.put('setupCouchRemoteUrl', newValue);
-            $scope.getDbs();
+            $scope.setup.remoteUrl = newValue;
             $scope.$apply();
         }
     });
@@ -458,6 +550,10 @@ function multicapCntl($scope, config, state, defaults, persist) {
         // value: "http://multicapdb.iriscouch.com",
         value: "database",
         success: function(response, newValue) {
+            if (!newValue) {
+                alert('No value entered!!!');
+                return;
+            }
             $scope.setup.targetDatabase = newValue;
             persist.put('setupCouchTarget', newValue);
             $scope.$apply();
@@ -469,6 +565,10 @@ function multicapCntl($scope, config, state, defaults, persist) {
         type: 'text',
         value: state.remoteUserName,
         success: function(response, newValue) {
+            if (!newValue) {
+                alert('No value entered!!!');
+                return;
+            }
             $scope.setup.remoteUserName = newValue;
             persist.put('setupCouchUserName', newValue);
         }
@@ -479,6 +579,10 @@ function multicapCntl($scope, config, state, defaults, persist) {
         type: 'text',
         value: state.remotePassword
         ,success: function(response, newValue) {
+            if (!newValue) {
+                alert('No value entered!!!');
+                return;
+            }
             $scope.setup.remotePwd = newValue;
         }
     });
@@ -492,6 +596,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
                        updateLocationDoc();
                        $scope.setup.remoteUrl =
                            persist.get('setupCouchRemoteUrl') || 'http://localhost:5984';
+                       $scope.setup.url = validateUrl($scope.setup.remoteUrl);
                        $('#remoteUrl').editable(
                            'setValue'
                            ,$scope.setup.remoteUrl

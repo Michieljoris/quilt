@@ -131,7 +131,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#97;&#x69;&#108;&#116;&#111;:&#109;&#x69;&#x63;&#104;&#105;&#x65;&#108;jo&#x72;&#105;&#x73;&#64;&#103;&#109;&#x61;i&#108;&#46;&#99;&#111;&#x6D;">&#109;&#x69;&#x63;&#104;&#105;&#x65;&#108;jo&#x72;&#105;&#x73;&#64;&#103;&#109;&#x61;i&#108;&#46;&#99;&#111;&#x6D;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="m&#97;&#105;&#108;&#x74;&#111;:&#x6D;i&#x63;&#104;&#105;&#x65;&#x6C;j&#x6F;&#114;&#105;&#x73;&#64;&#x67;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;">&#x6D;i&#x63;&#104;&#105;&#x65;&#x6C;j&#x6F;&#114;&#105;&#x73;&#64;&#x67;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -267,8 +267,12 @@ for this app, and <a target="_blank" href="{{state.connected}}/roster">{{state.c
                     ></a>
 <p></p>
 <hr>
-<button ng-hide="connectedToSource" class="btn btn-small btn-success"
-        ng-click="getDbs()">Connect to source CouchDB instance</button>
+<button ng-hide="connectingToSource || connectedToSource" class="btn btn-small btn-success"
+        ng-click="getDbs()">
+  Connect to source CouchDB instance</button>
+  <div ng-show="connectingToSource">
+    <i class="icon-spinner icon-spin icon-medium"></i>
+    Connecting to {{setup.remoteUrl}}</div> 
 
 <div ng-show="connectedToSource">
   <div style="width:500px;">
@@ -292,8 +296,13 @@ for this app, and <a target="_blank" href="{{state.connected}}/roster">{{state.c
     </ul>
   </div>
 
-  <button class="btn btn-small btn-success"
-          ng-click="getDbs()">Refresh list of databases</button>
+  <button data-loading-text="Loading.." 
+	  ng-hide="connectingToSource" class="loading btn btn-small btn-success" 
+          ng-click="getDbs()">Refresh list of databases</button> 
+  <div ng-show="connectingToSource">
+    <i class="icon-spinner icon-spin icon-medium"></i>
+    Connecting to {{setup.remoteUrl}}</div> 
+  
 
   <hr>
   <div style="width:500px;">
@@ -310,7 +319,7 @@ for this app, and <a target="_blank" href="{{state.connected}}/roster">{{state.c
   <div style="width:500px;">
     <i>When clicking the blue button databases will be created,
       permissions set and replications setup. When this is done you
-      should be able to connect using the roster app at <b>{{state.connected}}/{{targetDatabase}}</b>.</i>
+      should be able to connect using the roster app at <b>{{state.connected}}/{{setup.targetDatabase}}</b>.</i>
   </div>
   <br>
 
@@ -318,11 +327,13 @@ for this app, and <a target="_blank" href="{{state.connected}}/roster">{{state.c
           ng-click="setupSimple()">Setup your CouchDB!!</button>
   <p></p>
 
-  <pre>{{setup.databasesToSync|json}}</pre>
-  <pre>{{setup.locationsToSync|json}}</pre>
-  <pre>{{readable|json}}</pre>
-  <pre>{{writable|json}}</pre>
-  <pre>{{locationsDoc|json}}</pre>
+  <pre>{{setup|json}}</pre>
+  <pre>{{state.reps|json}}</pre>
+  <br>
+  More..
+  <pre>readable{{readable|json}}</pre>
+  <pre>writeable{{writable|json}}</pre>
+  <pre>locationsDoc{{locationsDoc|json}}</pre>
 
 </div>
 </div>

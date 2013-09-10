@@ -57,6 +57,7 @@ var exports = {
             id: 'myLinkBlock',
             files:  [
                 'bootstrap'
+                ,'font-awesome/css/font-awesome.min'
                 ,'bootstrap-responsive'
                 ,'jquery-ui-1.10.2.custom'
                 ,'angular-ui'

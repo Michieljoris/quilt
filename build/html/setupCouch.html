@@ -30,8 +30,12 @@
                     ></a>
 <p></p>
 <hr>
-<button ng-hide="connectedToSource" class="btn btn-small btn-success"
-        ng-click="getDbs()">Connect to source CouchDB instance</button>
+<button ng-hide="connectingToSource || connectedToSource" class="btn btn-small btn-success"
+        ng-click="getDbs()">
+  Connect to source CouchDB instance</button>
+  <div ng-show="connectingToSource">
+    <i class="icon-spinner icon-spin icon-medium"></i>
+    Connecting to {{setup.remoteUrl}}</div> 
 
 <div ng-show="connectedToSource">
   <div style="width:500px;">
@@ -55,8 +59,13 @@
     </ul>
   </div>
 
-  <button class="btn btn-small btn-success"
-          ng-click="getDbs()">Refresh list of databases</button>
+  <button data-loading-text="Loading.." 
+	  ng-hide="connectingToSource" class="loading btn btn-small btn-success" 
+          ng-click="getDbs()">Refresh list of databases</button> 
+  <div ng-show="connectingToSource">
+    <i class="icon-spinner icon-spin icon-medium"></i>
+    Connecting to {{setup.remoteUrl}}</div> 
+  
 
   <hr>
   <div style="width:500px;">
@@ -73,7 +82,7 @@
   <div style="width:500px;">
     <i>When clicking the blue button databases will be created,
       permissions set and replications setup. When this is done you
-      should be able to connect using the roster app at <b>{{state.connected}}/{{targetDatabase}}</b>.</i>
+      should be able to connect using the roster app at <b>{{state.connected}}/{{setup.targetDatabase}}</b>.</i>
   </div>
   <br>
 
@@ -81,10 +90,12 @@
           ng-click="setupSimple()">Setup your CouchDB!!</button>
   <p></p>
 
-  <pre>{{setup.databasesToSync|json}}</pre>
-  <pre>{{setup.locationsToSync|json}}</pre>
-  <pre>{{readable|json}}</pre>
-  <pre>{{writable|json}}</pre>
-  <pre>{{locationsDoc|json}}</pre>
+  <pre>{{setup|json}}</pre>
+  <pre>{{state.reps|json}}</pre>
+  <br>
+  More..
+  <pre>readable{{readable|json}}</pre>
+  <pre>writeable{{writable|json}}</pre>
+  <pre>locationsDoc{{locationsDoc|json}}</pre>
 
 </div>
