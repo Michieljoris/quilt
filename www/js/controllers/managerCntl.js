@@ -16,24 +16,10 @@ function managerCntl($scope, config, state, defaults) {
         }
     });
     
-    // scrollSpy('#manmenu');
-    
     //-----------------------------------------------------
     $scope.isActive = function(screen) {
         return screen === state.activeScreen ? 'active' : '';
     };
-    
-    
-    // $scope.click = function(event) {
-    //     event.preventDefault();
-    //     // state.activeScreen = event.currentTarget.hash;
-    //     state.setActiveScreen( $scope, event.currentTarget.hash );
-    //     cookie.set('quilt_activeScreen', state.activeScreen);
-    //     if (state.activeScreen === "#simple") {
-    //         cookie.remove("quilt_advanced");
-    //         state.advanced = false;
-    //     }
-    // };
     
     $scope.config = config;
     $scope.state = state;
@@ -44,11 +30,10 @@ function managerCntl($scope, config, state, defaults) {
         state.initialize($scope);
     }
     
-    
-    
     $('#couchDBurl').editable({
         unsavedclass: null,
         type: 'text',
+        mode:'inline',
         value: config.couchDbUrl,
         success: function(response, newValue) {
             config.set({ couchDbUrl: newValue });
@@ -59,6 +44,7 @@ function managerCntl($scope, config, state, defaults) {
     $('#corsProxy').editable({
         unsavedclass: null,
         type: 'text',
+        mode:'inline',
         value: config.corsProxy,
         success: function(response, newValue) {
             config.set({ corsProxy: newValue });
@@ -68,8 +54,8 @@ function managerCntl($scope, config, state, defaults) {
     
     
     $scope.connect = function() {
-        state.initialize($scope);
         $scope.disconnected = false;
+        state.initialize($scope);
         };
     
     $scope.isSetupConnectionHelpCollapsed = true;

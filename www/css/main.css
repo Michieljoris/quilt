@@ -1259,21 +1259,22 @@ body {
     /* background: grey; */
 }
 
-#topmenu a.sublink , #topmenu-advanced a.sublink {
+#topmenu a.sublink {
     margin-top:5px;
     padding-bottom:0; 
     padding-left:1px;
     padding-right:8px;
-    font-size:10px;
+    font-size:11px;
 }
 
-#topmenu-advanced a.sublink {
-    margin-top:5px;
-    padding-bottom:0; 
-    padding-left:10px;
-    padding-right:8px;
-    font-size:12px;
-}
+#topmenu-advanced a.sublink { 
+    margin-top:5px; 
+    padding-bottom:0;  
+    padding-left:10px; 
+    padding-right:8px; 
+    font-size:13px; 
+} 
+
 #topmenu-advanced {
     margin-left:50px;
 }

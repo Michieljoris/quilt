@@ -1,10 +1,17 @@
 For windows do the following: 
 
-* Download [CouchDB][couchdb for windows]. Install, say 'Yes' when
-  asked to run the database as a service.
+* Download 
+<a
+href="http://mirror.mel.bkb.net.au/pub/apache/couchdb/binary/win/1.4.0/setup-couchdb-1.4.0_R16B01.exe">CouchDB</a>. For
+alternative download locations click <a
+href="http://www.apache.org/dyn/closer.cgi?path=/couchdb/binary/win/1.4.0/setup-couchdb-1.4.0_R16B01.exe"
+target="_blank">here</a>. Double click on the downloaded file and go
+though the install wizard. On the page 'Select Additional Tasks' leave
+both checkboxes checked.
   
 * Download this [utility][corsproxy.zip]. Unzip it somewhere and double-click
-  the cors-proxy.bat in the unzipped folder.
+  the cors-proxy.bat in the unzipped folder. If a Windows Security
+  Alert window comes up click the button 'Allow access'.
   
 * Refresh this page, or click the connect button
 
@@ -27,16 +34,18 @@ If you still can't connect this could be for the following reasons:
   You can remedy this by doing one of the following:
   
   1. Download this little [utility][corsproxy.zip]. Unzip its content
-  somewhere on you hard drive and double click the cors-proxy.bat in the unzipped
-  folder.  Under Linux install node.js first, then execute "node server.js". That should
-  work on a Mac as well. Then come back to this page and refresh
-  or click the connect button. This proxy server assumes your CouchDB
-  instance is on http;//localhost:5984<p>
-  I will then try to configure CouchDb to enable access without having to
-  use this little utility. This will only work with a CouchDB that is
-  not locked down yet with a server admin password (as is the case
-  after a fresh install). <p>
-  This is the simplest solution for a fresh install.
+  somewhere on you hard drive and double click the cors-proxy.bat in
+  the unzipped folder.  Under Linux install node.js first, then
+  execute "node server.js". That should work on a Mac as well. Then
+  come back to this page and refresh or click the connect button. This
+  proxy server assumes your CouchDB instance is on
+  http;//localhost:5984<p> I will then try to configure CouchDb to
+  enable access without having to use this little utility.  This will
+  work with a CouchDB that is either not locked down yet with a server
+  admin password (as is the case after a fresh install) and/or when
+  the app you're using now is served from a standard location such as
+  localhost:8080 or quilt.michieljoris.net. <p> This is the simplest
+  solution for a fresh install.
   
   1. Download this [file][couchdb ini file]. In windows copy this to
   C:\Program Files (x86)\Apache Software
@@ -79,10 +88,10 @@ If you still can't connect this could be for the following reasons:
   
   * Can you open the default address for the CouchDB instance in
   a browser window? For a local CouchDB this is for instance
-  [http://localhost:5984](). You should see a empty page with
+  [http://localhost:5984](http://localhost:5984). You should see a empty page with
   something like:
 
-      {"couchdb":"Welcome","uuid":"4418cad0d9bd42aabccad6cd71d1b5eb","version":"1.3.0","vendor":{"version":"1.3.0","name":"The
+      {"couchdb":"Welcome","uuid":"4418cad0d9bd42aabccad6cd71d1b5eb","version":"1.4.0","vendor":{"version":"1.4.0","name":"The
   Apache Software Foundation"}}
  
 The above tips assume you want the simplest setup possible. If you
@@ -92,11 +101,11 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. 
 
-If your setup is more complicated than above or it is not working contact me on <mailto:michieljoris@gmail.com>
+If your setup is more complicated than above or it is not working contact me on <mailto:mail@michieljoris.com>
   
-[couchdb for windows]: http://www.apache.org/dyn/closer.cgi?path=/couchdb/binary/win/1.3.1/setup-couchdb-1.3.1_R15B03-1.exe
-[couchdb for mac]: http://www.apache.org/dyn/closer.cgi?path=/couchdb/binary/mac/1.3.1/Apache-CouchDB-1.3.1.zip
-[couchdb for linux]: http://www.apache.org/dyn/closer.cgi?path=/couchdb/source/1.3.1/apache-couchdb-1.3.1.tar.gz
+[couchdb for windows]: http://www.apache.org/dyn/closer.cgi?path=/couchdb/binary/win/1.4.0/setup-couchdb-1.4.0_R16B01.exe
+[couchdb for mac]: http://www.apache.org/dyn/closer.cgi?path=/couchdb/binary/mac/1.4.0/Apache-CouchDB-1.4.0.zip
+[couchdb for linux]: http://www.apache.org/dyn/closer.cgi?path=/couchdb/source/1.4.0/apache-couchdb-1.4.0.tar.gz
 [corsproxy.zip]: cors-proxy.zip
 [couchdb ini file]: local.ini
 [local couchdb config]:http://localhost:5984/_utils/config.html

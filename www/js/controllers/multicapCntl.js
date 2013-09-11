@@ -1,4 +1,4 @@
-/*global alert:false angular:false VOW:false couchapi:false console:false  $:false*/
+/*global confirm:false prompt:false quilt:false alert:false angular:false VOW:false couchapi:false console:false  $:false*/
 
 function multicapCntl($scope, config, state, defaults, persist) {
     "use strict" ;
@@ -9,6 +9,55 @@ function multicapCntl($scope, config, state, defaults, persist) {
             names: [ "_type:'shift'" ]
             ,roles: [ "read", "write" ]
         }
+    };
+    
+    $scope.createServerAdmin = function() {
+
+        var pwd = prompt('Password?');
+        if (!pwd) return;
+        var pwd2 = prompt('Type your password again:');
+        if (pwd !== pwd2) {
+            alert('Passwords don\'t match. Server admin not created');
+            return;
+        }
+        var result = confirm('When you click OK a server admin will be created. ');
+        if (!result) return;
+        couchapi.config('admins', 'admin', pwd).when(
+            function(data) {
+                console.log(data);
+                // $scope.password = null;
+                state.initialize($scope);
+                alert('Server admin created. Log in as \'admin\' and use the password you just entered.');
+            },
+            function(data) {
+                console.log("error",data);
+                $scope.password = null;
+                alert('The admin user already exists probably. Anyway the admin user has not been added.', data);
+            }
+        );
+    };
+    
+    $scope.createPersonsDb = function() {
+        createDb('persons', ["_type:'person'", "_type:'settings'", "_type:'user'"]).when(
+            function(data) {
+                alert('Created/configured persons database');
+                console.log('Created persons database', data ); }
+            ,function(error) {
+                alert("Couldn't create or setup persons database");
+                console.log('Failed to create or setup persons database', error ); }
+        );
+        
+    };
+    
+    $scope.createLocationsDb = function() {
+        createDb('locations', ["_type:'location'"]).when(
+            function(data) {
+                alert('Created/configured locations database');
+                console.log('Created location database', data ); }
+            ,function(error) {
+                alert("Couldn't create or setup location database");
+                console.log('Failed to create or setup location database', error ); }
+        );
     };
     
     function setSecObj(locationName) {
@@ -28,32 +77,32 @@ function multicapCntl($scope, config, state, defaults, persist) {
                         modified = true;
                     }
                     if (data.members.roles &&
-                    Object.keys(data.members.roles).length > 0) {
-                    secObj.members.roles = data.members.roles;
-                }
-                else {
-                    modified = true;
-                }
-            }
-            else modified = true;
-            if (modified) {
-                couchapi.dbSecurity(secObj, "location-" + locationName).when(
-                    function(data) {
-                        console.log('SecObj of location ' +
-                                    locationName + " has been set.", data);
-                    },
-                    function(err) {
-                        console.log("Couldn't set secObj of location!!", err);
+                        Object.keys(data.members.roles).length > 0) {
+                        secObj.members.roles = data.members.roles;
                     }
-                );
-            }
+                    else {
+                        modified = true;
+                    }
+                }
+                else modified = true;
+                if (modified) {
+                    couchapi.dbSecurity(secObj, "location-" + locationName).when(
+                        function(data) {
+                            console.log('SecObj of location ' +
+                                        locationName + " has been set.", data);
+                        },
+                        function(err) {
+                            console.log("Couldn't set secObj of location!!", err);
+                        }
+                    );
+                }
 
 
-        },
+            },
             function(err) {
                 console.log('Database doesn\'t exist:' + locationName, err);
                 $scope.$apply();
-            }
+                }
         );
     }
     
@@ -64,12 +113,12 @@ function multicapCntl($scope, config, state, defaults, persist) {
         if (!match || match[0].length !== locationName.length) {
             $scope.error = 'Illegal character. Use only alphabetical, numeral or space';
             setTimeout(function() {
-                $scope.error = "";
+                    $scope.error = "";
             },3000);
             return;
         }
         var dbName = locationName.replace(/ /g, '-').toLowerCase();
-        couchapi.dbCreate('location-' + dbName).when(
+        createDb('location-' + dbName, ["_type:'shift',_location:'" + dbName + "'"] ).when(
             function(data) {
                 console.log(data);
                 $scope.newLocationShouldBeOpen = false;
@@ -115,7 +164,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
                     var locationsDoc = {
                         _id: 'locations'
                     };
-                    vow.keep(locationsDoc);
+                        vow.keep(locationsDoc);
                 }
             );
         }
@@ -242,7 +291,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
         }).forEach(function(locationName) {
             vows.push(couchapi.dbInfo(locationName));
         });
-        return VOW.any(vows);
+            return VOW.any(vows);
     }
     
     function getSession(userName, userPwd) {
@@ -267,6 +316,8 @@ function multicapCntl($scope, config, state, defaults, persist) {
                     'setValue'
                     ,data.userCtx.name
                     , false);
+                $scope.setup.remoteUsername = data.userCtx.name;
+                $scope.$apply();
             },
             function(err) {
                 console.log('error getting session', err);
@@ -310,7 +361,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
             }
         );
         return vow.promise;
-    }
+        }
     
     $scope.getDbs = function() {
         $scope.connectingToSource = true;
@@ -325,7 +376,6 @@ function multicapCntl($scope, config, state, defaults, persist) {
             function(data) {
                 $scope.setup.databasesToSync = data;
                 $scope.setup.locationsToSync = data.filter(function(db) {
-                    
                     return db.dbName !== 'locations' && db.dbName !== 'persons';
                 });
                 $scope.connectedToSource = true;
@@ -335,7 +385,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
             }
             ,function(error) {
                 alert("Couldn't fetch info. " +
-                     "\n\nError:\n\n" + (error.reason || ""));
+                      "\n\nError:\n\n" + (error.reason || ""));
                 console.log(error);
                 $scope.connectedToSource = false;
                 $scope.connectingToSource = false;
@@ -370,11 +420,13 @@ function multicapCntl($scope, config, state, defaults, persist) {
                         return d.db_name;
                     });
                     console.log('readable:',readableDbs);
-                    if (readableDbs.indexOf('locations') === -1 ||
-                        readableDbs.indexOf('persons') === -1)
-                        return VOW.broken({ reason:'You have no read permission for the locations and/or persons database. Or they might not exist.'});
+                    //TODO uncomment, just for testing
+                    // if (readableDbs.indexOf('locations') === -1 ||
+                    //     readableDbs.indexOf('persons') === -1)
+                    //     return VOW.broken({ reason:'You have no read permission for the locations and/or persons database. Or they might not exist.'});
                         
-                    else return getSecObjs(readableDbs);
+                    // else
+                        return getSecObjs(readableDbs);
                 })
             .when(
                 function(data) {
@@ -386,7 +438,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
                 })
             .when(
                 function(locationsDoc) {
-                    console.log('locations doc:', locationsDoc);
+                        console.log('locations doc:', locationsDoc);
                         
                     var databasesToSync = readableDbs.map(function(dbName) {
                         var result =  locationsDoc[dbName.slice(9)] || {};
@@ -407,34 +459,34 @@ function multicapCntl($scope, config, state, defaults, persist) {
                     $.couch.urlPrefix = oldUrlPrefix;
                     // alert(error);
                     vow.breek(error);
-                }
+                    }
             );
         return vow.promise;
     }
     
     
-    function makePureRep(rep) {
-        var cleanRep = {
-            _id: rep._id
-            ,source: rep.source
-            ,target: rep.target
-            ,continuous: rep.continuous
-            ,create_target: rep.create_target
-            ,filter: rep.filter
-            ,query_params: rep.query_params
-            ,doc_ids: rep.doc_ids
-            ,user_ctx: rep.user_ctx
-        };
-        Object.keys(cleanRep).forEach(function(k) {
-            var val = cleanRep[k];
-            if (!val ||
-                ( angular.isArray(val) && val.length === 0 ) ||
-                ( angular.isObject(val) && Object.keys(val).length === 0) ||
-                ( typeof val === 'string' && val.length === 0)) 
-                delete cleanRep[k]; 
-        });
-        return cleanRep;
-    }
+    // function makePureRep(rep) {
+    //     var cleanRep = {
+    //         _id: rep._id
+    //         ,source: rep.source
+    //         ,target: rep.target
+    //         ,continuous: rep.continuous
+    //         ,create_target: rep.create_target
+    //         ,filter: rep.filter
+    //         ,query_params: rep.query_params
+    //         ,doc_ids: rep.doc_ids
+    //         ,user_ctx: rep.user_ctx
+    //     };
+    //     Object.keys(cleanRep).forEach(function(k) {
+    //         var val = cleanRep[k];
+    //         if (!val ||
+    //             ( angular.isArray(val) && val.length === 0 ) ||
+    //             ( angular.isObject(val) && Object.keys(val).length === 0) ||
+    //             ( typeof val === 'string' && val.length === 0)) 
+    //             delete cleanRep[k]; 
+    //     });
+    //     return cleanRep;
+    // }
     
     function validateSetup(setup) {
         if (!setup.targetDatabase) {
@@ -456,6 +508,121 @@ function multicapCntl($scope, config, state, defaults, persist) {
         return true;
     }
     
+    function removeDb(name) {
+        var vow = VOW.make();
+        couchapi.dbRemove(name).when(
+            function(data) {
+                console.log('removed database:' + name);
+                vow.keep(data);
+            }
+            ,function(error) {
+                console.log('Doesn\'t exist:' + name);
+                vow.keep(error);
+            }
+        );
+            return vow.promise;
+    }
+    
+    
+    function setDesign(dbName) {
+        var docName = "design";
+        function update(ddoc) {
+            ddoc.validate_doc_update = quilt.vdu;
+            ddoc.lib = ddoc.lib || {};
+            ddoc.lib.validator = quilt.validator;
+            ddoc.filters = ddoc.filters || {};
+            ddoc.filters.filter = quilt.filter;
+            return ddoc;
+        }
+        var vow = VOW.make();
+        function save(designDoc) {
+            console.log('saving design doc', designDoc);
+            couchapi.docSave(designDoc, dbName).when(
+                vow.keep,
+                vow.breek
+            );
+        }
+        couchapi.docGet('_design/' + docName, dbName).when(
+            function(designDoc) {
+                save(update(designDoc));
+            },
+            function() {
+                    save(update({ _id: '_design/' + docName }));
+            }
+        );
+        return vow.promise;
+    }
+    
+    function createDb(dbName, rules) {
+        var vows = [];
+        vows.push(couchapi.dbCreate(dbName));
+        vows.push(couchapi.dbInfo(dbName));
+        return VOW.first(vows).when(
+            function() {
+                var secObj = {
+                    members: {
+                        names: rules
+                        ,roles: [ "read", "write", "read_" + dbName, "write_" + dbName ]
+                    }
+                };
+                return couchapi.dbSecurity(secObj, dbName);
+            }
+        ).when(
+            function() {
+                return setDesign(dbName);
+            }
+        );
+    }
+    
+    function makeReplications(setup) {
+        var id = setup.targetDatabase + '_';
+        var remoteUrl = setup.url.protocol + setup.remoteUserName + ":" +
+            setup.remotePwd + '@' + setup.url.path + '/';
+        var reps = [];
+        setup.databasesToSync.forEach(function(db) {
+            var rep = {
+                _id: id + 'pull_' + db.dbName
+                ,source: remoteUrl + db.dbName
+                ,target: setup.targetDatabase
+                ,continuous: true
+                ,user_ctx: { "roles": [ "_admin" ]}
+            };
+            var repPush = angular.copy(rep);
+            delete rep.user_ctx;
+            
+            if (db.dbName === 'locations') {
+                rep.doc_ids = setup.locationsToSync.map(function(l) {
+                    return l.name;
+                });
+            }
+            else if (db.dbName === 'persons') {
+                repPush.filter = 'design/filter;';
+                repPush.query = { type: [ "user", "person" , "settings"] };
+            }
+            else {
+                repPush.filter = 'design/filter';
+                repPush.query = { type:'shift' , location: db.name};
+            }
+            
+            reps.push(rep);
+            if (db.sync === 'sync') {
+                repPush.source = rep.target;
+                repPush.target = rep.source;
+                reps.push(repPush);
+            }
+        });
+        
+        reps.push({
+            _id: id + 'push_users'
+            ,source: setup.targetDatabase
+            ,target: '_users'
+            ,continuous: true
+            ,filter: 'design/filter'
+            ,query_params: { type: 'user' }
+            ,user_ctx: { "roles": [ "_admin" ]}
+        });
+        return reps;
+    }
     
     $scope.setupSimple = function() {
         console.log('Setting up CouchDB', $scope.setup);
@@ -472,41 +639,44 @@ function multicapCntl($scope, config, state, defaults, persist) {
         
         var repsToRemove = state.reps.filter(
             function(r) {
-               return (r._id.startsWith(setup.targetDatabase));
+                return setup.removeAllReps ||
+                    setup.targetDatabase === r.source ||
+                    setup.targetDatabase === r.target ||
+                    $scope.state.connected + '/' + setup.targetDatabase === r.source ||
+                    $scope.state.connected + '/' + setup.targetDatabase === r.target;
             }
         ).map(function(r){
             return r.original;
         });
+        var vows = [];
+        // vows.push(removeDb('locations'));
+        // vows.push(removeDb('persons'));
+        vows.push(removeDb(setup.targetDatabase));
+        vows.push(couchapi.docBulkRemove(repsToRemove, '_replicator'));
+        VOW.every(vows)
+            .when(
+                function(data) {
+                    console.log('Removed target, persons and locations databases, and replications', data);
+                    return createDb(setup.targetDatabase, [ "_type:'shift'", "_type:'location'", "_type:'person'",
+                                                            "_type:'user'", "_type:'settings'"]);
+                }
+            ).when(
+                function(data) {
+                    console.log('Created target database:', data);
+                    var repsToCommit = makeReplications(setup);
+                    return VOW.kept(repsToCommit);
+                    // return couchapi.docBulkSave(repsToCommit, '_replicator');
+                }
+            ).when(
+                function(data) {
+                    console.log('Successfully setup database', data );
+                }
+                ,function(error) {
+                    console.log('ERROR', error);
+                }
+            );
         
-        couchapi.dbRemove(setup.targetDatabase).when(
-            function() {
-                console.log('removed targetDatabase:' + setup.targetDatabase);
-                return couchapi.docBulkRemove(repsToRemove, '_replicator');
-            }
-        ).when(
-            function(data) {
-                console.log('removed reps relating to targetDatabase:', data);
-                couchapi.dbCreate(setup.targetDatabase);
-            }
-        );
-        //make targetDatabase, set permissions and roles
-        
-        //reps: id=targetDatabase
-        //id_users: targetDatabase > local _users (filter type=user)
-        
-        //id_pull_locations: remote locations > targetDatabase (filter requested locations)
-        //id_push_locations: targetDatabase > remote locations (if sync= "sync", filter requested locations)
-        
-        //id_pull_persons: remote persons > targetDatabase 
-        //id_push_persons: targetDatabase > remote persons (if sync= "sync", use filter for type=user,person,setting)
-        
-        //id_pull_houseName1: remote house database1 > targetDatabase
-        //id_push_houseName1: targetDatabase > remoteHouseDatabase1 ( if sync="sync" filter=shift)
-        
-        //id_pull_houseName2: remote house database2 > targetDatabase
-        //id_push_houseName2: targetDatabase > remoteHouseDatabase2 ( if sync="sync" filter=shift)
-        // etc
-   }; 
+    }; 
     
     function validateUrl(url) {
         var parsed = {};
@@ -537,8 +707,8 @@ function multicapCntl($scope, config, state, defaults, persist) {
                 alert('Invalid url');
                 return;
             }
-            persist.put('setupCouchRemoteUrl', newValue);
-            $scope.setup.remoteUrl = newValue;
+            persist.put('setupCouchRemoteUrl', newValue.trim());
+            $scope.setup.remoteUrl = newValue.trim();
             $scope.$apply();
         }
     });
@@ -554,8 +724,8 @@ function multicapCntl($scope, config, state, defaults, persist) {
                 alert('No value entered!!!');
                 return;
             }
-            $scope.setup.targetDatabase = newValue;
-            persist.put('setupCouchTarget', newValue);
+            $scope.setup.targetDatabase = newValue.trim();
+            persist.put('setupCouchTarget', newValue.trim());
             $scope.$apply();
         }
     });
@@ -569,8 +739,9 @@ function multicapCntl($scope, config, state, defaults, persist) {
                 alert('No value entered!!!');
                 return;
             }
-            $scope.setup.remoteUserName = newValue;
-            persist.put('setupCouchUserName', newValue);
+            $scope.setup.remoteUserName = newValue.trim();
+            persist.put('setupCouchUserName', newValue.trim());
+            $scope.$apply();
         }
     });
     
@@ -584,6 +755,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
                 return;
             }
             $scope.setup.remotePwd = newValue;
+            $scope.$apply();
         }
     });
     
@@ -607,14 +779,22 @@ function multicapCntl($scope, config, state, defaults, persist) {
                            'setValue'
                            ,$scope.setup.remoteUserName
                            , false);
+                       $scope.setup.remotePwd = $scope.setup.remoteUserName;
+                       $('#remotePassword').editable(
+                           'setValue'
+                           ,$scope.setup.remotePwd
+                           , false);
                        $scope.setup.targetDatabase =
                            persist.get('setupCouchTarget') || 'database';
                        $('#targetDatabase').editable(
                            'setValue'
                            ,$scope.setup.targetDatabase
                            , false);
+                       $scope.setup.removeAllReps = true;
                    });
     }
+    
+    
     
     
 }

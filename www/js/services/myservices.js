@@ -8,7 +8,8 @@ angular.module("myApp").factory('defaults', function() {
     return {
         couchDbUrl : "http://localhost:5984"
         ,corsProxy : "http://localhost:1234"
-        ,timeout: 60000
+        // ,timeout: 60000
+        ,timeout: 5000
         ,firstScreen: '#info'
         ,logBytes: 3000
         // ,logRefresh: 2000 //in ms
@@ -59,6 +60,8 @@ angular.module("myApp").factory('config', function(defaults) {
 //state
 angular.module("myApp").factory('state', function(defaults, config, persist, $rootScope) {
     var state = {};
+    state.config = config;
+    state.testing = true;
     state.pwds = {};
     function checkSetting(setting, data)  {
         var value = data[setting[0]] ? data[setting[0]][setting[1]] : '';
@@ -110,17 +113,53 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         return vow.promise;
     }
     
-    function tryUrl(url) {
-        console.log('trying ' , url);
-        var vow = VOW.make();
-        $.couch.urlPrefix = url;
+    function tryProxy(proxyUrl, vow) {
+        couchapi.withCredentials(true);
+        $.couch.urlPrefix = proxyUrl;
+        var timedout;
+        var timer = setTimeout(function() {
+            console.log('timedout corsproxy url');
+            timedout = true;
+            clearTimeout(timer);
+            vow.breek('timedout corsproxy url');
+        }, defaults.timeout);
+        
         couchapi.info().when(
             function(data) {
-                // state.allDbs = data;
-                vow.keep(url);
+                clearTimeout(timer);
+                vow.keep(proxyUrl);
             },
             function(err) {
-                vow.break(err);
+                clearTimeout(timer);
+                console.log('failed corsproxy url', proxyUrl);
+                vow.breek(err);
+            }
+        );
+    }
+    
+    function tryUrls(directUrl, proxyUrl) {
+        console.log('trying ' , directUrl);
+        var vow = VOW.make();
+        var timedout;
+        $.couch.urlPrefix = directUrl;
+        var timer = setTimeout(function() {
+            console.log('timedout couchdb url');
+            timedout = true;
+            clearTimeout(timer);
+            tryProxy(proxyUrl, vow);
+        }, defaults.timeout);
+        
+        couchapi.info().when(
+            function(data) {
+                if (timedout) return;
+                clearTimeout(timer);
+                vow.keep(directUrl);
+            },
+            function(err) {
+                if (timedout) return;
+                console.log('failed couchdb url');
+                clearTimeout(timer);
+                tryProxy(proxyUrl, vow);
             }
         );
         return vow.promise;
@@ -128,7 +167,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
     
     state.initialize = function($scope) {
         state.connecting = true;
-        init($scope).when(
+        init().when(
             function() {
                 state.initialized = true;
                 state.connecting = false;
@@ -141,16 +180,16 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
         var vow = VOW.make();
         var timer = setTimeout(function() {
             console.log('timedout');
-            vow.keep();
             state.connected = false;
-        }, defaults.timeout);
-         state.userShortList = [];
+            state.disconnected = false;
+            vow.keep();
+        }, defaults.timeout * 3);
+        state.userShortList = [];
         couchapi.withCredentials(true);
-        VOW.first([tryUrl(config.couchDbUrl), tryUrl(config.corsProxy)]).when(
+        tryUrls(config.couchDbUrl, config.corsProxy).when(
             function(url) {
                 $.couch.urlPrefix = url;
                 state.dbUrl = state.connected = url;
-                // return persist.init(url, 'create', state);
                 return persist.init(url, false, state);
             }
         ).when(
@@ -164,12 +203,13 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
             } 
         ).when(
             function(sessionInfo) {
+                console.log('SESSIONINFO', sessionInfo);
                 if (sessionInfo && sessionInfo.userCtx && sessionInfo.userCtx.name) {
                     state.user = sessionInfo.userCtx;
                     state.userShortList = persist.get('userShortList') || [];
                     if (state.userShortList.indexOf('Other..') === -1) {
                         state.userShortList = ['Other..'].concat(state.userShortList);
-                       } 
+                    } 
                     if (state.userShortList.indexOf(state.user.name) === -1) {
                         state.userShortList.push(state.user.name);
                         persist.put('userShortList', state.userShortList);
@@ -187,7 +227,7 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 console.log('cors configured?', state.corsConfigured);
                 var url = state.connected; 
                 state.advanced = cookie.get('quilt_advanced');
-                    var activeScreen;
+                var activeScreen;
                 if (url.indexOf('1234') !== -1)  {
                     state.maybeCors = true;
                     activeScreen = '#enableCors';
@@ -205,32 +245,35 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 
                 return initScreen['#allUsers']();
                 // couchapi.withCredentials(false);
-            }).when(
-                function() {
-                    return initScreen['#databases']();
-                }).when(
-                    function() {
-                        if (state.activeScreen !== '#allUsers' &&
-                            state.activeScreen !== '#databases' &&
-                            initScreen[state.activeScreen])
-                            return initScreen[state.activeScreen]();
-                        else return VOW.kept();
-                    }
-                ).when(
-                    function(data) {
-                        console.log('All good!!!' , data);
-                        clearTimeout(timer);
-                        vow.keep(data);
-                    },
-                    function(err) {
-                        state.connected = false;
-                        clearTimeout(timer);
-                        vow.keep(err);
-                        // couchapi.withCredentials(false);
-                    }
-                );
+            }
+        ).when(
+            function() {
+                return initScreen['#databases']();
+            }
+        ).when(
+            function() {
+                if (state.activeScreen !== '#allUsers' &&
+                    state.activeScreen !== '#databases' &&
+                    initScreen[state.activeScreen])
+                    return initScreen[state.activeScreen]();
+                else return VOW.kept();
+            }
+        ).when(
+            function(data) {
+                console.log('All good!!!' , state);
+                clearTimeout(timer);
+                vow.keep(data);
+            },
+            function(err) {
+                state.connected = false;
+                clearTimeout(timer);
+                console.log('Error!!', err);
+                vow.keep('Error!!', err);
+                // couchapi.withCredentials(false);
+            }
+        );
         
-            return vow.promise;
+        return vow.promise;
     } 
     //end of init
     

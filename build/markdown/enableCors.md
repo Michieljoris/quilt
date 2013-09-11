@@ -4,9 +4,9 @@ origins. But to configure CouchDB for our needs we need access to
 it. To enable this access you have to install either a 'cors proxy' or
 configure CouchDB manually. 
 
-If you have a cors proxy running my recommendation 
-is to 'enable cors' for the CouchDB server. See below for other 
-options. 
+If you are accessing CouchDB via a proxy <span
+ng-show="state.maybeCors">(it seems you are)</span> you need to
+'enable cors' for the CouchDB server. See below for another option.
 
 <p ng-show="state.corsConfigured">
 It looks like your CouchDB is configured for cors access 
@@ -31,11 +31,7 @@ directly a certain number of settings need to be applied.
 <p><p>	
 
 <button class="btn btn-small btn-primary" ng-click="enableCors($event)">
-Automatically apply cors settings to CouchDB</button>
-<p>
-For info on how to do this manually please <a href="#"
-ng-click="reset($event)">disconnect</a> and look at the help on how to
-enable access to CouchDB.
+Apply cors settings to CouchDB (recommended)</button>
 <p>
 
 <a  ng-click="isCorsSettingsCollapsed =
@@ -45,43 +41,40 @@ enable access to CouchDB.
 <pre>{{defaults.corsSettings | json}}</pre>
 </div>
 
+After applying cors settings to your CouchDB instance you can use the
+roster app and/or this app to access the databases, even when they're
+not served from your local CouchDB.
+
 </div>
 
 --------------------------------------------
-
-###Other options:
-
-* Other than configuring your CouchDB for cors access, there is a
-second option. You can choose
-not too modify CouchDB at all. But you will have to have a cors proxy
-running in the background at all times so the roster app and this page
-can access the database. <span ng-show="state.maybeCors">
-It looks like we're accessing CouchDB through cors proxy at the
-moment. 
-</span> 
-
-  For info on how install to install this proxy <a href="#" ng-click="reset($event)">disconnect</a> and look at the help on how to enable access to CouchDB.
-
-1. The third option is to serve the roster app and this app from
-CouchDB, then they both come from the same domain, and the problem is
+Instead of enabling cors on the CouchDb instance you can
+serve the roster app and this app directly from
+CouchDB, then they both come from the same domain, and the problem is also
 solved. 
 <span ng-show="state.servedFromCouchDb">
 It looks like this app is already server from CouchDB.	
 </span>
-<span ng-hide="state.servedFromCouchDb">
+
 <span ng-hide="state.configAccessible">
 <b>Please click the button right top and log in with server admin
 credentials so I can replicate this and the roster app to your CouchDB.</b>
 </span>
+
 <span ng-show="state.configAccessible">
-  To make this happen please click the button:<br><br>
+  To make this happen please click the button:<p></p>
 <button class="btn btn-small btn-primary" ng-click="enableCors($event)">
 Replicate this app and the roster app to your CouchDB</button>
 </span>
 </span>
 
   Go to <a href="{{state.connected}}/quilt">{{state.connected}}/quilt</a>
-for this app, and <a target="_blank" href="{{state.connected}}/roster">{{state.connected}}/roster</a> for the roster.
+for this app, and <a target="_blank"
+href="{{state.connected}}/roster">{{state.connected}}/roster</a> for
+the roster.
+
+
+
 
 
 	

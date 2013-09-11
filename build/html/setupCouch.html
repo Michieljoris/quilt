@@ -1,101 +1,179 @@
-<span ng-show="state.partyMode">
-  Your CouchDB is in party mode as it's called. Which means there is no
-  server admin configured. This makes your database quite insecure. It
-  is not strictly necessary, but highly recommended to create a server
-  admin. Please click the button to do so.
-  <button class="btn btn-small btn-primary" ng-click="createServerAdmin()">Log
-    in your CouchDB</button>
-</span>
-<div style="width:500px;">
-  <i>Please edit the url of the CouchDB instance you want to use as
-    the source. Leave the default if you don't know what to fill in
-    here.
-  </i>
+<div ng-show="state.configAccessible && !state.user">
+  <div class="row" >
+    <b class="span5" style="color:red;">
+      Your CouchDB is in party mode. Which means there is no
+      server admin configured. This makes your database quite insecure. It
+      is not strictly necessary, but highly recommended to create a server
+      admin. Please click the button to do so.
+    </b>
+    <div class="span7">
+      <button class="btn btn-small btn-primary"
+              ng-click="createServerAdmin()">Create server
+	admin</button>
+    </div>
+  </div>
+  <hr >
 </div>
-<p></p>
 
-<b>Source CouchDB:</b> <a href="#" id="remoteUrl" data-type="text"></a> <br>
-<hr>
-<div style="width:500px;">
-  <i>Please fill in user name and password for the source CouchDB
-    instance. Don't use the user name and pwd of the server admin
-    account of the CouchDB instance you're trying to set up. If you
-    leave either one blank an existing session is used if found,
-    however a password is needed to setup CouchDB (blue button).</i>
+
+<div class="row">
+  <div class="span5" >
+    <i>Please edit the url of the CouchDB instance you want to use as
+      the source. Leave the default if you don't know what to fill in
+      here.
+    </i>
+  </div>
+  <div class="span7">
+    <b>Source CouchDB:</b> <a href="#" id="remoteUrl"
+                              data-type="text"></a>
+  </div>
 </div>
-<br>
 
-<b>User name:</b> <a href="#" id="remoteUserName" data-type="text" ></a> <br>
-<b>Password:</b> <a href="#" id="remotePassword" data-type="password"
-                    ></a>
-<p></p>
 <hr>
+
+<div class="row">
+
+  <div class="span5">
+    <i>Please fill in user name and password for the source CouchDB
+      instance. Don't use the user name and pwd of the server admin
+      account of the CouchDB instance you're trying to set up. If you
+      leave either one blank an existing session is used if found,
+      however a password is needed to setup CouchDB. </i>
+  </div>
+  <div class="span7">
+    <b>User name:</b> <a href="#" id="remoteUserName" data-type="text" ></a> <br>
+    <b>Password:</b> <a href="#" id="remotePassword" data-type="password"
+                        ></a>
+  </div>
+</div>
+<hr>
+
 <button ng-hide="connectingToSource || connectedToSource" class="btn btn-small btn-success"
         ng-click="getDbs()">
   Connect to source CouchDB instance</button>
-  <div ng-show="connectingToSource">
-    <i class="icon-spinner icon-spin icon-medium"></i>
-    Connecting to {{setup.remoteUrl}}</div> 
+<div ng-show="connectingToSource && !connectedToSource">
+  <i class="icon-spinner icon-spin icon-medium"></i>
+  Connecting to {{setup.remoteUrl}}</div>
 
 <div ng-show="connectedToSource">
-  <div style="width:500px;">
-    <i>
-      Tick the locations that you want to synchronize
-      with <b>{{targetDatabase}}</b>. If you're not getting all the
-      databases you're expecting modify user and password or the
-      source url and click the refresh button.
-    </i>
-  </div>
-  <br>
-  <div>
-    <ul class="unstyled">
-      <li ng-repeat="locationToSync in setup.locationsToSync">
-        <label class="checkbox">
-          <input type="checkbox"
-                 ng-model="locationToSync.checked">
-          {{locationToSync.name}} ({{locationToSync.sync}})
-        </label>
-      </li>
-    </ul>
+  <div class="row">
+    <div class="span5">
+      <i>
+        Tick the locations that you want to synchronize
+        with <b>{{setup.targetDatabase}}</b>.       </i>
+      <br><br>
+    </div>
+    <div class="span7">
+      <ul class="unstyled">
+        <li ng-repeat="locationToSync in setup.locationsToSync">
+          <label class="checkbox">
+            <input type="checkbox"
+                   ng-model="locationToSync.checked">
+            {{locationToSync.name}} ({{locationToSync.sync}})
+          </label>
+        </li>
+      </ul>
+    </div>
   </div>
 
-  <button data-loading-text="Loading.." 
-	  ng-hide="connectingToSource" class="loading btn btn-small btn-success" 
-          ng-click="getDbs()">Refresh list of databases</button> 
-  <div ng-show="connectingToSource">
-    <i class="icon-spinner icon-spin icon-medium"></i>
-    Connecting to {{setup.remoteUrl}}</div> 
-  
+  <div class="row">
+    <div class="span5">
+      <i>
+        If you're not getting all the
+        databases you're expecting modify user and password or the
+        source url and click the refresh button.
+      </i>
+    </div>
+    <div class="span7">
+      <button ng-hide="connectingToSource" class="loading btn btn-small btn-success"
+              ng-click="getDbs()">Refresh list of databases</button>
+      <div ng-show="connectingToSource">
+        <i class="icon-spinner icon-spin icon-medium"></i>
+        Connecting to {{setup.remoteUrl}}</div>
+    </div>
+  </div>
 
   <hr>
-  <div style="width:500px;">
-    <i>
-      Edit the name of the database you want to create at
-      <b> {{state.connected}}</b>. Leave the default if you don't know
-      what to fill in here.
-    </i>
+  <div class="row">
+    <div class="span5">
+      <i>
+        Edit the name of the database you want to create at
+        <b> {{state.connected}}</b>. Leave the default if you don't know
+        what to fill in here.
+      </i>
+    </div>
+    <div class="span7">
+      <b>Target database:</b> <a href="#" id="targetDatabase"
+                                 data-type="text"></a>
+    </div>
   </div>
   <br>
-  <b>Target database:</b> <a href="#" id="targetDatabase"
-                             data-type="text"></a> <br>
-  <hr>
-  <div style="width:500px;">
-    <i>When clicking the blue button databases will be created,
-      permissions set and replications setup. When this is done you
-      should be able to connect using the roster app at <b>{{state.connected}}/{{setup.targetDatabase}}</b>.</i>
+  <div class="row">
+    <div class="span5">
+      <i>
+        If you're installing to an existing CouchDB instance and you
+        think there are already replications set up, uncheck the
+        this checkbox. If this is a new CouchDB instance, or it's
+        not used for anything else than the roster app, leave checked.
+      </i>
+    </div>
+    <div class="span7">
+      <label class="checkbox">
+        <input type="checkbox"
+               ng-model="setup.removeAllReps">
+        Remove all current replications
+      </label>
+    </div>
   </div>
   <br>
+  <div class="row">
+    <div class="span5">
+      <i>
+        This option will synchronize the roster app and this app
+        (quilt) to your CouchDB instance. Uncheck if you don't want
+        this. Both can still be accessed via the
+        internet: <a href="http://quilt.michieljoris.net">quilt</a>
+        and <a href="http://multicap.iriscouch.com" >roster app</a>.
+        If you leave it checked these apps can be accessed locally
+        at <a href="{{state.connected}}/quilt">quilt</a>
+        and <a href="{{state.connected}}/roster" >roster app</a>
+      </i>
+    </div>
+    <div class="span7">
+      <label class="checkbox">
+        <input type="checkbox"
+               ng-model="setup.installApps">
 
-  <button class="btn btn-small btn-primary"
-          ng-click="setupSimple()">Setup your CouchDB!!</button>
+        Setup a copy of the roster app and this app on your CouchDB instance
+      </label>
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <div class="span5">
+      <i>When clicking the blue button databases will be created,
+        permissions set and replications setup. When this is done you
+        should be able to connect using
+        the <a href="http://multicap.iriscouch.com" >roster app</a>.
+        In the roster app click the database icon left top and fill
+        in <b>{{state.connected}}</b> for the url
+        and <b>{{setup.targetDatabase}}</b> for the database. Log in
+        with the username and pwd you used here to set it all up.</i>
+    </div>
+    <div class="span7">
+      <button class="btn btn-small btn-primary"
+              ng-click="setupSimple()">Setup your CouchDB!!</button>
+    </div>
+  </div>
   <p></p>
-
-  <pre>{{setup|json}}</pre>
-  <pre>{{state.reps|json}}</pre>
-  <br>
-  More..
-  <pre>readable{{readable|json}}</pre>
-  <pre>writeable{{writable|json}}</pre>
-  <pre>locationsDoc{{locationsDoc|json}}</pre>
+  <div ng-show="state.testing">
+    <pre>{{setup|json}}</pre>
+    <pre>{{state.reps|json}}</pre>
+    <br>
+    More..
+    <pre>readable{{readable|json}}</pre>
+    <pre>writeable{{writable|json}}</pre>
+    <pre>locationsDoc{{locationsDoc|json}}</pre>
+  </div>
 
 </div>

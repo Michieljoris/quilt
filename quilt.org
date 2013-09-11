@@ -1,4 +1,15 @@
+* uncomment line 397 search for 'testing' for line 
+* location doc id has to be same as dbname without location_ 
+* check setup on windows  
+
+* set timeout of connection to one minute 
+* set allow-origin
+to all possible locations quilt could be server from and then zip it
+up for download
+* set state.testing=false
+* force https!  
 * TODO
+** add query to database table  
 ** regex the urls entered
 url ending in letter after portnumber hangs
 maybe do a timeout that resolves the promise in state.init ?
@@ -41,6 +52,7 @@ origins:*
   
 * using filters in replication 
   Invoke them as follows;
+  
 {"source":"http://example.org/example-database","target":"http://admin:password@127.0.0.1:5984/example-database", "filter":"myddoc/myfilter"}
 You can even pass arguments to them;
 

@@ -149,7 +149,7 @@ var exports = {
                     ,   'controllers/testCntl'
                     ,'controllers/quiltCntl'
                     ,'controllers/multicapCntl'
-                    
+                    ,'design'
                     // ,'controllers/treeCntl'
                 ],
                 path: 'js/'

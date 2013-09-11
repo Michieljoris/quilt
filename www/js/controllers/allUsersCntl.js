@@ -277,6 +277,7 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
             function(data) {
                 console.log(data);
                 $scope.password = null;
+                delete state.allUsers;
                 state.initialize($scope);
             },
             function(data) {
@@ -383,11 +384,14 @@ angular.module("myApp").controller("allUsersCntl", function ($scope, $location, 
 
         VOW.every(vows).when(
             function(data) {
+                delete state.allUsers;
                 state.initialize($scope);
                 console.log(data);
             },
             function(data) {
                 console.log("Error removing at least one of the server admins selected",data);
+                delete state.user;
+                delete state.allUsers;
                 state.initialize($scope);
             }
         );

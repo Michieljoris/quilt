@@ -1,26 +1,45 @@
-<div ng-hide="disconnected || state.connecting"> 
-I have tried to connect to CouchDB with the following two addresses:
+<div ng-hide="state.disconnected || state.connecting">
+  I have tried to connect to CouchDB with the following two addresses:
 </div>
 
-<div ng-show="state.connecting"> 
-I am trying to connect to the following addresses:
+<div ng-show="state.connecting">
+  I am trying to connect to the following addresses:
 </div>
 
 
-<div ng-show="disconnected"> Please enter the urls of the CouchDB you want to try to connect to:</div>
+<div ng-show="!state.connecting && state.disconnected"> Please enter the urls of the CouchDB you want to try to connect to:</div>
 <p></p>
 - <a href="#" id="couchDBurl" data-type="text"></a> (CouchDB)
 <br>
-- <a href="#" id="corsProxy" data-type="text" ></a> (Cors proxy)
+- <a href="#" id="corsProxy" data-type="text" ></a> (Cors Proxy)
 
 <p></p>
-<div ng-hide="disconnected || state.connecting">
-Neither of them gave back a valid response.
+<div ng-show="state.connecting">
+  I will give up after one minute of waiting. To try again click the connect
+  button or refresh the page. Correct the addresses first if necessary (by clicking on
+  them).
+  <p></p>
+  You can also click on the text 'Connect to CouchDB' left top. Some
+  previous addresses tried earlier might be listed. 
+  <p></p>
+  Default address of CouchDB is http://localhost:5984
+  <p></p>
+</div>
 
-Please correct them (by clicking on them) and then click the connect
-button or refresh the page.
+
+<div ng-hide="state.disconnected || state.connecting">
+  Neither of them gave back a valid response.
+  <p></p>
+  Please correct them (by clicking on them) and then click the connect
+  button or refresh the page.
+  <p></p>
+  You can also click on the text 'Connect to CouchDB' left top. Some
+  previous addresses tried earlier might be listed. 
+  <p></p>
+  Default address of CouchDB is http://localhost:5984
+  <p>
 </div>
 
 <button class="btn btn-small btn-primary" ng-click="connect()">Connect</button>
 
-<br>
+<p></p>

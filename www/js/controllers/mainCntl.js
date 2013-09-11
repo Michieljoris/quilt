@@ -20,17 +20,13 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, conf
     $scope.changeCouchDbUrl = function(url) {
         console.log("Switching to different couchDB url", url)  ;
         config.set({ couchDbUrl: url });
-        $('#couchDbUrl').editable('setValue', url, false);
+        $('#couchDBurl').editable('setValue', url, false);
         delete state.databases;
         delete state.allUsers;
         state.initialize($scope);
     };
     
     $scope.changeUser = function(userName) {
-        console.log("Switching to different user", userName)  ;
-        
-        if (userName === 'Other..') $scope.loginText = "";
-        else $scope.loginText = userName;
         if (state.pwds[userName] && userName !== 'Other.') {
             $scope.passwordText = state.pwds[userName];
             $scope.login();

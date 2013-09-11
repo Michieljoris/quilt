@@ -1,13 +1,13 @@
 var http = require('http'),
+
     cors_headers = {
-      'Access-Control-Allow-Origin'  : 'http://localhost:8080',
+      'Access-Control-Allow-Origin'  : '*',
       'Access-Control-Allow-Methods' : 'POST, GET, PUT, DELETE, OPTIONS',
       'Access-Control-Max-Age'       : '86400', // 24 hours
-      'Access-Control-Allow-Headers' : 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization'
-       ,'Access-Control-Expose-Headers' : 'Content-Type, cors-proxy'
-       ,'Access-Control-Allow-Credentials' : 'true'
-        ,'cors-proxy':'true'
+      'Access-Control-Allow-Headers' : 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization',
+      'Access-Control-Allow-Credentials' : 'true'
     },
+
     passed_domain = false;
 
 // add passed extra headers
