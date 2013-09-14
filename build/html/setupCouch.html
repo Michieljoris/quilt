@@ -112,9 +112,9 @@
     <div class="span5">
       <i>
         If you're installing to an existing CouchDB instance and you
-        think there are already replications set up, uncheck the
-        this checkbox. If this is a new CouchDB instance, or it's
-        not used for anything else than the roster app, leave checked.
+        think there are already replications set up, leave this
+        unchecked. If you want only replications that are needed for
+        the roster app please check it.
       </i>
     </div>
     <div class="span7">
@@ -125,29 +125,29 @@
       </label>
     </div>
   </div>
-  <br>
-  <div class="row">
-    <div class="span5">
-      <i>
-        This option will synchronize the roster app and this app
-        (quilt) to your CouchDB instance. Uncheck if you don't want
-        this. Both can still be accessed via the
-        internet: <a href="http://quilt.michieljoris.net">quilt</a>
-        and <a href="http://multicap.iriscouch.com" >roster app</a>.
-        If you leave it checked these apps can be accessed locally
-        at <a href="{{state.connected}}/quilt">quilt</a>
-        and <a href="{{state.connected}}/roster" >roster app</a>
-      </i>
-    </div>
-    <div class="span7">
-      <label class="checkbox">
-        <input type="checkbox"
-               ng-model="setup.installApps">
+  <!-- <br> -->
+  <!-- <div class="row"> -->
+  <!--   <div class="span5"> -->
+  <!--     <i> -->
+  <!--       This option will synchronize the roster app and this app -->
+  <!--       (quilt) to your CouchDB instance. Uncheck if you don't want -->
+  <!--       this. Both can still be accessed via the -->
+  <!--       internet: <a href="http://quilt.michieljoris.net">quilt</a> -->
+  <!--       and <a href="http://multicap.iriscouch.com" >roster app</a>. -->
+  <!--       If you leave it checked these apps can be accessed locally -->
+  <!--       at <a href="{{state.connected}}/quilt">quilt</a> -->
+  <!--       and <a href="{{state.connected}}/roster" >roster app</a> -->
+  <!--     </i> -->
+  <!--   </div> -->
+  <!--   <div class="span7"> -->
+  <!--     <label class="checkbox"> -->
+  <!--       <input type="checkbox" -->
+  <!--              ng-model="setup.installApps"> -->
 
-        Setup a copy of the roster app and this app on your CouchDB instance
-      </label>
-    </div>
-  </div>
+  <!--       Setup a copy of the roster app and this app on your CouchDB instance -->
+  <!--     </label> -->
+  <!--   </div> -->
+  <!-- </div> -->
   <hr>
   <div class="row">
     <div class="span5">

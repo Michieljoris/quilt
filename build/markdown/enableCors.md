@@ -1,11 +1,10 @@
-This website and the roster app can't access the
-CouchDB server directly when they are served from different
-origins. But to configure CouchDB for our needs we need access to
-it. To enable this access you have to install either a 'cors proxy' or
-configure CouchDB manually. 
+This website and the roster app can't access the CouchDB server
+directly when they are served from different origins. To enable this
+access you have to install either a 'cors proxy', configure CouchDB
+for cors access or install any apps that want access directly on CouchDB.
 
 If you are accessing CouchDB via a proxy <span
-ng-show="state.maybeCors">(it seems you are)</span> you need to
+ng-show="state.maybeCors">(it seems you are)</span> you can configure 
 'enable cors' for the CouchDB server. See below for another option.
 
 <p ng-show="state.corsConfigured">
@@ -52,8 +51,9 @@ Instead of enabling cors on the CouchDb instance you can
 serve the roster app and this app directly from
 CouchDB, then they both come from the same domain, and the problem is also
 solved. 
+
 <span ng-show="state.servedFromCouchDb">
-It looks like this app is already server from CouchDB.	
+It looks like this app is already served from CouchDB.	
 </span>
 
 <span ng-hide="state.configAccessible">
@@ -63,15 +63,20 @@ credentials so I can replicate this and the roster app to your CouchDB.</b>
 
 <span ng-show="state.configAccessible">
   To make this happen please click the button:<p></p>
-<button class="btn btn-small btn-primary" ng-click="enableCors($event)">
-Replicate this app and the roster app to your CouchDB</button>
+<button class="btn btn-small btn-primary"   ng-click="repApps($event)">
+Set up replication of this app and the roster app to your CouchDB</button>
 </span>
 </span>
 
-  Go to <a href="{{state.connected}}/quilt">{{state.connected}}/quilt</a>
+  Go to <a href="{{state.connected}}/quilt/app target="blank">{{state.connected}}/quilt/app</a>
 for this app, and <a target="_blank"
-href="{{state.connected}}/roster">{{state.connected}}/roster</a> for
+href="{{state.connected}}/roster/app">{{state.connected}}/roster/app</a> for
 the roster.
+
+---------------------------------
+
+<button class="btn btn-small btn-success" ng-click="done($event)">
+Done</button>
 
 
 

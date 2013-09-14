@@ -3,7 +3,8 @@
 /*jshint maxparams:7 maxcomplexity:7 maxlen:150 devel:true newcap:false*/ 
 
 var dev = process.env.BB_SERVER_DEV;
-dev = true;
+
+console.log(dev);
 
 if (dev) console.log('\n------Server running with development settings------\n');
 
@@ -30,7 +31,7 @@ var options = {
     ,"dir": dev
     ,"index": !dev
     ,"silent": false
-    // ,"port": 7090
+    ,"port": 6005
     ,postHandlers: {
         // "/" : db
         "/sendmail" : sendMail

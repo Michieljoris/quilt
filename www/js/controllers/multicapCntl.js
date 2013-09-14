@@ -316,7 +316,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
                     'setValue'
                     ,data.userCtx.name
                     , false);
-                $scope.setup.remoteUsername = data.userCtx.name;
+                $scope.setup.remoteUserName = data.userCtx.name;
                 $scope.$apply();
             },
             function(err) {
@@ -489,17 +489,19 @@ function multicapCntl($scope, config, state, defaults, persist) {
     // }
     
     function validateSetup(setup) {
+        console.log('validating setup:', setup);
         if (!setup.targetDatabase) {
             alert('Target database not set!!');
-            return false;
-        }
-        if (!setup.remotePwd) {
-            alert('Remote pwd not set!!');
             return false;
         }
         if (!setup.remoteUserName) {
             alert('Remote user name not set!!');
             return false;
+        }
+        if (!setup.remotePwd) {
+            setup.remotePwd = setup.remoteUserName;
+            // alert('Remote pwd not set!!');
+            return true;
         }
         if (setup.databasesToSync.length === 0) {
             alert('Nothing to do!!!');
@@ -605,7 +607,8 @@ function multicapCntl($scope, config, state, defaults, persist) {
             }
             
             reps.push(rep);
-            if (db.sync === 'sync') {
+            if (db.sync === 'sync' || true) {
+                rep._id = id + 'push-' + db.dbName;
                 repPush.source = rep.target;
                 repPush.target = rep.source;
                 reps.push(repPush);
@@ -765,6 +768,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
         $scope.setup = {};
         $scope.$on('initMulticap',
                    function() {
+                       console.log('INIT MULTICAP');
                        updateLocationDoc();
                        $scope.setup.remoteUrl =
                            persist.get('setupCouchRemoteUrl') || 'http://localhost:5984';
@@ -779,18 +783,19 @@ function multicapCntl($scope, config, state, defaults, persist) {
                            'setValue'
                            ,$scope.setup.remoteUserName
                            , false);
-                       $scope.setup.remotePwd = $scope.setup.remoteUserName;
-                       $('#remotePassword').editable(
-                           'setValue'
-                           ,$scope.setup.remotePwd
-                           , false);
+                       // $scope.setup.remotePwd = $scope.setup.remoteUserName;
+                       // $('#remotePassword').editable(
+                       //     'setValue'
+                       //     ,$scope.setup.remotePwd
+                       //     , false);
                        $scope.setup.targetDatabase =
-                           persist.get('setupCouchTarget') || 'database';
+                           persist.get('setupCouchTarget') || 'roster_data';
                        $('#targetDatabase').editable(
                            'setValue'
                            ,$scope.setup.targetDatabase
                            , false);
-                       $scope.setup.removeAllReps = true;
+                       // $scope.setup.removeAllReps = true;
+                       $scope.$apply();
                    });
     }
     

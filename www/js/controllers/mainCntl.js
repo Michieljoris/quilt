@@ -161,7 +161,7 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, conf
         $event.preventDefault();
         state.advanced = false;
         cookie.remove('quilt_advanced');
-        if (state.activeScreen === '#enableCors') return;
+        // if (state.activeScreen === '#enableCors') return;
         state.oldActive = state.activeScreen;
         state.activeScreen = "#simple";
     };
@@ -170,7 +170,7 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, conf
         $event.preventDefault();
         state.advanced = true;
         cookie.set('quilt_advanced', 'true');
-        if (state.activeScreen === '#enableCors') return;
+        // if (state.activeScreen === '#enableCors') return;
         state.activeScreen = state.oldActive || defaults.firstScreen;
     };
     

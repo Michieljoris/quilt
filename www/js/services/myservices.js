@@ -8,8 +8,8 @@ angular.module("myApp").factory('defaults', function() {
     return {
         couchDbUrl : "http://localhost:5984"
         ,corsProxy : "http://localhost:1234"
-        // ,timeout: 60000
-        ,timeout: 5000
+        ,timeout: 60000
+        // ,timeout: 5000
         ,firstScreen: '#info'
         ,logBytes: 3000
         // ,logRefresh: 2000 //in ms
@@ -228,11 +228,12 @@ angular.module("myApp").factory('state', function(defaults, config, persist, $ro
                 var url = state.connected; 
                 state.advanced = cookie.get('quilt_advanced');
                 var activeScreen;
+                state.servedFromCouchDb = location.origin === state.connected;
                 if (url.indexOf('1234') !== -1)  {
                     state.maybeCors = true;
                     activeScreen = '#enableCors';
                 }
-                else if (!state.corsConfigured) {
+                else if (!state.corsConfigured && !state.servedFromCouchDb) {
                     activeScreen = '#enableCors';
                 }
                 else {  activeScreen = cookie.get('quilt_activeScreen');
@@ -531,13 +532,13 @@ angular.module("myApp").factory('persist', function() {
     
     function getDatabase(url, create) {
         var vow = VOW.make();
-        couchapi.dbInfo('quilt', url)
+        couchapi.dbInfo('quilt_data', url)
             .when(
                 function(data) {
                     vow.keep(data);
                 }
                 ,function(error) {
-                    if (create)  couchapi.dbCreate('quilt').when(
+                    if (create)  couchapi.dbCreate('quilt_data').when(
                         function(data) {
                             vow.keep(data);
                         }
@@ -613,7 +614,7 @@ angular.module("myApp").factory('persist', function() {
     api.put = function(key, value) {
         if (persistDoc) {
             persistDoc[key] = value;
-            couchapi.docSave(persistDoc, 'quilt')
+            couchapi.docSave(persistDoc, 'quilt_data')
                 .when(
                     function(data) {
                         console.log('Saved persistDoc to couchDB', data);

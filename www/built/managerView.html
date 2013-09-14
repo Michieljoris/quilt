@@ -159,18 +159,17 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#x61;&#105;&#108;&#116;&#111;:&#x6D;&#97;&#105;&#108;&#x40;&#109;&#105;&#x63;&#x68;&#105;&#101;&#x6C;j&#x6F;&#114;i&#x73;&#x2E;&#x63;&#x6F;&#x6D;">&#x6D;&#97;&#105;&#108;&#x40;&#109;&#105;&#x63;&#x68;&#105;&#101;&#x6C;j&#x6F;&#114;i&#x73;&#x2E;&#x63;&#x6F;&#x6D;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#97;&#x69;&#x6C;&#x74;&#x6F;:&#x6D;&#x61;&#105;&#x6C;&#x40;&#109;&#105;&#99;&#x68;&#x69;&#x65;lj&#111;&#114;&#x69;&#x73;&#x2E;&#x63;&#111;&#x6D;">&#x6D;&#x61;&#105;&#x6C;&#x40;&#109;&#105;&#99;&#x68;&#x69;&#x65;lj&#111;&#114;&#x69;&#x73;&#x2E;&#x63;&#111;&#x6D;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
-  <div ng-show="isActive('#enableCors')" id="enableCors--"><p>This website and the roster app can't access the
-CouchDB server directly when they are served from different
-origins. But to configure CouchDB for our needs we need access to
-it. To enable this access you have to install either a 'cors proxy' or
-configure CouchDB manually. </p>
+  <div ng-show="isActive('#enableCors')" id="enableCors--"><p>This website and the roster app can't access the CouchDB server
+directly when they are served from different origins. To enable this
+access you have to install either a 'cors proxy', configure CouchDB
+for cors access or install any apps that want access directly on CouchDB.</p>
 
 <p>If you are accessing CouchDB via a proxy <span
-ng-show="state.maybeCors">(it seems you are)</span> you need to
+ng-show="state.maybeCors">(it seems you are)</span> you can configure 
 'enable cors' for the CouchDB server. See below for another option.</p>
 
 <p ng-show="state.corsConfigured">
@@ -217,9 +216,10 @@ not served from your local CouchDB.</p>
 <p>Instead of enabling cors on the CouchDb instance you can
 serve the roster app and this app directly from
 CouchDB, then they both come from the same domain, and the problem is also
-solved. 
-<span ng-show="state.servedFromCouchDb">
-It looks like this app is already server from CouchDB. <br />
+solved. </p>
+
+<p><span ng-show="state.servedFromCouchDb">
+It looks like this app is already served from CouchDB. <br />
 </span></p>
 
 <p><span ng-hide="state.configAccessible">
@@ -229,15 +229,20 @@ credentials so I can replicate this and the roster app to your CouchDB.</b>
 
 <p><span ng-show="state.configAccessible">
   To make this happen please click the button:<p></p>
-<button class="btn btn-small btn-primary" ng-click="enableCors($event)">
-Replicate this app and the roster app to your CouchDB</button>
+<button class="btn btn-small btn-primary"   ng-click="repApps($event)">
+Set up replication of this app and the roster app to your CouchDB</button>
 </span>
 </span></p>
 
-<p>Go to <a href="{{state.connected}}/quilt">{{state.connected}}/quilt</a>
+<p>Go to <a href="{{state.connected}}/quilt/app target="blank">{{state.connected}}/quilt/app</a>
 for this app, and <a target="_blank"
-href="{{state.connected}}/roster">{{state.connected}}/roster</a> for
-the roster.</p></div>
+href="{{state.connected}}/roster/app">{{state.connected}}/roster/app</a> for
+the roster.</p>
+
+<hr />
+
+<p><button class="btn btn-small btn-success" ng-click="done($event)">
+Done</button></p></div>
   <div ng-show="isActive('#simple')" id="simple--"><div ng-hide="state.configAccessible">
   <b><em>Please click the button to login as a server admin so I can setup your CouchDB.</em></b>
   <button class="btn btn-small btn-primary" ng-click="openLogin()">Log
@@ -367,9 +372,9 @@ the roster.</p></div>
     <div class="span5">
       <i>
         If you're installing to an existing CouchDB instance and you
-        think there are already replications set up, uncheck the
-        this checkbox. If this is a new CouchDB instance, or it's
-        not used for anything else than the roster app, leave checked.
+        think there are already replications set up, leave this
+        unchecked. If you want only replications that are needed for
+        the roster app please check it.
       </i>
     </div>
     <div class="span7">
@@ -380,29 +385,29 @@ the roster.</p></div>
       </label>
     </div>
   </div>
-  <br>
-  <div class="row">
-    <div class="span5">
-      <i>
-        This option will synchronize the roster app and this app
-        (quilt) to your CouchDB instance. Uncheck if you don't want
-        this. Both can still be accessed via the
-        internet: <a href="http://quilt.michieljoris.net">quilt</a>
-        and <a href="http://multicap.iriscouch.com" >roster app</a>.
-        If you leave it checked these apps can be accessed locally
-        at <a href="{{state.connected}}/quilt">quilt</a>
-        and <a href="{{state.connected}}/roster" >roster app</a>
-      </i>
-    </div>
-    <div class="span7">
-      <label class="checkbox">
-        <input type="checkbox"
-               ng-model="setup.installApps">
+  <!-- <br> -->
+  <!-- <div class="row"> -->
+  <!--   <div class="span5"> -->
+  <!--     <i> -->
+  <!--       This option will synchronize the roster app and this app -->
+  <!--       (quilt) to your CouchDB instance. Uncheck if you don't want -->
+  <!--       this. Both can still be accessed via the -->
+  <!--       internet: <a href="http://quilt.michieljoris.net">quilt</a> -->
+  <!--       and <a href="http://multicap.iriscouch.com" >roster app</a>. -->
+  <!--       If you leave it checked these apps can be accessed locally -->
+  <!--       at <a href="{{state.connected}}/quilt">quilt</a> -->
+  <!--       and <a href="{{state.connected}}/roster" >roster app</a> -->
+  <!--     </i> -->
+  <!--   </div> -->
+  <!--   <div class="span7"> -->
+  <!--     <label class="checkbox"> -->
+  <!--       <input type="checkbox" -->
+  <!--              ng-model="setup.installApps"> -->
 
-        Setup a copy of the roster app and this app on your CouchDB instance
-      </label>
-    </div>
-  </div>
+  <!--       Setup a copy of the roster app and this app on your CouchDB instance -->
+  <!--     </label> -->
+  <!--   </div> -->
+  <!-- </div> -->
   <hr>
   <div class="row">
     <div class="span5">

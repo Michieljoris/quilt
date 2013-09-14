@@ -8,6 +8,16 @@ to all possible locations quilt could be server from and then zip it
 up for download
 * set state.testing=false
 * force https!  
+* move all sites to linode or digital ocean  
+* get cloudant to use pkdf2 or CouchDB version1.3+  
+* setup own cert on own server so that https works
+* setup couchdb server on own server using cert 
+  
+* make sure that apps databases have proper vdu
+So random users can't add docs. See the vdu in couchappjs boilerplate app.js
+  
+* setup quilt.michieljoris.net and roster_help.michieljoris.net
+* make couchapps out of quilt and roster_help 
 * TODO
 ** add query to database table  
 ** regex the urls entered
@@ -27,6 +37,48 @@ applies all the changes to to the user database. Also bring select
 checkbox back
    
 * good to know
+** couchapp
+Using node couchapp
+Has all the design docs in the app.js file:
+
+var couchapp = require('couchapp')
+  , path = require('path')
+  ;
+
+ddoc = 
+  { _id:'_design/app'
+  , rewrites : 
+    [ {from:"/", to:'index.html'}
+    , {from:"/api", to:'../../'}
+    , {from:"/api/*", to:'../../*'}
+    , {from:"/*", to:'*'}
+    ]
+  }
+  ;
+
+ddoc.views = {};
+
+ddoc.validate_doc_update = function (newDoc, oldDoc, userCtx) {   
+  if (userCtx.roles.indexOf('_admin') === -1) {
+    throw "Only admin can write documents to this database.";
+  } 
+  if (newDoc._deleted === true && userCtx.roles.indexOf('_admin') === -1) {
+    throw "Only admin can delete documents on this database.";
+  } 
+}
+
+couchapp.loadAttachments(ddoc, path.join(__dirname, '_attachments'));
+
+module.exports = ddoc;
+
+To push:
+couchapp push app.js http://admin:admin@localhost:5984/rosterapp
+But do npm install -g couchapp first 
+And then install locally: npm install couchapp
+
+** vhosts 
+localhost:5984/quilt /quilt_app/_design/app/_rewrite
+localhost:5984/quilt/app /quilt_app/_design/app/_rewrite
 ** local.ini settings
 headers:accept, origin, authorization, content-type,
 X-CouchDB-WWW-Authenticate, X-Couch-Full-Commit
@@ -34,6 +86,7 @@ methods:DELETE, GET, HEAD, POST, OPTIONS, PUT
 credentials:true
 enable_cors:true
 origins:*
+
 
 * Array of objects
 ** rewrites _rewrite

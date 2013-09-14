@@ -4,7 +4,7 @@
 
 var ngView = angular.module('ngView', [], function($routeProvider, $locationProvider) {
     
-    var baseDir = '/built/';
+    // var baseDir = '/built/';
     var mapping =
         [
             ["manager", "/built/managerView.html", managerCntl]
@@ -21,13 +21,13 @@ var ngView = angular.module('ngView', [], function($routeProvider, $locationProv
         ];
     
     mapping.forEach(function(m) {
-        $routeProvider.when('/' + m[0], { 
-            templateUrl: '//' + document.location.host + m[1], controller: m[2] ? m[2] : DefaultCntl });
+        $routeProvider.when(m[0], { 
+            templateUrl: m[1], controller: m[2] ? m[2] : DefaultCntl });
     });
     
     $routeProvider.otherwise( { 
-        templateUrl: '//' + document.location.host +
-            '/built/managerView.html', controller: managerCntl });
+        templateUrl: 
+           'built/managerView.html', controller: managerCntl });
     
     $locationProvider.html5Mode(false);
     // console.log($locationProvider.hashPrefix());

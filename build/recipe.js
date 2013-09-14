@@ -23,7 +23,7 @@ var exports = {
         ,js: 'www/js'
     }
     ,routes : [
-        ['manager', '/built/managerView.html', 'managerCntl']
+        ['manager', 'built/managerView.html', 'managerCntl']
         // ,['help', '/built/helpView.html', 'helpCntl']
         // ,['test', '/built/testView.html', 'testCntl']
     ]

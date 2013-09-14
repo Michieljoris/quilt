@@ -388,7 +388,7 @@ console.log(row, field, old, row[field]);
                     $scope.modifiedCount = 0;
                 },
                 function(err) {
-                    alert('Error removing or updating at least one of the users..');
+                    alert('Error removing or updating at least one of the databases..');
                     console.log(err);
                     $scope.modifiedCount = 0;
                     delete state.databases;

@@ -17,6 +17,69 @@ function managerCntl($scope, config, state, defaults) {
     });
     
     //-----------------------------------------------------
+    // function makePureRep(rep) {
+    //     var cleanRep = {
+    //         _id: rep._id
+    //         ,source: rep.source
+    //         ,target: rep.target
+    //         ,continuous: rep.continuous
+    //         ,create_target: rep.create_target
+    //         ,filter: rep.filter
+    //         ,query_params: rep.query_params
+    //         ,doc_ids: rep.doc_ids
+    //         ,user_ctx: rep.user_ctx
+    //     };
+    //     Object.keys(cleanRep).forEach(function(k) {
+    //         var val = cleanRep[k];
+    //         if (!val ||
+    //             ( angular.isArray(val) && val.length === 0 ) ||
+    //             ( angular.isObject(val) && Object.keys(val).length === 0) ||
+    //             ( typeof val === 'string' && val.length === 0)) 
+    //             delete cleanRep[k]; 
+    //     });
+    //     return cleanRep;
+    // }
+    $scope.repApps = function() {
+        console.log('Replicating apps..');
+        var reps = [];
+        reps.push({
+            _id: 'pull_roster_app'
+            ,source: 'http://multicapdb.iriscouch.com/roster_app'
+            ,target: 'roster_app2'
+            ,continuous: true
+            ,create_target: true
+            ,user_ctx: { roles: [ "_admin" ]}
+        });
+        reps.push({
+            _id: 'pull_quilt_app'
+            ,source: 'http://multicapdb.iriscouch.com/quilt_app'
+            ,target: 'quilt_app2'
+            ,continuous: true
+            ,create_target: true
+            ,user_ctx: { roles: [ "_admin" ]}
+        });
+        var vows = [];
+        couchapi.docBulkRemove(reps, '_replicator').when(
+            function() {
+                vows.push(couchapi.config('vhosts', 'localhost:5984/quilt','/quilt_app/_design/app/_rewrite'));
+                vows.push(couchapi.config('vhosts', 'localhost:5984/quilt/app','/quilt_app/_design/app/_rewrite'));
+                vows.push(couchapi.docBulkSave(reps, '_replicator'));
+                VOW.every(vows).when(
+                    function(data) {
+                        console.log(data);
+                        alert('Triggered replications of both apps to your CouchDB instance'); },
+                    function(err) {
+                        alert('Error!!' + err.reason);
+                        console.log('Error replicating apps', err);
+                    }
+                );
+            }
+        );
+        
+    };
+    
+    
+    
     $scope.isActive = function(screen) {
         return screen === state.activeScreen ? 'active' : '';
     };
@@ -69,6 +132,13 @@ function managerCntl($scope, config, state, defaults) {
         $event.preventDefault();
         cookie.remove('corsConfigured');
         state.initialize($scope);
+    };
+    
+    $scope.done = function($event) {
+        console.log('done enable cors');
+        state.activeScreen = state.advanced ? cookie.get('quilt_activeScreen') || defaults.firstScreen : '#simple';
+        // state.active = 
+        console.log(state);
     };
     
     $scope.enableCors = function($event) {
