@@ -469,6 +469,7 @@ angular.module("myApp").controller("testCntl", function ($scope, state, defaults
                 var docToSave = angular.copy(state.testDocsMap[test.doc]);
                 docToSave._id = 'quilt_' + test.doc;
                 action = couchapi.docSave(docToSave, test.database);
+                console.log(state.testDocsMap, test.doc, docToSave);
             }
             else action = couchapi.dbInfo(test.database);
             action.when(

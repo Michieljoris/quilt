@@ -12,91 +12,93 @@
     };
 
     var vdu = function (newDoc, oldDoc, userCtx, secObj){
-        if (!secObj) return;
-
-        // log('in vdu, oldDoc is:' + JSON.stringify(oldDoc, null, '\t'));
-        // log('in vdu, newDoc is:' + JSON.stringify(newDoc, null, '\t'));
+            if (!secObj) return;
     
-        secObj.members = secObj.members || {};
-        secObj.members.roles = secObj.members.roles || [];
-        secObj.members.names = secObj.members.names || [];
+            secObj.members = secObj.members || {};
+            secObj.members.roles = secObj.members.roles || [];
+            secObj.members.names = secObj.members.names || [];
     
-        function reportError(type, error_msg) {
-            log('Error writing document `' + newDoc._id +
-                '\' to the database: ' + error_msg);
-            var errorObj = {};
-            errorObj[type] = error_msg;
-            throw(errorObj);
-        }
-    
-        var validator = require('lib/validator');
-    
-        try {
-            validator = validator.init(secObj.members.names, userCtx);
-        }  catch(e) {
-            log('error initing validator', e);
-            if (e.message) reportError('forbidden', 'Error initializing validator: \n' + e.message);
-            else reportError('forbidden', 'Error initializing validator: \n' + e.source + '\n ' + e.error);
-        }
-        
-        function is_admin(){
-            return userCtx.roles.indexOf('_admin') !== -1;
-        }
-    
-        function validateDoc(doc) {
-            return validator.validateDoc(doc);
-        }
-    
-        if (is_admin()) {
-            if (newDoc._deleted) return;
-            if (!validateDoc(newDoc)) 
-                reportError('forbidden', 'Dear admin: This document does not pass the the validation rules for this database and and has not been saved');
-            return;
-        } 
-    
-        function hasWritePermission() {
-            var roles = secObj.members.roles;
-        
-            for (var i = 0; i < roles.length; i++) {
-                if (roles[i].indexOf('write') === 0) {
-                    if (userCtx.roles.indexOf(roles[i]) !== -1) return true;
-                }
+            function reportError(type, error_msg) {
+                log('Error writing document `' + newDoc._id +
+                    '\' to the database: ' + error_msg);
+                var errorObj = {};
+                errorObj[type] = error_msg;
+                throw(errorObj);
             }
-            return false;
-        }
     
-        var name = userCtx.name || 'unknown';
-        if (!hasWritePermission())
-            reportError('unauthorized', 'User ' + userCtx.name  +
-                        ' is not allowed to write to this database.');
+            var validator = require('lib/validator');
     
-        if (newDoc._deleted) {
-            if  (!validator.validateUser(oldDoc, {}) )
-                reportError('unauthorized', 'User ' + name + ' is not allowed to delete this particular document from the database.');
-        }
-        else {
-            if  (!validator.validateUser(newDoc, oldDoc) )
-                reportError('unauthorized', 'User ' + name + ' is not allowed to write this particular document to the database.');
+            try {
+                validator = validator.init(secObj.members, userCtx);
+            }  catch(e) {
+                log('error initing validator', e);
+                if (e.message) reportError('forbidden', 'Error initializing validator: \n' + e.message);
+                else reportError('forbidden', 'Error initializing validator: \n' + e.source + '\n ' + e.error);
+            }
+        
+            function is_admin(){
+                return userCtx.roles.indexOf('_admin') !== -1;
+            }
+    
+            function validateDoc(doc) {
+                return validator.validateDoc(doc);
+            }
+    
+            if (is_admin()) {
+                if (newDoc._deleted) return;
+                if (!validateDoc(newDoc)) 
+                    reportError('forbidden', 'Dear admin: This document does not pass the the validation rules for this database and and has not been saved');
+                return;
+            } 
+    
+            function hasReadPermission() {
+                var roles = secObj.members.roles;
+        
+                for (var i = 0; i < roles.length; i++) {
+                    // if (roles[i].indexOf('read') === 0) {
+                    if (userCtx.roles.indexOf(roles[i]) !== -1) return true;
+                    // }
+                }
+                return false;
+            }
+    
+            var name = userCtx.name || 'unknown';
+            if (!hasReadPermission())
+                reportError('unauthorized', 'User ' + userCtx.name  +
+                            ' is not allowed to write to this database (no read permission).');
+    
+    
+            if (newDoc._deleted) {
+                if  (!validator.validateUser(oldDoc, {}) )
+                    reportError('unauthorized', 'User ' + name + ' is not allowed to delete this particular document from this database.');
+            }
+            else {
+                if  (!validator.validateUser(newDoc, oldDoc) )
+                    reportError('unauthorized', 'User ' + name +
+                                ' is not allowed to write to this database or not allowed to write this particular document or both.');
                 if (!validator.validateDoc(newDoc))
                     reportError('forbidden', 'This document does not pass the the validation rules for this database and and has not been saved.');
-        }
-    }
+            }
+    
+    };
 
 
     var validator = function() {
+        
         var validateDoc;
         var cachedRules;
-        var validateUser;
+            var validateUser;
         var cachedUserCtx;
+        var cachedRoles;
 
-            function isArray(value) {
-                return Object.prototype.toString.apply(value) === '[object Array]';
-            }
+        function isArray(value) {
+            return Object.prototype.toString.apply(value) === '[object Array]';
+        }
 
         function equals(o1, o2) {
             if (o1 === o2) return true;
             if (o1 === null || o2 === null) return false;
-            if (o1 !== o1 && o2 !== o2) return true; 
+                if (o1 !== o1 && o2 !== o2) return true; 
             var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
             if (t1 === t2) {
                 if (t1 === 'function') {
@@ -130,7 +132,7 @@
                 }
             }
             return false;
-        }
+            }
 
         function defined(doc, key) { return typeof doc[key] !== 'undefined'; }
         function array(doc, key) { return isArray(doc[key]); }
@@ -158,7 +160,7 @@
                 return function(doc) {
                     return doc[key] === fixedValue;
                 };
-            }
+                }
     
             var bind = function(f, key) {
                 return function(doc) {
@@ -169,7 +171,7 @@
             for (var k in rule) {
                 if (!rule.hasOwnProperty(k)) continue;
                 if (typeof rule[k] !== 'function') 
-                    rule[k] = makeTestFixedValueFunction(k, rule[k]);
+                        rule[k] = makeTestFixedValueFunction(k, rule[k]);
                 else
                     rule[k] =  bind(rule[k], k);
             }
@@ -188,23 +190,24 @@
             return ruleAsOneTest;
         }
 
-            function compileRules(rules) {
-                cachedRules = rules;
-                if (!isArray(rules)) rules = []; 
-                var tests = rules.filter(function(r) {
-                    return r.indexOf('_') === 0;
-                }).map(function(r) {
-                    r = parseDbRule(r.slice(1));
-                    return combineRuleTests(r);
-                });
-                validateDoc = function(doc) {
-                    for (var i = 0; i < tests.length; i++) {
+        function compileRules(rules) {
+    
+            cachedRules = rules;
+            if (!isArray(rules)) rules = []; 
+            var tests = rules.filter(function(r) {
+                return r.indexOf('_') === 0;
+            }).map(function(r) {
+                r = parseDbRule(r.slice(1));
+                return combineRuleTests(r);
+            });
+            validateDoc = function(doc) {
+                for (var i = 0; i < tests.length; i++) {
                         if (tests[i](doc)) return true;
-                    }
-                    return false;
-                    };
-                    return validateDoc;
-            }
+                }
+                return false;
+            };
+            return validateDoc;
+        }
 
 
         function parse(rule, user) {
@@ -254,7 +257,7 @@
                     key.push(ch);   
                 }
                 else if (state === 'parsingQuotedKey') {
-                    if (ch === '\\') state = "readLiteral";
+                        if (ch === '\\') state = "readLiteral";
                     else if (ch === dq) {
                         keys.push(key.join(''));
                         state = 'waitingForNextKey';
@@ -263,7 +266,7 @@
                 else if (state === 'parsingKey') {
                     if (ch === ' ' || ch === ',' || ch === ';') {
                         keys.push(key.join(''));
-                            state = 'waitingForNextKey';
+                        state = 'waitingForNextKey';
                     }
                     else key.push(ch); 
                 } 
@@ -275,7 +278,7 @@
                                   state = 'parsingKey';   
                                 }
                          }
-                    }
+                }
             }
     
             if (state === 'parsingQuotedKey')
@@ -285,7 +288,7 @@
             return { rule: rule, fixedValues: obj, type: type, keys: keys };
         }
 
-        function getAllowedRules(array, currentDb) {
+        function getAllowedRules(array, currentDb, dbRoles) {
             if (!isArray(array)) array = []; 
             var rules = [];
             array.forEach(function(r) {
@@ -296,7 +299,7 @@
                     if (nextUnderScore === -1 || db.indexOf(':') !== -1 || db.indexOf('\'') !== -1) {
                         throw({ source: r, error: 'database missing'});
                     }
-                    if (db === '*' || db === currentDb)
+                    if (db === '*' || db === currentDb || dbRoles.indexOf(db) !== -1 )
                         rules.push(r.slice(nextUnderScore + 1));
                 }
             });
@@ -312,7 +315,7 @@
                 for (fixedKey in r.fixedValues) {
                     if (!r.fixedValues.hasOwnProperty(fixedKey)) continue;
                     oldDoc[fixedKey] = r.fixedValues[fixedKey];
-                }
+                    }
                 for (var i = 0; i < r.keys.length; i++) {
                     key = r.keys[i];
                     oldDoc[key] = newDoc[key];
@@ -337,10 +340,14 @@
             return test[r.type];
         }
 
-        function compileUserCtx(userCtx) {
+        function compileUserCtx(userCtx, dbRoles) {
+            cachedUserCtx =userCtx;
+            cachedRoles = dbRoles;
+    
             userCtx = userCtx || {};
+            dbRoles = dbRoles || [];
             var user = userCtx.name;
-            var allowedRules = getAllowedRules(userCtx.roles, userCtx.db);
+            var allowedRules = getAllowedRules(userCtx.roles, userCtx.db, dbRoles);
     
             allowedRules = allowedRules.map(function(r) {
                 var parsed = parse(r, user);
@@ -348,7 +355,6 @@
                 return parsed;
             });
     
-            cachedUserCtx =userCtx;
             validateUser = function(newDoc, oldDoc) {
         
                 if (!oldDoc) oldDoc = {};
@@ -360,14 +366,24 @@
             return validateUser;
         }
 
-        function init(dbRules, userCtx) {
+        function init(dbSecObjMembers, userCtx) {
+            var dbRules = dbSecObjMembers.names, dbRoles = dbSecObjMembers.roles;
+            var rulesAreSame = equals(dbRules, cachedRules),
+            userCtxIsSame = equals(userCtx, cachedUserCtx),
+            dbRolesAreSame = equals(dbRoles, cachedRoles);
+    
             return {
-                validateDoc: cachedRules && equals(dbRules, cachedRules)  ? validateDoc : compileRules(dbRules),
-                validateUser: userCtx && equals(userCtx, cachedUserCtx)  ? validateUser : compileUserCtx(userCtx)
+                cached: (rulesAreSame ? 'dbRules,' : '') +
+                    (userCtxIsSame ? 'userCtx,' : '') +
+                    (dbRolesAreSame ? 'dbRoles' : ''),
+                validateDoc: rulesAreSame  ? validateDoc : compileRules(dbRules),
+                validateUser: userCtxIsSame && dbRolesAreSame ?
+                    validateUser : compileUserCtx(userCtx, dbRoles)
             };
         }
 
         exports['init'] = init;
+
     };
     
     validator = validator.toString();

@@ -584,7 +584,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
                 var secObj = {
                     members: {
                         names: rules
-                        ,roles: roles || [ "read", "write", "read_" + dbName, "write_" + dbName ]
+                        ,roles: roles || [ "read_all",  "" + dbName ]
                     }
                 };
                 return couchapi.dbSecurity(secObj, dbName);
@@ -715,8 +715,8 @@ function multicapCntl($scope, config, state, defaults, persist) {
                     setup.locationsToSync.filter(function(l) {
                         return l.checked;
                     }).forEach(function(l) {
-                        roles.push("read_" + l.dbName);
-                        roles.push("write" + l.dbName);
+                        roles.push("" + l.dbName);
+                        // roles.push("write" + l.dbName);
                     });
                     roles.push("read"); roles.push("write");
                     return createDb(setup.targetDatabase, [ "_type:'shift'", "_type:'location'", "_type:'person'",
