@@ -1,7 +1,15 @@
 <button class="btn btn-small btn-info"
-	ng-click="createLocationsDb()">Create locations database</button>
+        ng-click="createLocationsDb()">Create locations
+        database</button>
+
+<p></p>
 <button class="btn btn-small btn-info"
-	ng-click="createPersonsDb()">Create persons database</button>
+        ng-click="createPersonsDb()">Create persons database</button>
+<label class="checkbox">
+  <input type="checkbox"
+         ng-model="repToUsers">
+  Setup replication of user docs from persons to _users database
+</label>
 <p></p>
 <div style="width:500px;">
   These buttons are for setting up a master CouchDB instance. If the database

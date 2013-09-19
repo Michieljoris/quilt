@@ -14,6 +14,7 @@ up for download
 * setup couchdb server on own server using cert 
   
 * make sure that apps databases have proper vdu
+* make sure that all apps start up again after linode server reboots 
 So random users can't add docs. See the vdu in couchappjs boilerplate app.js
   
 * setup quilt.michieljoris.net and roster_help.michieljoris.net
@@ -51,7 +52,7 @@ ddoc =
     [ {from:"/", to:'index.html'}
     , {from:"/api", to:'../../'}
     , {from:"/api/*", to:'../../*'}
-    , {from:"/*", to:'*'}
+    , {from:"/*", to:'/quilt/*'}
     ]
   }
   ;

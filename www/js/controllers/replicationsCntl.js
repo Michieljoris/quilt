@@ -524,7 +524,8 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         });
         
         persist.put('reps', state.quilt_reps);
-        
+        console.log('reps to remove', repsToRemove);
+        console.log('reps to commit', repsToRemove);
         couchapi.docBulkRemove(repsToRemove, '_replicator')
             .when(
                 function() {
@@ -532,18 +533,18 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
                 })
             .when(
                 function(data) {
-                    if (!$scope.polling) {
-                        $scope.togglePolling(); 
-                        var polling = $scope.polling;
-                        setTimeout(function() {
-                            clearTimeout(polling);
-                            $scope.polling = false;
-                            $scope.$apply();
-                        },5000);
-                    }
-                    else {
+                    // if (!$scope.polling) {
+                    //     //$scope.togglePolling(); 
+                    //     var polling = $scope.polling;
+                    //     setTimeout(function() {
+                    //         clearTimeout(polling);
+                    //         $scope.polling = false;
+                    //         $scope.$apply();
+                    //     },5000);
+                    // }
+                    // else {
                         $scope.refresh();
-                    }
+                    // }
                     console.log('success save reps', data);
                 
                 },
@@ -1025,8 +1026,8 @@ angular.module("myApp").controller("replicationsCntl", function ($scope, $locati
         $scope.$on('initReps',
                    function() {
                        console.log('in initReps');
-                       var viewState = localStorage.getItem('quilt_repsViewState');
-                       var fieldGroup = localStorage.getItem('quilt_fieldGroup');
+                       var viewState = localStorage.getItem('quilt_repsViewState') || 'all';
+                       var fieldGroup = localStorage.getItem('quilt_fieldGroup') || 'Essential';
                        
                        $scope.source = {};
                        $scope.target = {};

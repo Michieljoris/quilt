@@ -38,7 +38,7 @@ var exports = {
     ,partials: {
         ids: {
             title: '<title>CouchDB manager</title>'
-            ,skewer:'<script src="http://localhost:9090/skewer"></script>'
+            // ,skewer:'<script src="http://localhost:9090/skewer"></script>'
             // ,filepicker: '<script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>'
             // ,filepicker: '<script type="text/javascript" src="js/filepicker.js"></script>'
         }
@@ -276,8 +276,8 @@ var exports = {
                 //converted to html. Partials in an array will be
                 //concatenated before inserted at the tag id element
                 ,mapping: {
-                    head: ['title', 'meta', 'html/ieshim',  'skewer'
-                           ,'headJsBlock', 'myLinkBlock'
+                    head: ['title', 'meta', 'html/ieshim', // 'skewer',
+                           'headJsBlock', 'myLinkBlock'
                            // ,'_linkBlock'
                           ],
                     wrapper: [
@@ -299,7 +299,7 @@ var exports = {
                 //converted to html. Partials in an array will be
                 //concatenated before inserted at the tag id element
                 ,mapping: {
-                    head: ['title', 'meta', 'html/ieshim',  'skewer'
+                    head: ['title', 'meta', 'html/ieshim' // 'skewer',
                            ,'headJsBlock', 'myLinkBlock'
                            // ,'_linkBlock'
                           ],

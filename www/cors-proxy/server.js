@@ -3,7 +3,8 @@ var http = require('http'),
 
     cors_headers = {
       // 'Access-Control-Allow-Origin'  : dev ? 'http://localhost:6005' : 'http://quilt.michieljoris.net',
-      'Access-Control-Allow-Origin'  : 'http://localhost:6005',
+      // 'Access-Control-Allow-Origin'  : 'http://localhost:6005',
+      'Access-Control-Allow-Origin'  : 'https://ssl.axion5.net',
       'Access-Control-Allow-Methods' : 'POST, GET, PUT, DELETE, OPTIONS',
       'Access-Control-Max-Age'       : '86400', // 24 hours
       'Access-Control-Allow-Headers' : 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Authorization',

@@ -528,7 +528,7 @@ angular.module("myApp").factory('persist', function() {
 
     var persistDoc; 
     var api = {};
-    var state;
+    var persisting;
     
     function getDatabase(url, create) {
         var vow = VOW.make();
@@ -579,7 +579,6 @@ angular.module("myApp").factory('persist', function() {
     
     api.init = function(url, create, state) {
         var vow = VOW.make();
-        state.persisting = false;
         getDatabase(url, create)
             .when(
                 function() {
@@ -587,7 +586,6 @@ angular.module("myApp").factory('persist', function() {
                 })
             .when(
                 function(doc) {
-                    state.persisting = true;
                     console.log('Read persistDoc from database quilt. Using CouchDB as backend.');
                     persistDoc = doc;
                     vow.keep(doc);
@@ -620,7 +618,6 @@ angular.module("myApp").factory('persist', function() {
                         console.log('Saved persistDoc to couchDB', data);
                     }
                     ,function(error) {
-                        state.persisting = false;
                         console.log('Unable to save persistDoc to database quilt at couchDB', error);
                     });
         }
