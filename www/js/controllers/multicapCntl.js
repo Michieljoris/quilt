@@ -215,8 +215,10 @@ function multicapCntl($scope, config, state, defaults, persist) {
         var vow = VOW.make();
         getLocationDoc().when(
             function(locationsDoc) {
+                
                 locationsDoc[dbName] = {
-                    name: name
+                    name: name,
+                    dbName: 'location-' + dbName
                 };
                 couchapi.docSave(locationsDoc, 'multicap').when(
                     function(data) {
@@ -700,7 +702,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
         var repsToCommit = makeReplications(setup);
         if (repsToCommit.length === 0) return;
         
-        var remoteUrl = url.protocol+ setup.remoteUserName + ':' +
+        var remoteUrl = url.protocol+ setup.remoteUserName + ':'+
             setup.remotePwd + '@' + url.path;
         console.log(remoteUrl);
         

@@ -25,7 +25,6 @@ So random users can't add docs. See the vdu in couchappjs boilerplate app.js
 url ending in letter after portnumber hangs
 maybe do a timeout that resolves the promise in state.init ?
 
-
 ** make database list a table with multiselect, and bulk delete
 ** put select2 in the tables.?
 ** paging for users, databases and documents
