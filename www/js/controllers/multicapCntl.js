@@ -443,9 +443,9 @@ function multicapCntl($scope, config, state, defaults, persist) {
                     });
                     console.log('readable:',readableDbs);
                     //TODO uncomment, just for testing
-                    // if (readableDbs.indexOf('locations') === -1 ||
-                    //     readableDbs.indexOf('persons') === -1)
-                    //     return VOW.broken({ reason:'You have no read permission for the locations and/or persons database. Or they might not exist.'});
+                    if (readableDbs.indexOf('locations') === -1 ||
+                        readableDbs.indexOf('persons') === -1)
+                        return VOW.broken({ reason:'You have no read permission for the locations and/or persons database. Or they might not exist.'});
                         
                     // else
                         return getSecObjs(readableDbs);

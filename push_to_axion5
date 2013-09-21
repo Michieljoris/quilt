@@ -1,1 +1,1 @@
-couchapp push app.js https://admin:admin@ssl.axion5.net/quilt_app
+couchapp push app.js http://admin:admin@couchdb.axion5.net/quilt_app

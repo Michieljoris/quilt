@@ -1,5 +1,6 @@
+* make sure that all apps start up again after linode server reboots 
+ that's basically the forever apps and stunnel for ssl.axion5.net 
 * uncomment line 397 search for 'testing' for line 
-* location doc id has to be same as dbname without location_ 
 * check setup on windows  
 
 * set timeout of connection to one minute 
@@ -14,12 +15,13 @@ up for download
 * setup couchdb server on own server using cert 
   
 * make sure that apps databases have proper vdu
-* make sure that all apps start up again after linode server reboots 
-So random users can't add docs. See the vdu in couchappjs boilerplate app.js
-  
 * setup quilt.michieljoris.net and roster_help.michieljoris.net
 * make couchapps out of quilt and roster_help 
 * TODO
+** move query to underneath database  
+** bugs: 
+**** design
+confusing clicking of database, doc and function 
 ** add query to database table  
 ** regex the urls entered
 url ending in letter after portnumber hangs

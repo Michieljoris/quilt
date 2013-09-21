@@ -1,17 +1,14 @@
  var couchapp = require('couchapp')
-  , path = require('path')
-  ;
+  , path = require('path') ;
 
 ddoc = 
   { _id:'_design/app'
-  , rewrites : 
+   ,rewrites : 
     [ {from:"/", to:'index.html'}
     , {from:"/api", to:'../../'}
     , {from:"/api/*", to:'../../*'}
     , {from:"/*", to:'*'}
-    ]
-  }
-  ;
+    ] };
 
 ddoc.views = {};
 
