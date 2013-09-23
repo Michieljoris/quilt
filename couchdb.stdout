@@ -175,3 +175,115 @@ Apache CouchDB has started. Time to relax.
 [info] [<0.139.0>] 127.0.0.1 - - GET /_config/ 200
 [info] [<0.136.0>] 127.0.0.1 - - GET /_session 200
 [info] [<0.2198.0>] 127.0.0.1 - - GET / 200
+
+Apache CouchDB 1.4.0 (LogLevel=info) is starting.
+Apache CouchDB has started. Time to relax.
+[info] [<0.32.0>] Apache CouchDB has started on http://127.0.0.1:5984/
+[info] [<0.134.0>] Attempting to start replication `23caa82bc68b4b92e30c00b7013199f0+continuous` (document `roster_data_pull_persons`).
+[info] [<0.134.0>] Attempting to start replication `17fe47e9e6e306906fb4a651d4f0e9f3+continuous` (document `roster_data_push_users`).
+[info] [<0.134.0>] Attempting to start replication `b1bc479e01b77ebd06c2e53bf446232f+continuous` (document `roster_data_push-location-waterford-west`).
+[info] [<0.134.0>] Attempting to start replication `9d3b171a0603fdc59af75c8c569abe27+continuous` (document `roster_data_push-persons`).
+[info] [<0.134.0>] Attempting to start replication `2779325e4bcdc2fe261117b493d3d4e3+continuous` (document `roster_data_pull_locations`).
+[info] [<0.134.0>] Attempting to start replication `2493eec2a4871948775650ce69dd19e1+continuous` (document `roster_data_pull_location-waterford-west`).
+[info] [<0.148.0>] Replication `"23caa82bc68b4b92e30c00b7013199f0+continuous"` is using:
+	4 worker processes
+	a worker batch size of 500
+	20 HTTP connections
+	a connection timeout of 30000 milliseconds
+	10 retries per request
+	socket options are: [{keepalive,true},{nodelay,false}]
+	source start sequence 536
+[info] [<0.148.0>] Document `roster_data_pull_persons` triggered replication `23caa82bc68b4b92e30c00b7013199f0+continuous`
+[info] [<0.146.0>] starting new replication `23caa82bc68b4b92e30c00b7013199f0+continuous` at <0.148.0> (`https://Bev:*****@ssl.axion5.net/persons/` -> `roster_data`)
+[info] [<0.187.0>] Replication `"17fe47e9e6e306906fb4a651d4f0e9f3+continuous"` is using:
+	4 worker processes
+	a worker batch size of 500
+	20 HTTP connections
+	a connection timeout of 30000 milliseconds
+	10 retries per request
+	socket options are: [{keepalive,true},{nodelay,false}]
+	source start sequence 72
+[info] [<0.187.0>] Document `roster_data_push_users` triggered replication `17fe47e9e6e306906fb4a651d4f0e9f3+continuous`
+[info] [<0.157.0>] starting new replication `17fe47e9e6e306906fb4a651d4f0e9f3+continuous` at <0.187.0> (`roster_data` -> `_users`)
+[info] [<0.197.0>] Replication `"b1bc479e01b77ebd06c2e53bf446232f+continuous"` is using:
+	4 worker processes
+	a worker batch size of 500
+	20 HTTP connections
+	a connection timeout of 30000 milliseconds
+	10 retries per request
+	socket options are: [{keepalive,true},{nodelay,false}]
+	source start sequence 68
+[info] [<0.197.0>] Document `roster_data_push-location-waterford-west` triggered replication `b1bc479e01b77ebd06c2e53bf446232f+continuous`
+[info] [<0.159.0>] starting new replication `b1bc479e01b77ebd06c2e53bf446232f+continuous` at <0.197.0> (`roster_data` -> `https://Bev:*****@ssl.axion5.net/location-waterford-west/`)
+[info] [<0.215.0>] Replication `"9d3b171a0603fdc59af75c8c569abe27+continuous"` is using:
+	4 worker processes
+	a worker batch size of 500
+	20 HTTP connections
+	a connection timeout of 30000 milliseconds
+	10 retries per request
+	socket options are: [{keepalive,true},{nodelay,false}]
+	source start sequence 76
+[info] [<0.215.0>] Document `roster_data_push-persons` triggered replication `9d3b171a0603fdc59af75c8c569abe27+continuous`
+[info] [<0.160.0>] starting new replication `9d3b171a0603fdc59af75c8c569abe27+continuous` at <0.215.0> (`roster_data` -> `https://Bev:*****@ssl.axion5.net/persons/`)
+[info] [<0.229.0>] Replication `"2779325e4bcdc2fe261117b493d3d4e3+continuous"` is using:
+	4 worker processes
+	a worker batch size of 500
+	20 HTTP connections
+	a connection timeout of 30000 milliseconds
+	10 retries per request
+	socket options are: [{keepalive,true},{nodelay,false}]
+	source start sequence 119
+[info] [<0.229.0>] Document `roster_data_pull_locations` triggered replication `2779325e4bcdc2fe261117b493d3d4e3+continuous`
+[info] [<0.164.0>] starting new replication `2779325e4bcdc2fe261117b493d3d4e3+continuous` at <0.229.0> (`https://Bev:*****@ssl.axion5.net/locations/` -> `roster_data`)
+[info] [<0.251.0>] Replication `"2493eec2a4871948775650ce69dd19e1+continuous"` is using:
+	4 worker processes
+	a worker batch size of 500
+	20 HTTP connections
+	a connection timeout of 30000 milliseconds
+	10 retries per request
+	socket options are: [{keepalive,true},{nodelay,false}]
+	source start sequence 63
+[info] [<0.251.0>] Document `roster_data_pull_location-waterford-west` triggered replication `2493eec2a4871948775650ce69dd19e1+continuous`
+[info] [<0.165.0>] starting new replication `2493eec2a4871948775650ce69dd19e1+continuous` at <0.251.0> (`https://Bev:*****@ssl.axion5.net/location-waterford-west/` -> `roster_data`)
+[info] [<0.105.0>] 127.0.0.1 - - OPTIONS /roster_data/ 204
+[info] [<0.105.0>] 127.0.0.1 - - GET /roster_data/ 200
+[info] [<0.105.0>] 127.0.0.1 - - GET /_session 200
+[info] [<0.105.0>] 127.0.0.1 - - POST /_session 401
+[info] [<0.105.0>] 127.0.0.1 - - OPTIONS /roster_data/guest 204
+[info] [<0.105.0>] 127.0.0.1 - - GET /roster_data/guest 401
+[info] [<0.105.0>] 127.0.0.1 - - PUT /roster_data/guest 401
+[info] [<0.120.0>] 127.0.0.1 - - GET /_all_dbs 200
+[info] [<0.120.0>] 127.0.0.1 - - POST /_session 200
+[info] [<0.120.0>] 127.0.0.1 - - GET /roster_data/ 200
+[info] [<0.120.0>] 127.0.0.1 - - GET /_session 200
+[info] [<0.120.0>] 127.0.0.1 - - OPTIONS /roster_data/Michiel 204
+[info] [<0.120.0>] 127.0.0.1 - - GET /roster_data/Michiel 200
+[info] [<0.120.0>] 127.0.0.1 - - OPTIONS /roster_data/67091f63005acb928d4846e064004bcb 204
+[info] [<0.120.0>] 127.0.0.1 - - GET /roster_data/67091f63005acb928d4846e064004bcb 200
+[info] [<0.120.0>] 127.0.0.1 - - OPTIONS /roster_data/_all_docs?include_docs=true 204
+[info] [<0.120.0>] 127.0.0.1 - - GET /roster_data/_all_docs?include_docs=true 200
+[info] [<0.120.0>] 127.0.0.1 - - OPTIONS /roster_data/org.couchdb.user%3ABev 204
+[info] [<0.120.0>] 127.0.0.1 - - OPTIONS /roster_data/Bev 204
+[info] [<0.120.0>] 127.0.0.1 - - GET /roster_data/org.couchdb.user%3ABev 200
+[info] [<0.281.0>] 127.0.0.1 - - PUT /roster_data/Bev 201
+[info] [<0.120.0>] 127.0.0.1 - - PUT /roster_data/org.couchdb.user%3ABev 201
+[error] [<0.225.0>] Replicator: couldn't write document `org.couchdb.user:Bev`, revision `5-df1895afffd1dfe9c8bd2cf3d2d26995`, to target database `https://Bev:*****@ssl.axion5.net/persons/`. Error: `unauthorized`, reason: `User Bev is not allowed to write this particular document to the database.`.
+[info] [<0.215.0>] recording a checkpoint for `roster_data` -> `https://Bev:*****@ssl.axion5.net/persons/` at source update_seq 78
+[info] [<0.120.0>] 127.0.0.1 - - GET /_all_dbs 200
+[info] [<0.187.0>] recording a checkpoint for `roster_data` -> `_users` at source update_seq 78
+[info] [<0.148.0>] recording a checkpoint for `https://Bev:*****@ssl.axion5.net/persons/` -> `roster_data` at source update_seq 537
+[info] [<0.120.0>] 127.0.0.1 - - POST /_session 401
+[info] [<0.120.0>] 127.0.0.1 - - POST /_session 200
+[info] [<0.120.0>] 127.0.0.1 - - GET /roster_data/Bev 200
+[info] [<0.120.0>] 127.0.0.1 - - OPTIONS /_uuids?count=10 204
+[info] [<0.120.0>] 127.0.0.1 - - GET /_uuids?count=10 200
+[info] [<0.120.0>] 127.0.0.1 - - OPTIONS /roster_data/dc1cd4d600c49d12addf04f46f004bae 204
+[info] [<0.120.0>] 127.0.0.1 - - PUT /roster_data/dc1cd4d600c49d12addf04f46f004bae 201
+[info] [<0.120.0>] 127.0.0.1 - - PUT /roster_data/Bev 201
+[info] [<0.120.0>] 127.0.0.1 - - GET /roster_data/dc1cd4d600c49d12addf04f46f004bae 200
+[error] [<0.226.0>] Replicator: couldn't write document `dc1cd4d600c49d12addf04f46f004bae`, revision `1-b4884a14c8edcca105c3b12332a92066`, to target database `https://Bev:*****@ssl.axion5.net/persons/`. Error: `unauthorized`, reason: `User Bev is not allowed to write this particular document to the database.`.
+[info] [<0.148.0>] recording a checkpoint for `https://Bev:*****@ssl.axion5.net/persons/` -> `roster_data` at source update_seq 538
+[info] [<0.215.0>] recording a checkpoint for `roster_data` -> `https://Bev:*****@ssl.axion5.net/persons/` at source update_seq 80
+[info] [<0.120.0>] 127.0.0.1 - - PUT /roster_data/dc1cd4d600c49d12addf04f46f004bae 201
+[error] [<0.224.0>] Replicator: couldn't write document `dc1cd4d600c49d12addf04f46f004bae`, revision `2-3c8bb7a6eb51c29803ba92fa15f37f9b`, to target database `https://Bev:*****@ssl.axion5.net/persons/`. Error: `unauthorized`, reason: `User Bev is not allowed to write this particular document to the database.`.
+[info] [<0.215.0>] recording a checkpoint for `roster_data` -> `https://Bev:*****@ssl.axion5.net/persons/` at source update_seq 81

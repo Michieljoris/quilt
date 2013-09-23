@@ -1,3 +1,4 @@
+* in simple check that server admin is logged in !!! otherwise silently fails at the moment..
 * make sure that all apps start up again after linode server reboots 
  that's basically the forever apps and stunnel for ssl.axion5.net 
 * uncomment line 397 search for 'testing' for line 

@@ -624,7 +624,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
             
             if (db.dbName === 'locations') {
                 if (locations.length === 0) return;
-                rep.doc_ids = locations.map(function(l) {
+                repPush.doc_ids = rep.doc_ids = locations.map(function(l) {
                     return l.name;
                 });
             }
@@ -676,7 +676,12 @@ function multicapCntl($scope, config, state, defaults, persist) {
                             $scope.state.connected + '/' + setup.targetDatabase === r.target;
                     }
                 );
-                return couchapi.docBulkRemove(reps, '_replicator');
+                console.log('removing the following reps:', reps);
+                var vows = [];
+                reps.forEach(function(r) {
+                    vows.push(couchapi.docRemoveById(r._id));
+                });
+                return VOW.every(vows);
             }).when(
                 function(data) {
                     vow.keep(data);
@@ -717,8 +722,8 @@ function multicapCntl($scope, config, state, defaults, persist) {
                     setup.locationsToSync.filter(function(l) {
                         return l.checked;
                     }).forEach(function(l) {
-                        roles.push("" + l.dbName);
-                        // roles.push("write" + l.dbName);
+                        // roles.push("" + l.dbName);
+                        roles.push("write_" + l.dbName);
                     });
                     roles.push("read"); roles.push("write");
                     return createDb(setup.targetDatabase, [ "_type:'shift'", "_type:'location'", "_type:'person'",
@@ -765,7 +770,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
         type: 'text',
         // value: state.remoteUrl,
         // value: "http://multicapdb.iriscouch.com",
-        value: "http://localhost:5984",
+        value: "https://ssl.axion5.net",
         success: function(response, newValue) {
             var url = validateUrl($scope.setup.remoteUrl);
             if (!url) {
