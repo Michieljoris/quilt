@@ -19,7 +19,6 @@ up for download
 * setup quilt.michieljoris.net and roster_help.michieljoris.net
 * make couchapps out of quilt and roster_help 
 * TODO
-** move query to underneath database  
 ** bugs: 
 **** design
 confusing clicking of database, doc and function 
