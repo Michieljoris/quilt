@@ -38,7 +38,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
     };
     
     $scope.createPersonsDb = function() {
-        createDb('persons', ["_type:'person'", "_type:'settings'", "_type:'user'"])
+        createDb('persons', ["_type:'person'", "_type:'settings'", "_type:'user'"], ["read","write","read_persons", "write_persons"])
             .when(
                 function(data) {
                     console.log('Created persons database', data );
@@ -70,7 +70,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
     };
     
     $scope.createLocationsDb = function() {
-        createDb('locations', ["_type:'location'"]).when(
+        createDb('locations', ["_type:'location'"], ["read","write","read_locations", "write_locations"]).when(
             function(data) {
                 alert('Created/configured locations database');
                 console.log('Created location database', data ); }
@@ -586,7 +586,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
                 var secObj = {
                     members: {
                         names: rules
-                        ,roles: roles || [ "read_all",  "" + dbName ]
+                        ,roles: roles || [ "read_" + dbName, "write_" + dbName, "read", "write" ]
                     }
                 };
                 return couchapi.dbSecurity(secObj, dbName);
@@ -659,9 +659,24 @@ function multicapCntl($scope, config, state, defaults, persist) {
         return reps;
     }
     
+    function removeUsers(setup) {
+        if (setup.removeAllUsers) {
+            console.log('Removing all users');
+            return couchapi.dbRemove('_users');
+        }
+        else return VOW.kept();
+    }
+    
     function removeReps(setup) {
-        var vow = VOW.make();
+        //If you remove _replicator it will not be created again
+        // automatically, you have to restart the instance, so the
+        // following does not work as it does for users.
+
+        // if (setup.removeAllReps) {
+        // console.log('Removing all replications'); return
+        // couchapi.dbRemove('_replicator'); }
         
+        var vow = VOW.make();
         couchapi.docAllInclude('_replicator', { }).when(
             function(reps) {
                 reps = reps.rows.map(function(r) {
@@ -669,8 +684,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
                 }).filter(
                     function(r) {
                         if (r._id.startsWith('_design')) return false;
-                        return setup.removeAllReps ||
-                            setup.targetDatabase === r.source ||
+                        return setup.targetDatabase === r.source ||
                             setup.targetDatabase === r.target ||
                             $scope.state.connected + '/' + setup.targetDatabase === r.source ||
                             $scope.state.connected + '/' + setup.targetDatabase === r.target;
@@ -696,6 +710,26 @@ function multicapCntl($scope, config, state, defaults, persist) {
     }
     
     $scope.setupSimple = function() {
+        couchapi.session().when(
+            function(sessionInfo) {
+                if (sessionInfo && sessionInfo.userCtx && sessionInfo.userCtx.roles) {
+                    var roles = sessionInfo.userCtx.roles;
+                    if (roles.indexOf('_admin') !== -1) {
+                        setupSimple();   
+                        return;
+                    }
+                    }
+                delete state.configAccessible;
+                $scope.$apply();
+            },
+            function() {
+                delete state.configAccessible;
+                $scope.$apply();
+            }
+        );
+    };
+    
+    function setupSimple () {
         console.log('Setting up CouchDB', $scope.setup);
         var setup = $scope.setup;
         if (!validateSetup(setup)) return;
@@ -715,10 +749,11 @@ function multicapCntl($scope, config, state, defaults, persist) {
         var vows = [];
         vows.push(removeDb(setup.targetDatabase));
         vows.push(removeReps(setup));
+        vows.push(removeUsers(setup));
         VOW.every(vows)
             .when(
                 function(data) {
-                    console.log('Removed target database and replications', data);
+                    console.log('Removed stuff:', data);
                     var roles = [];
                     setup.locationsToSync.filter(function(l) {
                         return l.checked;
@@ -792,7 +827,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
         type: 'text',
         // value: state.remoteUrl,
         // value: "http://multicapdb.iriscouch.com",
-        value: "database",
+        value: "roster_data",
         success: function(response, newValue) {
             if (!newValue) {
                 alert('No value entered!!!');

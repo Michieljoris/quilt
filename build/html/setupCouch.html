@@ -125,6 +125,24 @@
       </label>
     </div>
   </div>
+  <br>
+  <div class="row">
+    <div class="span5">
+      <i>
+        If you're installing to an existing CouchDB instance and you
+        think there are already users set up, leave this
+        unchecked. If you want only users that are needed for
+        the roster app please check it. 
+      </i>
+    </div>
+    <div class="span7">
+      <label class="checkbox">
+        <input type="checkbox"
+               ng-model="setup.removeAllUsers">
+        Remove all current users
+      </label>
+    </div>
+  </div>
   <!-- <br> -->
   <!-- <div class="row"> -->
   <!--   <div class="span5"> -->
@@ -155,6 +173,7 @@
         permissions set and replications setup. When this is done you
         should be able to connect using
         the <a href="http://roster.axion5.net" target="_blank">roster app</a>.
+	It might take a few minutes for the databases to synchronize.
         In the roster app click the database icon left top and fill
         in <b>{{state.connected}}</b> for the url
         and <b>{{setup.targetDatabase}}</b> for the database. Log in

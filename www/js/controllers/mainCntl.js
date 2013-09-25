@@ -164,6 +164,7 @@ angular.module("myApp").controller("mainCntl", function ($scope, $location, conf
         // if (state.activeScreen === '#enableCors') return;
         state.oldActive = state.activeScreen;
         state.activeScreen = "#simple";
+        state.initialize($scope);
     };
     
     $scope.advancedSetup = function($event) {

@@ -159,7 +159,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#x61;&#105;&#108;&#116;&#x6F;:&#x6D;&#97;&#105;&#x6C;&#x40;&#x6D;&#x69;&#99;&#x68;&#x69;&#x65;&#108;&#x6A;&#111;&#x72;&#x69;s&#x2E;&#99;&#111;&#109;">&#x6D;&#97;&#105;&#x6C;&#x40;&#x6D;&#x69;&#99;&#x68;&#x69;&#x65;&#108;&#x6A;&#111;&#x72;&#x69;s&#x2E;&#99;&#111;&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#x61;&#x69;&#x6C;&#116;&#x6F;:m&#97;&#105;&#108;&#x40;&#109;&#x69;&#99;&#104;&#105;&#101;&#108;&#x6A;&#x6F;&#x72;&#105;&#x73;&#46;&#x63;&#x6F;&#x6D;">m&#97;&#105;&#108;&#x40;&#109;&#x69;&#99;&#104;&#105;&#101;&#108;&#x6A;&#x6F;&#x72;&#105;&#x73;&#46;&#x63;&#x6F;&#x6D;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -385,6 +385,24 @@ Done</button></p></div>
       </label>
     </div>
   </div>
+  <br>
+  <div class="row">
+    <div class="span5">
+      <i>
+        If you're installing to an existing CouchDB instance and you
+        think there are already users set up, leave this
+        unchecked. If you want only users that are needed for
+        the roster app please check it. 
+      </i>
+    </div>
+    <div class="span7">
+      <label class="checkbox">
+        <input type="checkbox"
+               ng-model="setup.removeAllUsers">
+        Remove all current users
+      </label>
+    </div>
+  </div>
   <!-- <br> -->
   <!-- <div class="row"> -->
   <!--   <div class="span5"> -->
@@ -415,6 +433,7 @@ Done</button></p></div>
         permissions set and replications setup. When this is done you
         should be able to connect using
         the <a href="http://roster.axion5.net" target="_blank">roster app</a>.
+	It might take a few minutes for the databases to synchronize.
         In the roster app click the database icon left top and fill
         in <b>{{state.connected}}</b> for the url
         and <b>{{setup.targetDatabase}}</b> for the database. Log in
