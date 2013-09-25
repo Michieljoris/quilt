@@ -676,6 +676,7 @@ function multicapCntl($scope, config, state, defaults, persist) {
                             $scope.state.connected + '/' + setup.targetDatabase === r.target;
                     }
                 );
+                if (reps.length === 0) return VOW.kept();
                 console.log('removing the following reps:', reps);
                 var vows = [];
                 reps.forEach(function(r) {
@@ -724,8 +725,11 @@ function multicapCntl($scope, config, state, defaults, persist) {
                     }).forEach(function(l) {
                         // roles.push("" + l.dbName);
                         roles.push("write_" + l.dbName);
+                        roles.push("read_" + l.dbName);
                     });
                     roles.push("read"); roles.push("write");
+                    roles.push("write_persons"); roles.push("write_locations");
+                    roles.push("read_persons"); roles.push("read_locations");
                     return createDb(setup.targetDatabase, [ "_type:'shift'", "_type:'location'", "_type:'person'",
                                                             "_type:'user'", "_type:'settings'"],
                                     roles
