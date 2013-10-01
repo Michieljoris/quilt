@@ -249,18 +249,33 @@ function multicapCntl($scope, config, state, defaults, persist) {
             return db.name.slice(9);
         });
         
+        function capitalise(string)
+        {
+            var result = [];
+            string = string.split(' ');
+            string.forEach(function(s) {
+                result.push(s.charAt(0).toUpperCase() + s.slice(1));
+            });
+            return result.join(' ');
+        }
         getLocationDoc().when(
             function(locationsDoc) {
+                var modified;
                 console.log('MULTICAP===========', locationsDoc);
+                //add location to locationdoc if not found.
                 $scope.locationNames.forEach(function(locationName) {
                     if (!locationsDoc[locationName]) {
-                        locationsDoc[locationName] = {
-                            name: locationName.replace(/_/g, ' ')
+                        var dbName =  locationName;
+                        locationName = locationName.replace(/-/g, ' ');
+                        locationName = capitalise(locationName);
+                        locationsDoc[dbName] = {
+                            name: locationName,
+                            dbName: 'location-' + dbName
+                            
                         };
                         modified = true;
                     }
                 });
-                var modified;
                 Object.keys(locationsDoc).forEach(function(k) {
                     if (!k.startsWith('_')) {
                         if ($scope.locationNames.indexOf(k) === -1) {
@@ -671,7 +686,9 @@ function multicapCntl($scope, config, state, defaults, persist) {
         //If you remove _replicator it will not be created again
         // automatically, you have to restart the instance, so the
         // following does not work as it does for users.
-
+        //maybe read the validate_doc_update, wipe the replicator database,
+        //recreate it and put the vdu back
+        
         // if (setup.removeAllReps) {
         // console.log('Removing all replications'); return
         // couchapi.dbRemove('_replicator'); }
@@ -684,10 +701,9 @@ function multicapCntl($scope, config, state, defaults, persist) {
                 }).filter(
                     function(r) {
                         if (r._id.startsWith('_design')) return false;
-                        return setup.targetDatabase === r.source ||
-                            setup.targetDatabase === r.target ||
-                            $scope.state.connected + '/' + setup.targetDatabase === r.source ||
-                            $scope.state.connected + '/' + setup.targetDatabase === r.target;
+                        return r._id.startsWith('setup.targetDatabase') ||
+                            setup.targetDatabase === r.source ||
+                            setup.targetDatabase === r.target;
                     }
                 );
                 if (reps.length === 0) return VOW.kept();
