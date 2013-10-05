@@ -1,24 +1,34 @@
-* in simple check that server admin is logged in !!! otherwise silently fails at the moment..
-* make sure that all apps start up again after linode server reboots 
- that's basically the forever apps and stunnel for ssl.axion5.net 
-* uncomment line 397 search for 'testing' for line 
-* check setup on windows  
+put in proper rep removal on simple setup
+show reps being set up
 
-* set timeout of connection to one minute 
-* set allow-origin
+* add pouchdb as backent to couchapi
+  So we can use quilt as a pouchdb editor!!!
+And edit the internal couchdb. We can then easily setup reps from
+internal to external, examine databases, etc. Can offer it to the
+pouchdb guy to put on his site!!! Since puton is on ther already, but
+mine is better!!
+  
+* some of this has been done:  
+** in simple check that server admin is logged in !!! otherwise silently fails at the moment..
+** make sure that all apps start up again after linode server reboots 
+  that's basically the forever apps and stunnel for ssl.axion5.net 
+** uncomment line 397 search for 'testing' for line 
+** check setup on windows  
+
+** set timeout of connection to one minute 
+** set allow-origin
 to all possible locations quilt could be server from and then zip it
 up for download
-* set state.testing=false
-* force https!  
-* move all sites to linode or digital ocean  
-* get cloudant to use pkdf2 or CouchDB version1.3+  
-* setup own cert on own server so that https works
-* setup couchdb server on own server using cert 
-  
-* make sure that apps databases have proper vdu
-* setup quilt.michieljoris.net and roster_help.michieljoris.net
-* make couchapps out of quilt and roster_help 
-* TODO
+** set state.testing=false
+** force https!  
+** move all sites to linode or digital ocean  
+** get cloudant to use pkdf2 or CouchDB version1.3+  
+** setup own cert on own server so that https works
+** setup couchdb server on own server using cert 
+   
+** make sure that apps databases have proper vdu
+** setup quilt.michieljoris.net and roster_help.michieljoris.net
+** make couchapps out of quilt and roster_help 
 ** bugs: 
 **** design
 confusing clicking of database, doc and function 
@@ -32,7 +42,6 @@ maybe do a timeout that resolves the promise in state.init ?
 ** paging for users, databases and documents
 ** users info next to table as before
 ** full width pages
-   
 ** in users: 
 no second apply button, but a roles column, not editable and apply
 applies all the changes to to the user database. Also bring select

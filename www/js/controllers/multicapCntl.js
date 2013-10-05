@@ -133,43 +133,44 @@ function multicapCntl($scope, config, state, defaults, persist) {
         if (!match || match[0].length !== locationName.length) {
             $scope.error = 'Illegal character. Use only alphabetical, numeral or space';
             setTimeout(function() {
-                    $scope.error = "";
+                $scope.error = "";
             },3000);
             return;
         }
         var dbName = locationName.replace(/ /g, '-').toLowerCase();
-        createDb('location-' + dbName, ["_type:'shift',location:'" + locationName + "'"] ).when(
+        createDb('location-' + dbName, ["_type:'shift',location:'" + locationName + "'"] )
+            .when(
             function(data) {
                 console.log(data);
                 $scope.newLocationShouldBeOpen = false;
-                addToLocationDoc(dbName, locationName).when(
-                    function() {
-                        $scope.refreshDatabases();
-                        // $scope.$apply();
-                    }
-                    ,function(err) {
-                        console.log('Error adding ' + locationName +
-                                    'to the locationListDoc', err);
+                return addToLocationDoc(dbName, locationName);
+            })
+            .when(
+                function() {
+                    //create new location doc in locations
+                    return couchapi.docSave( {
+                        _id: locationName
+                        ,type: 'location'
                         
-                        // $scope.error = 'Error adding ' + locationName +
-                        //     ' to the locationListDoc';
-                        // setTimeout(function() {
-                        //     $scope.error = "";
-                        // },3000);
-                        // $scope.$apply();
-                    }
-                );
-            },
-            function(err) {
-                console.log(err); 
-                $scope.error = 'Database not created. It exists already probably';
-                setTimeout(function() {
-                    $scope.error = "";
-                },3000);
-                $scope.$apply();
-            }
-        );
+                    }, 'locations');
+                    
+                })
+            .when(
+                function() {
+                    $scope.refreshDatabases();
+                    // $scope.$apply();
+                }
+                ,function(err) {
+                    console.log(err); 
+                    $scope.error = 'Something went wrong:' + err.toString();
+                    setTimeout(function() {
+                        $scope.error = "";
+                    },3000);
+                    $scope.$apply();
+                }
+            );
     };
+    
     
     
     function getLocationDoc() {
@@ -682,6 +683,31 @@ function multicapCntl($scope, config, state, defaults, persist) {
         else return VOW.kept();
     }
     
+    function getRepStates() {
+        var repStateTimer = setInterval(function() {
+            couchapi.docAllInclude('_replicator', { })
+                .when(
+                    function(data) {
+                        var count = reps.length;
+                        var reps = reps.rows.map(function(r) {
+                            return r.doc._replication_state;
+                        }).filter(
+                            function(s) {
+                                return s === 'triggered';
+                            }
+                        );
+                        console.log('Triggered:' + reps.length +
+                                    ' out of '  + count);
+                        if (reps.length === count)
+                            clearInterval(repStateTimer);
+                    }
+                    ,function(err) {
+                        console.log('Oh no, can\'t get the reps states');
+                    });
+        }, 8000);
+        //TODO cacnel the whole thing after 5 minutes
+    } 
+    
     function removeReps(setup) {
         //If you remove _replicator it will not be created again
         // automatically, you have to restart the instance, so the
@@ -692,28 +718,44 @@ function multicapCntl($scope, config, state, defaults, persist) {
         // if (setup.removeAllReps) {
         // console.log('Removing all replications'); return
         // couchapi.dbRemove('_replicator'); }
-        
+        couchapi.config('replicator', 'db', 'mydatabase').when(
+            function(data) {
+                console.log(data);
+            }
+        );
         var vow = VOW.make();
-        couchapi.docAllInclude('_replicator', { }).when(
-            function(reps) {
-                reps = reps.rows.map(function(r) {
-                    return r.doc;
-                }).filter(
-                    function(r) {
-                        if (r._id.startsWith('_design')) return false;
-                        return r._id.startsWith('setup.targetDatabase') ||
-                            setup.targetDatabase === r.source ||
-                            setup.targetDatabase === r.target;
-                    }
-                );
-                if (reps.length === 0) return VOW.kept();
-                console.log('removing the following reps:', reps);
-                var vows = [];
-                reps.forEach(function(r) {
-                    vows.push(couchapi.docRemoveById(r._id));
-                });
-                return VOW.every(vows);
-            }).when(
+        //stop all reps
+        couchapi.config('replicator', 'db', 'asjkkdfkf42asdfas888dkfjakd')
+            .when(
+                function(data) {
+                    return couchapi.docAllInclude('_replicator', { });
+                }) 
+            .when(
+                function(reps) {
+                    reps = reps.rows.map(function(r) {
+                        return r.doc;
+                    }).filter(
+                        function(r) {
+                            if (r._id.startsWith('_design')) return false;
+                            return setup.removeAllReps || 
+                                r._id.startsWith(setup.targetDatabase) ||
+                                setup.targetDatabase === r.source ||
+                                setup.targetDatabase === r.target;
+                        }
+                    );
+                    if (reps.length === 0) return VOW.kept();
+                    console.log('removing the following reps:', reps);
+                    var vows = [];
+                    reps.forEach(function(r) {
+                        vows.push(couchapi.docRemoveById(r._id, '_replicator'));
+                    });
+                    return VOW.every(vows);
+                })
+            .when(
+                function(data) {
+                    return couchapi.config('replicator', 'db', '_replicator');
+                })
+            .when(
                 function(data) {
                     vow.keep(data);
                 }
