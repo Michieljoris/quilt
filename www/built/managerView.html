@@ -159,7 +159,7 @@ have to run it every time before you use the roster app. You could
 put it in the startup folder of windows. Your access will be through
 the address http://localhost:1234. </p>
 
-<p>If your setup is more complicated than above or it is not working contact me on <a href="&#x6D;&#97;&#x69;&#x6C;&#116;&#x6F;:&#109;&#x61;&#x69;&#108;&#64;m&#105;&#99;&#x68;&#x69;e&#108;&#106;&#x6F;&#x72;&#x69;&#x73;&#x2E;&#x63;&#111;&#109;">&#109;&#x61;&#x69;&#108;&#64;m&#105;&#99;&#x68;&#x69;e&#108;&#106;&#x6F;&#x72;&#x69;&#x73;&#x2E;&#x63;&#111;&#109;</a></p></div>
+<p>If your setup is more complicated than above or it is not working contact me on <a href="&#109;&#97;&#105;&#108;&#116;o:&#109;&#x61;i&#108;&#64;&#x6D;&#105;&#x63;&#x68;&#x69;&#101;l&#106;&#111;&#114;&#105;&#115;.&#x63;&#x6F;&#109;">&#109;&#x61;i&#108;&#64;&#x6D;&#105;&#x63;&#x68;&#x69;&#101;l&#106;&#111;&#114;&#105;&#115;.&#x63;&#x6F;&#109;</a></p></div>
 </div>
 
 <div ng-show="state.connected ">
@@ -269,7 +269,7 @@ Done</button></p></div>
     <div class="span7">
       <button class="btn btn-small btn-primary"
               ng-click="createServerAdmin()">Create server
-	admin</button>
+        admin</button>
     </div>
   </div>
   <hr >
@@ -316,6 +316,23 @@ Done</button></p></div>
   Connecting to {{setup.remoteUrl}}</div>
 
 <div ng-show="connectedToSource">
+
+  <div class="row">
+    <div class="span5">
+      <i>
+        If you're not getting all the
+        databases you're expecting modify user and password or the
+        source url and click the refresh button.
+      </i>
+    </div>
+    <div class="span7">
+      <button ng-hide="connectingToSource" class="loading btn btn-small btn-success"
+              ng-click="getDbs()">Refresh list of databases</button>
+      <div ng-show="connectingToSource">
+        <i class="icon-spinner icon-spin icon-medium"></i>
+        Connecting to {{setup.remoteUrl}}</div>
+    </div>
+  </div>
   <div class="row">
     <div class="span5">
       <i>
@@ -333,23 +350,6 @@ Done</button></p></div>
           </label>
         </li>
       </ul>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="span5">
-      <i>
-        If you're not getting all the
-        databases you're expecting modify user and password or the
-        source url and click the refresh button.
-      </i>
-    </div>
-    <div class="span7">
-      <button ng-hide="connectingToSource" class="loading btn btn-small btn-success"
-              ng-click="getDbs()">Refresh list of databases</button>
-      <div ng-show="connectingToSource">
-        <i class="icon-spinner icon-spin icon-medium"></i>
-        Connecting to {{setup.remoteUrl}}</div>
     </div>
   </div>
 
@@ -392,7 +392,7 @@ Done</button></p></div>
         If you're installing to an existing CouchDB instance and you
         think there are already users set up, leave this
         unchecked. If you want only users that are needed for
-        the roster app please check it. 
+        the roster app please check it.
       </i>
     </div>
     <div class="span7">
@@ -403,46 +403,33 @@ Done</button></p></div>
       </label>
     </div>
   </div>
-  <!-- <br> -->
-  <!-- <div class="row"> -->
-  <!--   <div class="span5"> -->
-  <!--     <i> -->
-  <!--       This option will synchronize the roster app and this app -->
-  <!--       (quilt) to your CouchDB instance. Uncheck if you don't want -->
-  <!--       this. Both can still be accessed via the -->
-  <!--       internet: <a href="http://quilt.michieljoris.net">quilt</a> -->
-  <!--       and <a href="http://multicap.iriscouch.com" >roster app</a>. -->
-  <!--       If you leave it checked these apps can be accessed locally -->
-  <!--       at <a href="{{state.connected}}/quilt">quilt</a> -->
-  <!--       and <a href="{{state.connected}}/roster" >roster app</a> -->
-  <!--     </i> -->
-  <!--   </div> -->
-  <!--   <div class="span7"> -->
-  <!--     <label class="checkbox"> -->
-  <!--       <input type="checkbox" -->
-  <!--              ng-model="setup.installApps"> -->
-
-  <!--       Setup a copy of the roster app and this app on your CouchDB instance -->
-  <!--     </label> -->
-  <!--   </div> -->
-  <!-- </div> -->
   <hr>
   <div class="row">
     <div class="span5">
       <i>When clicking the blue button databases will be created,
-        permissions set and replications setup. When this is done you
-        should be able to connect using
-        the <a href="http://roster.axion5.net" target="_blank">roster app</a>.
-	It might take a few minutes for the databases to synchronize.
-        In the roster app click the database icon left top and fill
-        in <b>{{state.connected}}</b> for the url
-        and <b>{{setup.targetDatabase}}</b> for the database. Log in
-        with the username and pwd you used here to set it all up.</i>
+        permissions set and replications setup.  It might take a few
+        minutes for the databases to synchronize.  When this is done
+        you should be able to connect using
+        the <a href="http://roster.axion5.net" target="_blank">roster
+        app</a>.  In the roster app click the gear icon left top and
+        select change database. Fill in <b>{{state.connected}}</b> for
+        the url and <b>{{setup.targetDatabase}}</b> for the
+        database. Click connect. Then log in with the username and pwd
+        you used here to set it all up.</i>
+      <br>
     </div>
     <div class="span7">
       <button class="btn btn-small btn-primary"
               ng-click="setupSimple()">Setup your CouchDB!!</button>
+      <div style="margin-top:10px;" class="well
+                                           well-small">{{setupProgress}}</div>
+      <div class="progress">
+        <div class="bar" style="width: {{setupProgressPerc}}%;"></div>
+      </div>
+
+
     </div>
+
   </div>
   <p></p>
   <div ng-show="state.testing">

@@ -61,7 +61,7 @@ angular.module("myApp").factory('config', function(defaults) {
 angular.module("myApp").factory('state', function(defaults, config, persist, $rootScope) {
     var state = {};
     state.config = config;
-    state.testing = true;
+    state.testing = false;
     state.pwds = {};
     function checkSetting(setting, data)  {
         var value = data[setting[0]] ? data[setting[0]][setting[1]] : '';

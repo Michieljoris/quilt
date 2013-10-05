@@ -688,9 +688,14 @@ function multicapCntl($scope, config, state, defaults, persist) {
             couchapi.docAllInclude('_replicator', { })
                 .when(
                     function(data) {
+                        var reps = data.rows.map(function(r) {
+                            return r.doc;
+                        }).filter(function(r) {
+                            return !r._id.startsWith('_design');
+                        });
                         var count = reps.length;
-                        var reps = reps.rows.map(function(r) {
-                            return r.doc._replication_state;
+                        reps = reps.map(function(rep) {
+                            return rep._replication_state;
                         }).filter(
                             function(s) {
                                 return s === 'triggered';
@@ -698,14 +703,28 @@ function multicapCntl($scope, config, state, defaults, persist) {
                         );
                         console.log('Triggered:' + reps.length +
                                     ' out of '  + count);
-                        if (reps.length === count)
-                            clearInterval(repStateTimer);
+                        $scope.setupProgressPerc = Math.floor(reps.length/count *100);
+                        if (reps.length === count) {
+                            $scope.setupProgress = "Done.";
+                            clearInterval(repStateTimer); 
+                        }
+                        else $scope.setupProgress =
+                            'Replications triggered: ' + reps.length + ' out of '  + count;
+                        $scope.$apply();
+                            
                     }
                     ,function(err) {
-                        console.log('Oh no, can\'t get the reps states');
+                        console.log('Oh no, can\'t get the reps states', err);
+                        $scope.setupProgress = "Error reading status of replications..";
+                        $scope.$apply();
                     });
-        }, 8000);
-        //TODO cacnel the whole thing after 5 minutes
+        }, 5000);
+        
+        setTimeout(function() {
+            clearInterval(repStateTimer);
+            $scope.setupProgress = "Timing out. Your internet might be slow, or the remote database might be offline. Try again.";
+            $scope.$apply();
+        }, 10 * 60 *1000);
     } 
     
     function removeReps(setup) {
@@ -804,6 +823,9 @@ function multicapCntl($scope, config, state, defaults, persist) {
             setup.remotePwd + '@' + url.path;
         console.log(remoteUrl);
         
+        $scope.setupProgress = "Starting..";
+        $scope.$apply();
+        $scope.setupProgressPerc = 0;
         var vows = [];
         vows.push(removeDb(setup.targetDatabase));
         vows.push(removeReps(setup));
@@ -835,10 +857,14 @@ function multicapCntl($scope, config, state, defaults, persist) {
                 }
             ).when(
                 function(data) {
-                    alert('Done!!');
+                    $scope.setupProgress = "Waiting for synchroniziations to trigger:";
+                    $scope.$apply();
+                    getRepStates();
                     console.log('Successfully setup database', data );
                 }
                 ,function(error) {
+                    $scope.setupProgress = "Error: ";
+                    $scope.$apply();
                     console.log('ERROR', error);
                 }
             );
@@ -961,6 +987,8 @@ function multicapCntl($scope, config, state, defaults, persist) {
                            
                        // $scope.setup.removeAllReps = true;
                        $scope.repToUsers = true;
+                        $scope.setupProgressPerc = 0;
+                       $scope.setupProgress = "Click the button!!";
                        $scope.$apply();
                    });
     }
